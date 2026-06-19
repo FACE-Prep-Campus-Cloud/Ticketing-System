@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Campus Helpdesk — Raise a Ticket</title>
+
+<!-- Firebase (compat build: works with plain <script> tags, no build tools needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --bg: #F6F4EF;
+    --panel: #FFFFFF;
+    --ink: #1F2A24;
+    --ink-soft: #5B6760;
+    --line: #DCD6C8;
+    --accent: #7A2E2E;
+    --accent-soft: #F1E3DC;
+    --good: #36664A;
+    --good-soft: #E3EEE3;
+    --warn: #9C6B14;
+    --warn-soft: #F6ECD8;
+    --font-display: Georgia, 'Iowan Old Style', serif;
+    --font-body: 'Helvetica Neue', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); font-family: var(--font-body); color: var(--ink); }
+  button { cursor: pointer; font-family: var(--font-body); }
+  input, select, textarea { font-family: var(--font-body); font-size: 14px; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 28px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  .brand-mark { width: 34px; height: 34px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
+  .brand-text { font-family: var(--font-display); font-size: 19px; }
+  .brand-sub { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.5px; text-transform: uppercase; }
+  .shell { max-width: 480px; margin: 0 auto; padding: 48px 24px 80px; }
+  .hero-title { font-family: var(--font-display); font-size: 28px; margin: 0 0 8px; line-height: 1.15; }
+  .hero-sub { color: var(--ink-soft); font-size: 14px; margin: 0 0 28px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
+  label.field-label { display: block; font-size: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; font-weight: 600; }
+  .field-input { width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); }
+  .field-block { margin-bottom: 20px; }
+  textarea.field-input { resize: vertical; min-height: 110px; }
+  .primary-btn { background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 12px 22px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+  .primary-btn:hover { background: #5f2424; }
+  .primary-btn:disabled { background: #b9aba2; cursor: not-allowed; }
+  .ghost-btn { background: transparent; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 7px; padding: 10px 16px; font-size: 13px; }
+  .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .error-box { background: var(--warn-soft); border: 1px solid #e8d2a0; color: var(--warn); border-radius: 7px; padding: 12px 14px; font-size: 13px; margin-bottom: 18px; display: none; gap: 8px; }
+  .error-box.show { display: block; }
+  .success-wrap { text-align: center; padding: 30px 10px; }
+  .ref-pill { display: inline-block; font-family: monospace; font-size: 20px; letter-spacing: 1px; background: var(--good-soft); color: var(--good); border: 1px solid #bfe0c4; padding: 12px 22px; border-radius: 8px; margin: 16px 0; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .checkmark { font-size: 34px; color: var(--good); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand-mark">T</div>
+  <div>
+    <div class="brand-text">Campus Helpdesk</div>
+    <div class="brand-sub">Student Ticket Portal</div>
+  </div>
+</div>
+
+<!-- STEP 1: Select college -->
+<div class="shell step active" id="step-college">
+  <h1 class="hero-title">Raise a ticket</h1>
+  <p class="hero-sub">Select your college to get started.</p>
+  <div class="card">
+    <div class="field-block">
+      <label class="field-label">College</label>
+      <select class="field-input" id="college-select">
+        <option value="">Select your college...</option>
+      </select>
+    </div>
+    <button class="primary-btn" id="college-continue-btn" disabled>Continue</button>
+  </div>
+</div>
+
+<!-- STEP 2: Verify roll no + passcode -->
+<div class="shell step" id="step-verify">
+  <h1 class="hero-title">Verify your details</h1>
+  <p class="hero-sub"><strong id="verify-college-label"></strong> — enter your roll number and passcode.</p>
+  <div class="card">
+    <div class="error-box" id="verify-error"></div>
+    <div class="field-block">
+      <label class="field-label">Roll number</label>
+      <input class="field-input" id="rollno-input" placeholder="e.g. 21UCS045" />
+    </div>
+    <div class="field-block">
+      <label class="field-label">Passcode</label>
+      <input class="field-input" type="password" id="passcode-input" placeholder="Your college-issued passcode" />
+    </div>
+    <button class="primary-btn" id="verify-btn">Continue</button>
+    <button class="ghost-btn" id="verify-back-btn" style="margin-left:10px;">Back</button>
+  </div>
+</div>
+
+<!-- STEP 3: Ticket form -->
+<div class="shell step" id="step-form">
+  <h1 class="hero-title">Describe your issue</h1>
+  <p class="hero-sub" id="form-greeting"></p>
+  <div class="card">
+    <div class="error-box" id="form-error"></div>
+    <div class="field-block">
+      <label class="field-label">Category</label>
+      <select class="field-input" id="category-select">
+        <option>Academics</option>
+        <option>Examinations</option>
+        <option>Fees & Payments</option>
+        <option>Hostel</option>
+        <option>ID Card / Documents</option>
+        <option>Library</option>
+        <option>Portal / Technical</option>
+        <option>Transport</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field-block">
+      <label class="field-label">Subject</label>
+      <input class="field-input" id="subject-input" placeholder="Short summary of the issue" />
+    </div>
+    <div class="field-block">
+      <label class="field-label">Description</label>
+      <textarea class="field-input" id="description-input" placeholder="Explain what happened, when, and what you need"></textarea>
+    </div>
+    <button class="primary-btn" id="submit-ticket-btn">Submit ticket</button>
+    <button class="ghost-btn" id="form-back-btn" style="margin-left:10px;">Back</button>
+  </div>
+</div>
+
+<!-- STEP 4: Done -->
+<div class="shell step" id="step-done">
+  <div class="card success-wrap">
+    <div class="checkmark">✓</div>
+    <h2 style="font-family: var(--font-display); margin: 12px 0 0;">Ticket submitted</h2>
+    <p style="color: var(--ink-soft); font-size: 13px; margin: 8px 0 0;">
+      Save this reference number. Your college's admin team will follow up.
+    </p>
+    <div class="ref-pill" id="ref-display"></div>
+    <div><button class="ghost-btn" id="reset-btn">Submit another ticket</button></div>
+  </div>
+</div>
+
+<script>
+  // ============ 1. PASTE YOUR FIREBASE CONFIG HERE ============
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  // ==============================================================
+
+  const COLLEGES = [
+    "Kamaraj College",
+    "Kamaraj Women's College",
+    "SDNB Vaishnav College for Women",
+    "Patrician College of Arts & Science",
+    "TERF's College of Arts and Science",
+    "Sree Saraswathi Thyagaraja College",
+    "TJS College of Arts and Science",
+    "Bharathidasan College of Arts & Science",
+    "Nagarathinam Angalammal Arts & Science College",
+    "Vinayaga Mission's Research Foundation School of Arts & Science",
+    "Sri Amaraavathi College of Arts & Science",
+    "Takshashila University",
+    "Study World Group of Institution",
+    "Rathinam College of Arts & Science",
+    "Noorul Islam Centre for Higher Education (NICHE)",
+    "AMET University",
+    "Joy University",
+    "Sasurie College of Arts and Science",
+    "Alliance University",
+    "Kristu Jayathi University",
+    "S-VYASA University",
+    "Asian School of Business"
+  ];
+
+  let selectedCollege = "";
+  let matchedStudent = null;
+
+  function normalize(s) { return (s || "").trim().toLowerCase(); }
+
+  function showStep(id) {
+    document.querySelectorAll(".step").forEach((el) => el.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  function showError(boxId, message) {
+    const box = document.getElementById(boxId);
+    box.textContent = message;
+    box.classList.add("show");
+  }
+  function clearError(boxId) {
+    const box = document.getElementById(boxId);
+    box.textContent = "";
+    box.classList.remove("show");
+  }
+
+  function makeRef() {
+    const d = new Date();
+    const datePart = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+    const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+    return `TKT-${datePart}-${rand}`;
+  }
+
+  // Populate college dropdown
+  const collegeSelect = document.getElementById("college-select");
+  COLLEGES.forEach((c) => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    collegeSelect.appendChild(opt);
+  });
+
+  collegeSelect.addEventListener("change", () => {
+    document.getElementById("college-continue-btn").disabled = !collegeSelect.value;
+  });
+
+  document.getElementById("college-continue-btn").addEventListener("click", () => {
+    selectedCollege = collegeSelect.value;
+    document.getElementById("verify-college-label").textContent = selectedCollege;
+    clearError("verify-error");
+    showStep("step-verify");
+  });
+
+  document.getElementById("verify-back-btn").addEventListener("click", () => showStep("step-college"));
+  document.getElementById("form-back-btn").addEventListener("click", () => showStep("step-verify"));
+
+  document.getElementById("verify-btn").addEventListener("click", async () => {
+    clearError("verify-error");
+    const rollNo = document.getElementById("rollno-input").value;
+    const passcode = document.getElementById("passcode-input").value.trim();
+    const btn = document.getElementById("verify-btn");
+    btn.disabled = true;
+    btn.textContent = "Checking...";
+
+    try {
+      const snapshot = await db.collection("students")
+        .where("college", "==", selectedCollege)
+        .where("rollNoLower", "==", normalize(rollNo))
+        .limit(1)
+        .get();
+
+      if (snapshot.empty || snapshot.docs[0].data().passcode !== passcode) {
+        showError("verify-error", "We couldn't verify this roll number and passcode for the selected college. Double-check both, or contact your college admin office.");
+        btn.disabled = false;
+        btn.textContent = "Continue";
+        return;
+      }
+
+      matchedStudent = snapshot.docs[0].data();
+      document.getElementById("form-greeting").innerHTML =
+        (matchedStudent.name ? `Hi ${matchedStudent.name}, ` : "") +
+        `filing on behalf of <strong>${matchedStudent.college}</strong>.`;
+      clearError("form-error");
+      showStep("step-form");
+    } catch (err) {
+      showError("verify-error", "Something went wrong checking your details. Please try again.");
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Continue";
+    }
+  });
+
+  document.getElementById("submit-ticket-btn").addEventListener("click", async () => {
+    clearError("form-error");
+    const subject = document.getElementById("subject-input").value.trim();
+    const description = document.getElementById("description-input").value.trim();
+    const category = document.getElementById("category-select").value;
+
+    if (!subject || !description) {
+      showError("form-error", "Please fill in both the subject and the description.");
+      return;
+    }
+
+    const btn = document.getElementById("submit-ticket-btn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try {
+      const ref = makeRef();
+      await db.collection("tickets").add({
+        ref,
+        rollNo: matchedStudent.rollNo || "",
+        email: matchedStudent.email || "",
+        name: matchedStudent.name || "",
+        college: matchedStudent.college,
+        category,
+        subject,
+        description,
+        status: "Open",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      document.getElementById("ref-display").textContent = ref;
+      showStep("step-done");
+    } catch (err) {
+      showError("form-error", "Something went wrong saving your ticket. Please try again.");
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Submit ticket";
+    }
+  });
+
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    selectedCollege = "";
+    matchedStudent = null;
+    collegeSelect.value = "";
+    document.getElementById("college-continue-btn").disabled = true;
+    document.getElementById("rollno-input").value = "";
+    document.getElementById("passcode-input").value = "";
+    document.getElementById("subject-input").value = "";
+    document.getElementById("description-input").value = "";
+    document.getElementById("category-select").value = "Academics";
+    showStep("step-college");
+  });
+</script>
+</body>
+</html>
