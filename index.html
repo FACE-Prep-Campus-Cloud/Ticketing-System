@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Campus Helpdesk — Raise a Ticket</title>
 
-<!-- Firebase (compat build: works with plain <script> tags, no build tools needed) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Supabase JS client (CDN, no build tools needed) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
   :root {
@@ -42,6 +41,7 @@
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
   label.field-label { display: block; font-size: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; font-weight: 600; }
   .field-input { width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); }
+  .field-input[readonly] { background: #F4F2EC; color: var(--ink-soft); }
   .field-block { margin-bottom: 20px; }
   textarea.field-input { resize: vertical; min-height: 110px; }
   .primary-btn { background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 12px 22px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
@@ -56,6 +56,8 @@
   .step { display: none; }
   .step.active { display: block; }
   .checkmark { font-size: 34px; color: var(--good); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .hint-box { background: var(--accent-soft); border: 1px solid #e3cdc1; color: var(--accent); border-radius: 7px; padding: 12px 14px; font-size: 12px; margin-bottom: 18px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -88,14 +90,15 @@
   <h1 class="hero-title">Verify your details</h1>
   <p class="hero-sub"><strong id="verify-college-label"></strong> — enter your roll number and passcode.</p>
   <div class="card">
+    <div class="hint-box" id="dummy-hint"></div>
     <div class="error-box" id="verify-error"></div>
     <div class="field-block">
       <label class="field-label">Roll number</label>
-      <input class="field-input" id="rollno-input" placeholder="e.g. 21UCS045" />
+      <input class="field-input" id="rollno-input" placeholder="e.g. 21UCS045" autocomplete="off" />
     </div>
     <div class="field-block">
       <label class="field-label">Passcode</label>
-      <input class="field-input" type="password" id="passcode-input" placeholder="Your college-issued passcode" />
+      <input class="field-input" type="password" id="passcode-input" placeholder="Your college-issued passcode" autocomplete="off" />
     </div>
     <button class="primary-btn" id="verify-btn">Continue</button>
     <button class="ghost-btn" id="verify-back-btn" style="margin-left:10px;">Back</button>
@@ -105,9 +108,25 @@
 <!-- STEP 3: Ticket form -->
 <div class="shell step" id="step-form">
   <h1 class="hero-title">Describe your issue</h1>
-  <p class="hero-sub" id="form-greeting"></p>
+  <p class="hero-sub">Your details are filled in automatically from your student record.</p>
   <div class="card">
     <div class="error-box" id="form-error"></div>
+
+    <div class="two-col">
+      <div class="field-block">
+        <label class="field-label">Name</label>
+        <input class="field-input" id="name-display" readonly />
+      </div>
+      <div class="field-block">
+        <label class="field-label">Department</label>
+        <input class="field-input" id="department-display" readonly />
+      </div>
+    </div>
+    <div class="field-block">
+      <label class="field-label">College</label>
+      <input class="field-input" id="college-display" readonly />
+    </div>
+
     <div class="field-block">
       <label class="field-label">Category</label>
       <select class="field-input" id="category-select">
@@ -127,7 +146,7 @@
       <input class="field-input" id="subject-input" placeholder="Short summary of the issue" />
     </div>
     <div class="field-block">
-      <label class="field-label">Description</label>
+      <label class="field-label">Describe the issue</label>
       <textarea class="field-input" id="description-input" placeholder="Explain what happened, when, and what you need"></textarea>
     </div>
     <button class="primary-btn" id="submit-ticket-btn">Submit ticket</button>
@@ -149,18 +168,15 @@
 </div>
 
 <script>
-  // ============ 1. PASTE YOUR FIREBASE CONFIG HERE ============
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  // ==============================================================
+  // ============ 1. PASTE YOUR SUPABASE CREDENTIALS HERE ============
+  // Find these in your Supabase project: Settings -> API
+  //   - Project URL            -> SUPABASE_URL
+  //   - "anon" "public" key    -> SUPABASE_ANON_KEY
+  const SUPABASE_URL = "https://YOUR_PROJECT_REF.supabase.co";
+  const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
+  // ===================================================================
+
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const COLLEGES = [
     "Kamaraj College",
@@ -186,6 +202,13 @@
     "S-VYASA University",
     "Asian School of Business"
   ];
+
+  // Shown on screen so you can test the flow immediately without
+  // touching the database. These match the sample row in the SQL
+  // seed script (see setup guide).
+  const DUMMY_COLLEGE = "Takshashila University";
+  const DUMMY_ROLL = "21UCS045";
+  const DUMMY_PASSCODE = "campus123";
 
   let selectedCollege = "";
   let matchedStudent = null;
@@ -232,6 +255,15 @@
     selectedCollege = collegeSelect.value;
     document.getElementById("verify-college-label").textContent = selectedCollege;
     clearError("verify-error");
+
+    const hint = document.getElementById("dummy-hint");
+    if (selectedCollege === DUMMY_COLLEGE) {
+      hint.style.display = "block";
+      hint.innerHTML = `<strong>Test credentials</strong> — Roll number: <code>${DUMMY_ROLL}</code> &nbsp;|&nbsp; Passcode: <code>${DUMMY_PASSCODE}</code>`;
+    } else {
+      hint.style.display = "none";
+    }
+
     showStep("step-verify");
   });
 
@@ -247,23 +279,27 @@
     btn.textContent = "Checking...";
 
     try {
-      const snapshot = await db.collection("students")
-        .where("college", "==", selectedCollege)
-        .where("rollNoLower", "==", normalize(rollNo))
+      const { data, error } = await supabaseClient
+        .from("students")
+        .select("*")
+        .eq("college", selectedCollege)
+        .eq("roll_no_lower", normalize(rollNo))
         .limit(1)
-        .get();
+        .maybeSingle();
 
-      if (snapshot.empty || snapshot.docs[0].data().passcode !== passcode) {
+      if (error) throw error;
+
+      if (!data || data.passcode !== passcode) {
         showError("verify-error", "We couldn't verify this roll number and passcode for the selected college. Double-check both, or contact your college admin office.");
         btn.disabled = false;
         btn.textContent = "Continue";
         return;
       }
 
-      matchedStudent = snapshot.docs[0].data();
-      document.getElementById("form-greeting").innerHTML =
-        (matchedStudent.name ? `Hi ${matchedStudent.name}, ` : "") +
-        `filing on behalf of <strong>${matchedStudent.college}</strong>.`;
+      matchedStudent = data;
+      document.getElementById("name-display").value = matchedStudent.name || "";
+      document.getElementById("department-display").value = matchedStudent.department || "";
+      document.getElementById("college-display").value = matchedStudent.college || "";
       clearError("form-error");
       showStep("step-form");
     } catch (err) {
@@ -292,18 +328,20 @@
 
     try {
       const ref = makeRef();
-      await db.collection("tickets").add({
+      const { error } = await supabaseClient.from("tickets").insert({
         ref,
-        rollNo: matchedStudent.rollNo || "",
-        email: matchedStudent.email || "",
+        roll_no: matchedStudent.roll_no || "",
         name: matchedStudent.name || "",
+        department: matchedStudent.department || "",
         college: matchedStudent.college,
         category,
         subject,
         description,
-        status: "Open",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        status: "Open"
       });
+
+      if (error) throw error;
+
       document.getElementById("ref-display").textContent = ref;
       showStep("step-done");
     } catch (err) {
