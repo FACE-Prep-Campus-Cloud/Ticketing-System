@@ -540,6 +540,7 @@ async function submitTicket(){
       id: genId(),
       roll_number: currentRoll,
       student_name: currentStudent ? currentStudent.name : currentRoll,
+      college: currentStudent ? currentStudent.college : null,
       category: cat,
       subject: subj,
       description: desc,
