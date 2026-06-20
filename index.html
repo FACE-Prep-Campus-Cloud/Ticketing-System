@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Campus Help Desk — Student Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -151,6 +152,7 @@
   }
   .btn-primary:hover  { opacity: 0.85; }
   .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .btn-ghost {
     background: transparent; border: none;
@@ -271,7 +273,7 @@
         <input id="a-confirm" type="password" placeholder="••••••" />
       </div>
       <div id="a-error" class="error-msg hidden"></div>
-      <button class="btn-primary" onclick="submitStudent()">
+      <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()">
         <span id="a-btn-label">Log in</span> →
       </button>
       <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">
@@ -318,7 +320,8 @@
           <label class="field-label">Description</label>
           <textarea id="f-desc" rows="5" placeholder="Explain the doubt in detail…"></textarea>
         </div>
-        <button class="btn-primary" onclick="submitTicket()">+ Submit ticket</button>
+        <button class="btn-primary" id="f-submit-btn" onclick="submitTicket()">+ Submit ticket</button>
+        <div id="f-error" class="error-msg hidden"></div>
         <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
       </div>
     </div>
@@ -335,12 +338,16 @@
 </div>
 
 <script>
-const STORAGE_KEY_STUDENTS = 'chd-students';
-const STORAGE_KEY_TICKETS  = 'chd-tickets';
+/* ── Supabase setup ── */
+const SUPABASE_URL = 'https://rysajbwcuieovbsllaas.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let students = {};
-let tickets  = [];
+const SESSION_KEY = 'chd-current-roll'; // remembers who's logged in on this device
+
+let tickets = [];
 let currentRoll = null;
+let currentStudent = null;
 let authMode = 'login'; // 'login' | 'register'
 
 /* ── helpers ── */
@@ -363,16 +370,18 @@ function fmtRel(iso){
   return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
 }
 
-function loadData(){
-  try { const r = localStorage.getItem(STORAGE_KEY_STUDENTS); if(r) students = JSON.parse(r); } catch(e){}
-  try { const r = localStorage.getItem(STORAGE_KEY_TICKETS);  if(r) tickets  = JSON.parse(r); } catch(e){}
-}
-
-function saveStudents(){ localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(students)); }
-function saveTickets(){  localStorage.setItem(STORAGE_KEY_TICKETS,  JSON.stringify(tickets));  }
-
 function show(id){ document.getElementById(id).classList.remove('hidden'); }
 function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+function setBtnLoading(btnId, loading, idleText){
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  if(btnId === 'a-submit-btn'){
+    document.getElementById('a-btn-label').textContent = loading ? 'Please wait…' : idleText;
+  } else {
+    btn.textContent = loading ? 'Submitting…' : idleText;
+  }
+}
 
 /* ── auth ── */
 function toggleMode(){
@@ -386,47 +395,84 @@ function toggleMode(){
 
 function showError(msg){ const el = document.getElementById('a-error'); el.textContent = msg; show('a-error'); }
 
-function submitStudent(){
+async function submitStudent(){
   hide('a-error');
   const roll = norm(document.getElementById('a-roll').value);
   const pass = document.getElementById('a-pass').value;
   if(!roll || !pass){ showError('Enter your roll number and passcode.'); return; }
 
-  if(authMode === 'register'){
-    const name    = document.getElementById('a-name').value.trim();
-    const confirm = document.getElementById('a-confirm').value;
-    if(!name){ showError('Enter your full name.'); return; }
-    if(pass.length < 4){ showError('Passcode must be at least 4 characters.'); return; }
-    if(pass !== confirm){ showError('Passcodes do not match.'); return; }
-    if(students[roll]){ showError('This roll number is already registered. Log in instead.'); return; }
-    students[roll] = { rollNumber: roll, name, passcode: pass };
-    saveStudents();
-    currentRoll = roll;
-    showDashboard();
-  } else {
-    const rec = students[roll];
-    if(!rec){ showError('No account found for this roll number. Create one below.'); return; }
-    if(rec.passcode !== pass){ showError('Incorrect passcode.'); return; }
-    currentRoll = roll;
-    showDashboard();
+  setBtnLoading('a-submit-btn', true, authMode === 'register' ? 'Create account' : 'Log in');
+
+  try {
+    if(authMode === 'register'){
+      const name    = document.getElementById('a-name').value.trim();
+      const confirm = document.getElementById('a-confirm').value;
+      if(!name){ showError('Enter your full name.'); return; }
+      if(pass.length < 4){ showError('Passcode must be at least 4 characters.'); return; }
+      if(pass !== confirm){ showError('Passcodes do not match.'); return; }
+
+      // Check if roll number already exists
+      const { data: existing, error: checkErr } = await sb
+        .from('students')
+        .select('roll_number')
+        .eq('roll_number', roll)
+        .maybeSingle();
+
+      if(checkErr) throw checkErr;
+      if(existing){ showError('This roll number is already registered. Log in instead.'); return; }
+
+      const { data: inserted, error: insertErr } = await sb
+        .from('students')
+        .insert({ roll_number: roll, name, passcode: pass })
+        .select()
+        .single();
+
+      if(insertErr) throw insertErr;
+
+      currentRoll = roll;
+      currentStudent = inserted;
+      localStorage.setItem(SESSION_KEY, roll);
+      await showDashboard();
+
+    } else {
+      const { data: rec, error } = await sb
+        .from('students')
+        .select('*')
+        .eq('roll_number', roll)
+        .maybeSingle();
+
+      if(error) throw error;
+      if(!rec){ showError('No account found for this roll number. Create one below.'); return; }
+      if(rec.passcode !== pass){ showError('Incorrect passcode.'); return; }
+
+      currentRoll = roll;
+      currentStudent = rec;
+      localStorage.setItem(SESSION_KEY, roll);
+      await showDashboard();
+    }
+  } catch(e){
+    console.error(e);
+    showError('Something went wrong reaching the server. Please try again.');
+  } finally {
+    setBtnLoading('a-submit-btn', false, authMode === 'register' ? 'Create account' : 'Log in');
   }
 }
 
 /* ── dashboard ── */
-function showDashboard(){
+async function showDashboard(){
   hide('auth-screen');
   show('student-screen');
-  const s = students[currentRoll];
-  document.getElementById('s-name').textContent = s ? s.name : '';
-  document.getElementById('s-roll').textContent = s ? s.rollNumber : '';
-  renderTickets();
+  document.getElementById('s-name').textContent = currentStudent ? currentStudent.name : '';
+  document.getElementById('s-roll').textContent = currentStudent ? currentStudent.roll_number : '';
+  await loadTickets();
 }
 
 function logout(){
   currentRoll = null;
+  currentStudent = null;
+  localStorage.removeItem(SESSION_KEY);
   hide('student-screen');
   show('auth-screen');
-  // reset form
   ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = '');
   hide('a-error');
   authMode = 'login';
@@ -435,31 +481,45 @@ function logout(){
   hide('a-name-wrap'); hide('a-confirm-wrap');
 }
 
-function submitTicket(){
+async function submitTicket(){
   const cat  = document.getElementById('f-cat').value;
   const subj = document.getElementById('f-subject').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
+  hide('f-error');
   if(!subj || !desc) return;
-  const s = students[currentRoll];
-  const ticket = {
-    id: genId(),
-    rollNumber: currentRoll,
-    studentName: s ? s.name : currentRoll,
-    category: cat,
-    subject: subj,
-    description: desc,
-    status: 'open',
-    adminNote: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  tickets = [ticket, ...tickets];
-  saveTickets();
-  document.getElementById('f-subject').value = '';
-  document.getElementById('f-desc').value   = '';
-  show('f-success');
-  setTimeout(() => hide('f-success'), 3000);
-  renderTickets();
+
+  setBtnLoading('f-submit-btn', true, '+ Submit ticket');
+
+  try {
+    const nowIso = new Date().toISOString();
+    const ticket = {
+      id: genId(),
+      roll_number: currentRoll,
+      student_name: currentStudent ? currentStudent.name : currentRoll,
+      category: cat,
+      subject: subj,
+      description: desc,
+      status: 'open',
+      admin_note: '',
+      created_at: nowIso,
+      updated_at: nowIso
+    };
+
+    const { error } = await sb.from('tickets').insert(ticket);
+    if(error) throw error;
+
+    document.getElementById('f-subject').value = '';
+    document.getElementById('f-desc').value   = '';
+    show('f-success');
+    setTimeout(() => hide('f-success'), 3000);
+    await loadTickets();
+  } catch(e){
+    console.error(e);
+    document.getElementById('f-error').textContent = 'Could not submit the ticket. Please try again.';
+    show('f-error');
+  } finally {
+    setBtnLoading('f-submit-btn', false, '+ Submit ticket');
+  }
 }
 
 function stampHTML(status){
@@ -474,10 +534,30 @@ function toggleCard(id){
   renderTickets();
 }
 
-function renderTickets(){
-  const myTickets = tickets.filter(t => t.rollNumber === currentRoll)
-    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+async function loadTickets(){
+  const list = document.getElementById('ticket-list');
+  list.innerHTML = `<div class="empty-state">Loading your tickets…</div>`;
 
+  try {
+    const { data, error } = await sb
+      .from('tickets')
+      .select('*')
+      .eq('roll_number', currentRoll)
+      .order('created_at', { ascending: false });
+
+    if(error) throw error;
+    tickets = data || [];
+  } catch(e){
+    console.error(e);
+    list.innerHTML = `<div class="empty-state">Couldn't load tickets. Please refresh.</div>`;
+    return;
+  }
+
+  renderTickets();
+}
+
+function renderTickets(){
+  const myTickets = tickets;
   const openCount = myTickets.filter(t => t.status !== 'resolved').length;
   document.getElementById('active-count').textContent = openCount + ' active';
 
@@ -492,9 +572,9 @@ function renderTickets(){
     const bodyHTML = expanded ? `
       <div class="ticket-body ticket-stub">
         <p class="desc">${escHTML(t.description)}</p>
-        ${t.adminNote ? `<div class="admin-note">
+        ${t.admin_note ? `<div class="admin-note">
           <div class="note-label">Response from desk</div>
-          ${escHTML(t.adminNote)}
+          ${escHTML(t.admin_note)}
         </div>` : ''}
       </div>` : '';
     return `<div class="ticket-card">
@@ -502,7 +582,7 @@ function renderTickets(){
         <div style="min-width:0">
           <div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div>
           <div class="subject">${escHTML(t.subject)}</div>
-          <div class="time">${fmtRel(t.createdAt)}</div>
+          <div class="time">${fmtRel(t.created_at)}</div>
         </div>
         ${stampHTML(t.status)}
       </button>
@@ -518,9 +598,31 @@ function escHTML(s){
 }
 
 /* ── boot ── */
-loadData();
-hide('loading-screen');
-show('auth-screen');
+async function boot(){
+  const savedRoll = localStorage.getItem(SESSION_KEY);
+  if(savedRoll){
+    try {
+      const { data: rec, error } = await sb
+        .from('students')
+        .select('*')
+        .eq('roll_number', savedRoll)
+        .maybeSingle();
+
+      if(!error && rec){
+        currentRoll = rec.roll_number;
+        currentStudent = rec;
+        hide('loading-screen');
+        await showDashboard();
+        return;
+      }
+    } catch(e){ console.error(e); }
+    localStorage.removeItem(SESSION_KEY);
+  }
+  hide('loading-screen');
+  show('auth-screen');
+}
+
+boot();
 </script>
 </body>
 </html>
