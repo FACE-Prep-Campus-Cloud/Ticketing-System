@@ -393,7 +393,12 @@ function toggleMode(){
   hide('a-error');
 }
 
-function showError(msg){ const el = document.getElementById('a-error'); el.textContent = msg; show('a-error'); }
+function showError(msg, isSuccess){
+  const el = document.getElementById('a-error');
+  el.textContent = msg;
+  el.style.color = isSuccess ? 'var(--sage)' : '';
+  show('a-error');
+}
 
 async function submitStudent(){
   hide('a-error');
@@ -421,18 +426,22 @@ async function submitStudent(){
       if(checkErr) throw checkErr;
       if(existing){ showError('This roll number is already registered. Log in instead.'); return; }
 
-      const { data: inserted, error: insertErr } = await sb
+      const { error: insertErr } = await sb
         .from('students')
-        .insert({ roll_number: roll, name, passcode: pass })
-        .select()
-        .single();
+        .insert({ roll_number: roll, name, passcode: pass });
 
       if(insertErr) throw insertErr;
 
-      currentRoll = roll;
-      currentStudent = inserted;
-      localStorage.setItem(SESSION_KEY, roll);
-      await showDashboard();
+      // Account created — send them back to the login form instead of logging in automatically
+      document.getElementById('a-name').value = '';
+      document.getElementById('a-pass').value = '';
+      document.getElementById('a-confirm').value = '';
+      authMode = 'login';
+      hide('a-name-wrap'); hide('a-confirm-wrap');
+      document.getElementById('a-btn-label').textContent = 'Log in';
+      document.getElementById('a-mode-toggle').textContent = 'New here? Create an account';
+      showError('Account created! Log in with your roll number and passcode.', true);
+      return;
 
     } else {
       const { data: rec, error } = await sb
