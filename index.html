@@ -575,7 +575,8 @@ function stampHTML(status){
 let openCards = {};
 
 function toggleCard(id){
-  openCards[id] = !openCards[id];
+  const isExpanded = openCards[id] !== false; // default = expanded
+  openCards[id] = !isExpanded;
   renderTickets();
 }
 
@@ -613,7 +614,7 @@ function renderTickets(){
   }
 
   list.innerHTML = myTickets.map(t => {
-    const expanded = openCards[t.id];
+    const expanded = openCards[t.id] !== false; // default = expanded
     const bodyHTML = expanded ? `
       <div class="ticket-body ticket-stub">
         <p class="desc">${escHTML(t.description)}</p>
