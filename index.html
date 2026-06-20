@@ -241,6 +241,98 @@
 
   /* SVG icons inline */
   .icon { display: inline-block; vertical-align: middle; }
+
+  /* ── Image upload ── */
+  .img-drop {
+    border: 1.5px dashed var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--paper-dark);
+    transition: border-color .15s, background .15s;
+  }
+  .img-drop:hover, .img-drop.drag-over {
+    border-color: var(--amber);
+    background: rgba(184,120,15,0.06);
+  }
+  .img-drop .img-drop-label {
+    font-size: 13px;
+    color: var(--ink-light);
+  }
+  .img-drop .img-drop-label b { color: var(--ink); }
+  .img-drop .img-drop-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-light);
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  .img-preview-wrap {
+    position: relative;
+    display: inline-block;
+    margin-top: 12px;
+  }
+  .img-preview-wrap img {
+    display: block;
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+  }
+  .img-remove-btn {
+    position: absolute;
+    top: -8px; right: -8px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--paper);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-family: inherit;
+  }
+  .img-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-light);
+    margin-top: 6px;
+  }
+  .img-compressing {
+    font-size: 13px;
+    color: var(--ink-light);
+    text-align: center;
+    padding: 10px;
+  }
+
+  .ticket-attachment {
+    margin-top: 14px;
+  }
+  .ticket-attachment img {
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+    display: block;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(28,43,58,0.92);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    z-index: 100;
+    cursor: zoom-out;
+  }
+  .lightbox img {
+    max-width: 100%; max-height: 100%;
+    border-radius: 8px;
+  }
 </style>
 </head>
 <body>
@@ -355,6 +447,25 @@
           <label class="field-label">Description</label>
           <textarea id="f-desc" rows="5" placeholder="Explain the doubt in detail…"></textarea>
         </div>
+
+        <div class="field">
+          <label class="field-label">Attach a screenshot (optional)</label>
+
+          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()">
+            <div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div>
+            <div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div>
+          </div>
+          <input id="img-file-input" type="file" accept="image/*" class="hidden" onchange="handleImageSelect(event)" />
+
+          <div id="img-compressing" class="img-compressing hidden">Compressing image…</div>
+
+          <div id="img-preview-wrap" class="img-preview-wrap hidden">
+            <img id="img-preview" src="" alt="Attachment preview" />
+            <button type="button" class="img-remove-btn" onclick="removeImage()">✕</button>
+          </div>
+          <div id="img-meta" class="img-meta hidden"></div>
+        </div>
+
         <button class="btn-primary" id="f-submit-btn" onclick="submitTicket()">+ Submit ticket</button>
         <div id="f-error" class="error-msg hidden"></div>
         <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
@@ -378,10 +489,16 @@ const SUPABASE_URL = 'https://rysajbwcuieovbsllaas.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const IMAGE_BUCKET = 'ticket-images';
+const TARGET_MIN_KB = 200;
+const TARGET_MAX_KB = 300;
+
 let tickets = [];
 let currentRoll = null;
 let currentStudent = null;
 let authMode = 'login'; // 'login' | 'register'
+let pendingImageBlob = null;   // compressed Blob ready to upload
+let pendingImageExt  = 'jpg';
 
 /* ── helpers ── */
 function norm(s){ return (s||'').trim().toUpperCase(); }
@@ -414,6 +531,145 @@ function setBtnLoading(btnId, loading, idleText){
   } else {
     btn.textContent = loading ? 'Submitting…' : idleText;
   }
+}
+
+/* ── image compression ──
+   Strategy: draw onto a canvas, shrink dimensions if very large, then
+   binary-search JPEG quality until the blob lands in the 200–300 KB band
+   (or as close as possible for images that can't reach that band). */
+function loadImageFromFile(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => { resolve(img); };
+    img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
+}
+
+function canvasToBlob(canvas, quality){
+  return new Promise(resolve => {
+    canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
+  });
+}
+
+async function compressImage(file){
+  const img = await loadImageFromFile(file);
+
+  // Cap the longest edge to keep pixel count sane before quality tuning
+  const MAX_EDGE = 1600;
+  let { width, height } = img;
+  if (width > MAX_EDGE || height > MAX_EDGE) {
+    const scale = MAX_EDGE / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, width, height);
+  URL.revokeObjectURL(img.src);
+
+  const targetMin = TARGET_MIN_KB * 1024;
+  const targetMax = TARGET_MAX_KB * 1024;
+
+  // Binary search quality between 0.3 and 0.95
+  let lo = 0.3, hi = 0.95;
+  let bestBlob = await canvasToBlob(canvas, hi);
+
+  // If even max quality is already small enough, just use it
+  if (bestBlob.size <= targetMax) {
+    return bestBlob;
+  }
+
+  for (let i = 0; i < 7; i++){
+    const mid = (lo + hi) / 2;
+    const blob = await canvasToBlob(canvas, mid);
+    if (blob.size > targetMax) {
+      hi = mid;
+    } else if (blob.size < targetMin) {
+      lo = mid;
+      bestBlob = blob; // closest under max so far
+    } else {
+      // inside the target band — good enough
+      return blob;
+    }
+    bestBlob = blob.size <= targetMax ? blob : bestBlob;
+  }
+
+  // If we still can't hit the band (e.g. very simple image stays tiny,
+  // or very busy image won't compress down), downscale further and retry once.
+  if (bestBlob.size > targetMax) {
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = Math.round(width * 0.7);
+    canvas2.height = Math.round(height * 0.7);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.drawImage(canvas, 0, 0, canvas2.width, canvas2.height);
+    bestBlob = await canvasToBlob(canvas2, 0.7);
+  }
+
+  return bestBlob;
+}
+
+async function handleImageSelect(event){
+  const file = event.target.files[0];
+  event.target.value = ''; // allow re-selecting the same file later
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Please choose an image file.');
+    return;
+  }
+
+  hide('img-preview-wrap');
+  hide('img-meta');
+  show('img-compressing');
+
+  try {
+    const compressed = await compressImage(file);
+    pendingImageBlob = compressed;
+    pendingImageExt = 'jpg';
+
+    const previewUrl = URL.createObjectURL(compressed);
+    document.getElementById('img-preview').src = previewUrl;
+    show('img-preview-wrap');
+
+    const kb = (compressed.size / 1024).toFixed(0);
+    document.getElementById('img-meta').textContent = `Ready to attach · ${kb} KB`;
+    show('img-meta');
+  } catch (e) {
+    console.error(e);
+    alert('Could not process that image. Please try a different file.');
+    pendingImageBlob = null;
+  } finally {
+    hide('img-compressing');
+  }
+}
+
+function removeImage(){
+  pendingImageBlob = null;
+  document.getElementById('img-preview').src = '';
+  hide('img-preview-wrap');
+  hide('img-meta');
+}
+
+async function uploadTicketImage(ticketId){
+  if (!pendingImageBlob) return null;
+
+  const path = `${currentRoll}/${ticketId}.${pendingImageExt}`;
+  const { error: uploadErr } = await sb.storage
+    .from(IMAGE_BUCKET)
+    .upload(path, pendingImageBlob, {
+      contentType: 'image/jpeg',
+      upsert: true
+    });
+
+  if (uploadErr) throw uploadErr;
+
+  const { data: pub } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+  return pub ? pub.publicUrl : null;
 }
 
 /* ── auth ── */
@@ -523,6 +779,7 @@ function logout(){
   document.getElementById('a-btn-label').textContent = 'Log in';
   document.getElementById('a-mode-toggle').textContent = 'New here? Create an account';
   hide('a-college-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap');
+  removeImage();
 }
 
 async function submitTicket(){
@@ -536,14 +793,22 @@ async function submitTicket(){
 
   try {
     const nowIso = new Date().toISOString();
+    const ticketId = genId();
+
+    let imageUrl = null;
+    if (pendingImageBlob) {
+      imageUrl = await uploadTicketImage(ticketId);
+    }
+
     const ticket = {
-      id: genId(),
+      id: ticketId,
       roll_number: currentRoll,
       student_name: currentStudent ? currentStudent.name : currentRoll,
       college: currentStudent ? currentStudent.college : null,
       category: cat,
       subject: subj,
       description: desc,
+      image_url: imageUrl,
       status: 'open',
       admin_note: '',
       created_at: nowIso,
@@ -555,6 +820,7 @@ async function submitTicket(){
 
     document.getElementById('f-subject').value = '';
     document.getElementById('f-desc').value   = '';
+    removeImage();
     show('f-success');
     setTimeout(() => hide('f-success'), 3000);
     await loadTickets();
@@ -578,6 +844,16 @@ function toggleCard(id){
   const isExpanded = openCards[id] !== false; // default = expanded
   openCards[id] = !isExpanded;
   renderTickets();
+}
+
+function openLightbox(url){
+  const box = document.createElement('div');
+  box.className = 'lightbox';
+  box.onclick = () => box.remove();
+  const img = document.createElement('img');
+  img.src = url;
+  box.appendChild(img);
+  document.body.appendChild(box);
 }
 
 async function loadTickets(){
@@ -618,6 +894,9 @@ function renderTickets(){
     const bodyHTML = expanded ? `
       <div class="ticket-body ticket-stub">
         <p class="desc">${escHTML(t.description)}</p>
+        ${t.image_url ? `<div class="ticket-attachment">
+          <img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation(); openLightbox('${escHTML(t.image_url)}')" />
+        </div>` : ''}
         ${t.admin_note ? `<div class="admin-note">
           <div class="note-label">Response from desk</div>
           ${escHTML(t.admin_note)}
@@ -655,6 +934,27 @@ function boot(){
         submitStudent();
       }
     });
+  });
+
+  // Drag & drop onto the image drop zone
+  const dropZone = document.getElementById('img-drop');
+  ['dragenter','dragover'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+    });
+  });
+  dropZone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) {
+      handleImageSelect({ target: { files: [file], value: '' } });
+    }
   });
 }
 
