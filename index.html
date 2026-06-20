@@ -606,6 +606,15 @@ function escHTML(s){
 function boot(){
   hide('loading-screen');
   show('auth-screen');
+
+  ['a-roll','a-name','a-pass','a-confirm'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        submitStudent();
+      }
+    });
+  });
 }
 
 boot();
