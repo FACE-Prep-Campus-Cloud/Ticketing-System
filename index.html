@@ -3,368 +3,524 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Campus Helpdesk — Raise a Ticket</title>
-
-<!-- Supabase JS client (CDN, no build tools needed) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<title>Campus Help Desk — Student Portal</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #F6F4EF;
-    --panel: #FFFFFF;
-    --ink: #1F2A24;
-    --ink-soft: #5B6760;
-    --line: #DCD6C8;
-    --accent: #7A2E2E;
-    --accent-soft: #F1E3DC;
-    --good: #36664A;
-    --good-soft: #E3EEE3;
-    --warn: #9C6B14;
-    --warn-soft: #F6ECD8;
-    --font-display: Georgia, 'Iowan Old Style', serif;
-    --font-body: 'Helvetica Neue', Arial, sans-serif;
+    --ink: #1C2B3A;
+    --ink-light: #5B6B7C;
+    --paper: #FBF7EE;
+    --paper-dark: #F0E8D6;
+    --line: #D8CFB8;
+    --rust: #BF4E2C;
+    --amber: #B8780F;
+    --sage: #4F7858;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); font-family: var(--font-body); color: var(--ink); }
-  button { cursor: pointer; font-family: var(--font-body); }
-  input, select, textarea { font-family: var(--font-body); font-size: 14px; }
-  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px;
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--paper-dark);
+    min-height: 100vh;
   }
-  .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 28px; border-bottom: 1px solid var(--line); background: var(--panel); }
-  .brand-mark { width: 34px; height: 34px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
-  .brand-text { font-family: var(--font-display); font-size: 19px; }
-  .brand-sub { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.5px; text-transform: uppercase; }
-  .shell { max-width: 480px; margin: 0 auto; padding: 48px 24px 80px; }
-  .hero-title { font-family: var(--font-display); font-size: 28px; margin: 0 0 8px; line-height: 1.15; }
-  .hero-sub { color: var(--ink-soft); font-size: 14px; margin: 0 0 28px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
-  label.field-label { display: block; font-size: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; font-weight: 600; }
-  .field-input { width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); }
-  .field-input[readonly] { background: #F4F2EC; color: var(--ink-soft); }
-  .field-block { margin-bottom: 20px; }
-  textarea.field-input { resize: vertical; min-height: 110px; }
-  .primary-btn { background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 12px 22px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-  .primary-btn:hover { background: #5f2424; }
-  .primary-btn:disabled { background: #b9aba2; cursor: not-allowed; }
-  .ghost-btn { background: transparent; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 7px; padding: 10px 16px; font-size: 13px; }
-  .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .error-box { background: var(--warn-soft); border: 1px solid #e8d2a0; color: var(--warn); border-radius: 7px; padding: 12px 14px; font-size: 13px; margin-bottom: 18px; display: none; gap: 8px; }
-  .error-box.show { display: block; }
-  .success-wrap { text-align: center; padding: 30px 10px; }
-  .ref-pill { display: inline-block; font-family: monospace; font-size: 20px; letter-spacing: 1px; background: var(--good-soft); color: var(--good); border: 1px solid #bfe0c4; padding: 12px 22px; border-radius: 8px; margin: 16px 0; }
-  .step { display: none; }
-  .step.active { display: block; }
-  .checkmark { font-size: 34px; color: var(--good); }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .hint-box { background: var(--accent-soft); border: 1px solid #e3cdc1; color: var(--accent); border-radius: 7px; padding: 12px 14px; font-size: 12px; margin-bottom: 18px; line-height: 1.5; }
+
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono { font-family: 'IBM Plex Mono', monospace; }
+
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border: 2px solid currentColor;
+    border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .stamp-open    { color: var(--rust);  background: rgba(191,78,44,0.08); }
+  .stamp-progress{ color: var(--amber); background: rgba(184,120,15,0.10); }
+  .stamp-resolved{ color: var(--sage);  background: rgba(79,120,88,0.10); }
+  .stamp-header  { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
+
+  .ticket-stub { position: relative; border-top: 2px dashed var(--line); }
+  .ticket-stub::before, .ticket-stub::after {
+    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--paper-dark);
+  }
+  .ticket-stub::before { left: -1px; }
+  .ticket-stub::after  { right: -1px; }
+
+  header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  header .title { font-family: 'Fraunces', serif; font-size: 20px; }
+  header .user-info { text-align: right; display: none; }
+  @media(min-width: 600px){ header .user-info { display: block; } }
+  header .user-info .name { font-size: 14px; font-weight: 500; }
+  header .user-info .roll { font-family: 'IBM Plex Mono', monospace; font-size: 12px; opacity: 0.7; }
+
+  .btn-logout {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 14px; padding: 6px 12px; border-radius: 8px;
+    background: rgba(251,247,238,0.12); color: var(--paper);
+    border: none; cursor: pointer; font-family: inherit;
+    transition: opacity .15s;
+  }
+  .btn-logout:hover { opacity: 0.8; }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    gap: 32px;
+  }
+  @media(min-width: 760px){
+    main { grid-template-columns: 2fr 3fr; }
+  }
+
+  .section-title { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 4px; }
+  .section-sub   { font-size: 14px; color: var(--ink-light); margin-bottom: 20px; }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  label.field-label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+  }
+
+  .field { margin-bottom: 16px; }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--paper-dark);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--ink); }
+  input::placeholder, textarea::placeholder { color: var(--ink-light); opacity: 0.6; }
+  textarea { resize: none; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity .15s, transform .15s;
+  }
+  .btn-primary:hover  { opacity: 0.85; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    background: transparent; border: none;
+    font-family: inherit; font-size: 14px;
+    color: var(--ink-light); cursor: pointer;
+    width: 100%; padding: 8px 0;
+    transition: color .15s;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .error-msg   { font-size: 13px; color: var(--rust); margin-bottom: 10px; }
+  .success-msg { font-size: 13px; color: var(--sage); text-align: center; margin-top: 8px; }
+
+  /* Auth screen */
+  .auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .auth-box { width: 100%; max-width: 440px; }
+  .auth-header { text-align: center; margin-bottom: 32px; }
+  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 36px; line-height: 1.2; margin-top: 12px; }
+  .auth-header p  { font-size: 14px; color: var(--ink-light); margin-top: 8px; }
+
+  .auth-panel {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 0 16px 16px 16px;
+    padding: 28px;
+  }
+
+  /* Ticket cards */
+  .ticket-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .ticket-toggle {
+    width: 100%; text-align: left;
+    padding: 20px;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    background: transparent; border: none; cursor: pointer;
+  }
+  .ticket-toggle .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-light); margin-bottom: 4px; }
+  .ticket-toggle .subject { font-size: 15px; font-weight: 500; }
+  .ticket-toggle .time { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+  .ticket-body { padding: 0 20px 20px; }
+  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; padding-top: 16px; }
+  .admin-note {
+    margin-top: 16px; padding: 14px;
+    background: var(--paper-dark); border-radius: 12px; font-size: 14px;
+  }
+  .admin-note .note-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-light); margin-bottom: 6px;
+  }
+
+  .empty-state {
+    background: var(--paper); border: 1px dashed var(--line);
+    border-radius: 16px; padding: 48px; text-align: center;
+    color: var(--ink-light); font-size: 14px;
+  }
+
+  .active-badge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  .tickets-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+  }
+
+  /* Loading */
+  .loading {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--ink-light);
+  }
+
+  /* Hidden */
+  .hidden { display: none !important; }
+
+  /* SVG icons inline */
+  .icon { display: inline-block; vertical-align: middle; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand-mark">T</div>
-  <div>
-    <div class="brand-text">Campus Helpdesk</div>
-    <div class="brand-sub">Student Ticket Portal</div>
-  </div>
-</div>
+<div id="loading-screen" class="loading">⏳ Loading the help desk…</div>
 
-<!-- STEP 1: Select college -->
-<div class="shell step active" id="step-college">
-  <h1 class="hero-title">Raise a ticket</h1>
-  <p class="hero-sub">Select your college to get started.</p>
-  <div class="card">
-    <div class="field-block">
-      <label class="field-label">College</label>
-      <select class="field-input" id="college-select">
-        <option value="">Select your college...</option>
-      </select>
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="auth-wrap hidden">
+  <div class="auth-box">
+    <div class="auth-header">
+      <span class="stamp stamp-header">🎓 Campus Help Desk</span>
+      <h1 class="font-display">Raise it. Track it. Solved.</h1>
+      <p>Log in with your roll number to raise a doubt or check on one you've already filed.</p>
     </div>
-    <button class="primary-btn" id="college-continue-btn" disabled>Continue</button>
-  </div>
-</div>
-
-<!-- STEP 2: Verify roll no + passcode -->
-<div class="shell step" id="step-verify">
-  <h1 class="hero-title">Verify your details</h1>
-  <p class="hero-sub"><strong id="verify-college-label"></strong> — enter your roll number and passcode.</p>
-  <div class="card">
-    <div class="hint-box" id="dummy-hint"></div>
-    <div class="error-box" id="verify-error"></div>
-    <div class="field-block">
-      <label class="field-label">Roll number</label>
-      <input class="field-input" id="rollno-input" placeholder="e.g. 21UCS045" autocomplete="off" />
-    </div>
-    <div class="field-block">
-      <label class="field-label">Passcode</label>
-      <input class="field-input" type="password" id="passcode-input" placeholder="Your college-issued passcode" autocomplete="off" />
-    </div>
-    <button class="primary-btn" id="verify-btn">Continue</button>
-    <button class="ghost-btn" id="verify-back-btn" style="margin-left:10px;">Back</button>
-  </div>
-</div>
-
-<!-- STEP 3: Ticket form -->
-<div class="shell step" id="step-form">
-  <h1 class="hero-title">Describe your issue</h1>
-  <p class="hero-sub">Your details are filled in automatically from your student record.</p>
-  <div class="card">
-    <div class="error-box" id="form-error"></div>
-
-    <div class="two-col">
-      <div class="field-block">
-        <label class="field-label">Name</label>
-        <input class="field-input" id="name-display" readonly />
+    <div class="auth-panel">
+      <div class="field">
+        <label class="field-label">Roll Number</label>
+        <input id="a-roll" type="text" placeholder="e.g. 23CS045" />
       </div>
-      <div class="field-block">
-        <label class="field-label">Department</label>
-        <input class="field-input" id="department-display" readonly />
+      <div id="a-name-wrap" class="field hidden">
+        <label class="field-label">Full Name</label>
+        <input id="a-name" type="text" placeholder="Your name" />
       </div>
+      <div class="field">
+        <label class="field-label">Passcode</label>
+        <input id="a-pass" type="password" placeholder="••••••" />
+      </div>
+      <div id="a-confirm-wrap" class="field hidden">
+        <label class="field-label">Confirm Passcode</label>
+        <input id="a-confirm" type="password" placeholder="••••••" />
+      </div>
+      <div id="a-error" class="error-msg hidden"></div>
+      <button class="btn-primary" onclick="submitStudent()">
+        <span id="a-btn-label">Log in</span> →
+      </button>
+      <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">
+        New here? Create an account
+      </button>
     </div>
-    <div class="field-block">
-      <label class="field-label">College</label>
-      <input class="field-input" id="college-display" readonly />
-    </div>
-
-    <div class="field-block">
-      <label class="field-label">Category</label>
-      <select class="field-input" id="category-select">
-        <option>Academics</option>
-        <option>Examinations</option>
-        <option>Fees & Payments</option>
-        <option>Hostel</option>
-        <option>ID Card / Documents</option>
-        <option>Library</option>
-        <option>Portal / Technical</option>
-        <option>Transport</option>
-        <option>Other</option>
-      </select>
-    </div>
-    <div class="field-block">
-      <label class="field-label">Subject</label>
-      <input class="field-input" id="subject-input" placeholder="Short summary of the issue" />
-    </div>
-    <div class="field-block">
-      <label class="field-label">Describe the issue</label>
-      <textarea class="field-input" id="description-input" placeholder="Explain what happened, when, and what you need"></textarea>
-    </div>
-    <button class="primary-btn" id="submit-ticket-btn">Submit ticket</button>
-    <button class="ghost-btn" id="form-back-btn" style="margin-left:10px;">Back</button>
   </div>
 </div>
 
-<!-- STEP 4: Done -->
-<div class="shell step" id="step-done">
-  <div class="card success-wrap">
-    <div class="checkmark">✓</div>
-    <h2 style="font-family: var(--font-display); margin: 12px 0 0;">Ticket submitted</h2>
-    <p style="color: var(--ink-soft); font-size: 13px; margin: 8px 0 0;">
-      Save this reference number. Your college's admin team will follow up.
-    </p>
-    <div class="ref-pill" id="ref-display"></div>
-    <div><button class="ghost-btn" id="reset-btn">Submit another ticket</button></div>
-  </div>
+<!-- STUDENT DASHBOARD -->
+<div id="student-screen" class="hidden">
+  <header>
+    <div class="title">Campus Help Desk</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="user-info">
+        <div class="name" id="s-name"></div>
+        <div class="roll" id="s-roll"></div>
+      </div>
+      <button class="btn-logout" onclick="logout()">↩ Log out</button>
+    </div>
+  </header>
+  <main>
+    <div>
+      <div class="section-title font-display">Raise a doubt</div>
+      <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
+      <div class="card">
+        <div class="field">
+          <label class="field-label">Category</label>
+          <select id="f-cat">
+            <option>Academics</option>
+            <option>Examinations</option>
+            <option>Fees &amp; Accounts</option>
+            <option>Hostel &amp; Mess</option>
+            <option>Library</option>
+            <option>Technical / Portal</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Subject</label>
+          <input id="f-subject" type="text" placeholder="Short summary of the issue" />
+        </div>
+        <div class="field">
+          <label class="field-label">Description</label>
+          <textarea id="f-desc" rows="5" placeholder="Explain the doubt in detail…"></textarea>
+        </div>
+        <button class="btn-primary" onclick="submitTicket()">+ Submit ticket</button>
+        <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="tickets-header">
+        <div class="section-title font-display">Your tickets</div>
+        <span class="active-badge" id="active-count"></span>
+      </div>
+      <div class="section-sub">Everything you've raised, newest first.</div>
+      <div id="ticket-list"></div>
+    </div>
+  </main>
 </div>
 
 <script>
-  // ============ 1. PASTE YOUR SUPABASE CREDENTIALS HERE ============
-  // Find these in your Supabase project: Settings -> API
-  //   - Project URL            -> SUPABASE_URL
-  //   - "anon" "public" key    -> SUPABASE_ANON_KEY
-  const SUPABASE_URL = "https://YOUR_PROJECT_REF.supabase.co";
-  const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
-  // ===================================================================
+const STORAGE_KEY_STUDENTS = 'chd-students';
+const STORAGE_KEY_TICKETS  = 'chd-tickets';
 
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let students = {};
+let tickets  = [];
+let currentRoll = null;
+let authMode = 'login'; // 'login' | 'register'
 
-  const COLLEGES = [
-    "Kamaraj College",
-    "Kamaraj Women's College",
-    "SDNB Vaishnav College for Women",
-    "Patrician College of Arts & Science",
-    "TERF's College of Arts and Science",
-    "Sree Saraswathi Thyagaraja College",
-    "TJS College of Arts and Science",
-    "Bharathidasan College of Arts & Science",
-    "Nagarathinam Angalammal Arts & Science College",
-    "Vinayaga Mission's Research Foundation School of Arts & Science",
-    "Sri Amaraavathi College of Arts & Science",
-    "Takshashila University",
-    "Study World Group of Institution",
-    "Rathinam College of Arts & Science",
-    "Noorul Islam Centre for Higher Education (NICHE)",
-    "AMET University",
-    "Joy University",
-    "Sasurie College of Arts and Science",
-    "Alliance University",
-    "Kristu Jayathi University",
-    "S-VYASA University",
-    "Asian School of Business"
-  ];
+/* ── helpers ── */
+function norm(s){ return (s||'').trim().toUpperCase(); }
 
-  // Shown on screen so you can test the flow immediately without
-  // touching the database. These match the sample row in the SQL
-  // seed script (see setup guide).
-  const DUMMY_COLLEGE = "Takshashila University";
-  const DUMMY_ROLL = "21UCS045";
-  const DUMMY_PASSCODE = "campus123";
+function genId(){
+  return 'TKT-' + Date.now().toString(36).toUpperCase().slice(-5)
+       + Math.random().toString(36).slice(2,5).toUpperCase();
+}
 
-  let selectedCollege = "";
-  let matchedStudent = null;
+function fmtRel(iso){
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff/60000);
+  if(m<1) return 'just now';
+  if(m<60) return m+'m ago';
+  const h = Math.floor(m/60);
+  if(h<24) return h+'h ago';
+  const d = Math.floor(h/24);
+  if(d<30) return d+'d ago';
+  return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
 
-  function normalize(s) { return (s || "").trim().toLowerCase(); }
+function loadData(){
+  try { const r = localStorage.getItem(STORAGE_KEY_STUDENTS); if(r) students = JSON.parse(r); } catch(e){}
+  try { const r = localStorage.getItem(STORAGE_KEY_TICKETS);  if(r) tickets  = JSON.parse(r); } catch(e){}
+}
 
-  function showStep(id) {
-    document.querySelectorAll(".step").forEach((el) => el.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+function saveStudents(){ localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(students)); }
+function saveTickets(){  localStorage.setItem(STORAGE_KEY_TICKETS,  JSON.stringify(tickets));  }
+
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+/* ── auth ── */
+function toggleMode(){
+  authMode = authMode === 'login' ? 'register' : 'login';
+  document.getElementById('a-btn-label').textContent = authMode === 'register' ? 'Create account' : 'Log in';
+  document.getElementById('a-mode-toggle').textContent = authMode === 'login' ? 'New here? Create an account' : 'Already registered? Log in';
+  if(authMode === 'register'){ show('a-name-wrap'); show('a-confirm-wrap'); }
+  else { hide('a-name-wrap'); hide('a-confirm-wrap'); }
+  hide('a-error');
+}
+
+function showError(msg){ const el = document.getElementById('a-error'); el.textContent = msg; show('a-error'); }
+
+function submitStudent(){
+  hide('a-error');
+  const roll = norm(document.getElementById('a-roll').value);
+  const pass = document.getElementById('a-pass').value;
+  if(!roll || !pass){ showError('Enter your roll number and passcode.'); return; }
+
+  if(authMode === 'register'){
+    const name    = document.getElementById('a-name').value.trim();
+    const confirm = document.getElementById('a-confirm').value;
+    if(!name){ showError('Enter your full name.'); return; }
+    if(pass.length < 4){ showError('Passcode must be at least 4 characters.'); return; }
+    if(pass !== confirm){ showError('Passcodes do not match.'); return; }
+    if(students[roll]){ showError('This roll number is already registered. Log in instead.'); return; }
+    students[roll] = { rollNumber: roll, name, passcode: pass };
+    saveStudents();
+    currentRoll = roll;
+    showDashboard();
+  } else {
+    const rec = students[roll];
+    if(!rec){ showError('No account found for this roll number. Create one below.'); return; }
+    if(rec.passcode !== pass){ showError('Incorrect passcode.'); return; }
+    currentRoll = roll;
+    showDashboard();
+  }
+}
+
+/* ── dashboard ── */
+function showDashboard(){
+  hide('auth-screen');
+  show('student-screen');
+  const s = students[currentRoll];
+  document.getElementById('s-name').textContent = s ? s.name : '';
+  document.getElementById('s-roll').textContent = s ? s.rollNumber : '';
+  renderTickets();
+}
+
+function logout(){
+  currentRoll = null;
+  hide('student-screen');
+  show('auth-screen');
+  // reset form
+  ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = '');
+  hide('a-error');
+  authMode = 'login';
+  document.getElementById('a-btn-label').textContent = 'Log in';
+  document.getElementById('a-mode-toggle').textContent = 'New here? Create an account';
+  hide('a-name-wrap'); hide('a-confirm-wrap');
+}
+
+function submitTicket(){
+  const cat  = document.getElementById('f-cat').value;
+  const subj = document.getElementById('f-subject').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  if(!subj || !desc) return;
+  const s = students[currentRoll];
+  const ticket = {
+    id: genId(),
+    rollNumber: currentRoll,
+    studentName: s ? s.name : currentRoll,
+    category: cat,
+    subject: subj,
+    description: desc,
+    status: 'open',
+    adminNote: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  tickets = [ticket, ...tickets];
+  saveTickets();
+  document.getElementById('f-subject').value = '';
+  document.getElementById('f-desc').value   = '';
+  show('f-success');
+  setTimeout(() => hide('f-success'), 3000);
+  renderTickets();
+}
+
+function stampHTML(status){
+  const labels = { open:'Open', progress:'In Progress', resolved:'Resolved' };
+  return `<span class="stamp stamp-${status}">${labels[status]}</span>`;
+}
+
+let openCards = {};
+
+function toggleCard(id){
+  openCards[id] = !openCards[id];
+  renderTickets();
+}
+
+function renderTickets(){
+  const myTickets = tickets.filter(t => t.rollNumber === currentRoll)
+    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const openCount = myTickets.filter(t => t.status !== 'resolved').length;
+  document.getElementById('active-count').textContent = openCount + ' active';
+
+  const list = document.getElementById('ticket-list');
+  if(myTickets.length === 0){
+    list.innerHTML = `<div class="empty-state">No tickets yet. Raise your first doubt on the left.</div>`;
+    return;
   }
 
-  function showError(boxId, message) {
-    const box = document.getElementById(boxId);
-    box.textContent = message;
-    box.classList.add("show");
-  }
-  function clearError(boxId) {
-    const box = document.getElementById(boxId);
-    box.textContent = "";
-    box.classList.remove("show");
-  }
+  list.innerHTML = myTickets.map(t => {
+    const expanded = openCards[t.id];
+    const bodyHTML = expanded ? `
+      <div class="ticket-body ticket-stub">
+        <p class="desc">${escHTML(t.description)}</p>
+        ${t.adminNote ? `<div class="admin-note">
+          <div class="note-label">Response from desk</div>
+          ${escHTML(t.adminNote)}
+        </div>` : ''}
+      </div>` : '';
+    return `<div class="ticket-card">
+      <button class="ticket-toggle" onclick="toggleCard('${t.id}')">
+        <div style="min-width:0">
+          <div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div>
+          <div class="subject">${escHTML(t.subject)}</div>
+          <div class="time">${fmtRel(t.createdAt)}</div>
+        </div>
+        ${stampHTML(t.status)}
+      </button>
+      ${bodyHTML}
+    </div>`;
+  }).join('');
+}
 
-  function makeRef() {
-    const d = new Date();
-    const datePart = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-    const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return `TKT-${datePart}-${rand}`;
-  }
+function escHTML(s){
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
 
-  // Populate college dropdown
-  const collegeSelect = document.getElementById("college-select");
-  COLLEGES.forEach((c) => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    collegeSelect.appendChild(opt);
-  });
-
-  collegeSelect.addEventListener("change", () => {
-    document.getElementById("college-continue-btn").disabled = !collegeSelect.value;
-  });
-
-  document.getElementById("college-continue-btn").addEventListener("click", () => {
-    selectedCollege = collegeSelect.value;
-    document.getElementById("verify-college-label").textContent = selectedCollege;
-    clearError("verify-error");
-
-    const hint = document.getElementById("dummy-hint");
-    if (selectedCollege === DUMMY_COLLEGE) {
-      hint.style.display = "block";
-      hint.innerHTML = `<strong>Test credentials</strong> — Roll number: <code>${DUMMY_ROLL}</code> &nbsp;|&nbsp; Passcode: <code>${DUMMY_PASSCODE}</code>`;
-    } else {
-      hint.style.display = "none";
-    }
-
-    showStep("step-verify");
-  });
-
-  document.getElementById("verify-back-btn").addEventListener("click", () => showStep("step-college"));
-  document.getElementById("form-back-btn").addEventListener("click", () => showStep("step-verify"));
-
-  document.getElementById("verify-btn").addEventListener("click", async () => {
-    clearError("verify-error");
-    const rollNo = document.getElementById("rollno-input").value;
-    const passcode = document.getElementById("passcode-input").value.trim();
-    const btn = document.getElementById("verify-btn");
-    btn.disabled = true;
-    btn.textContent = "Checking...";
-
-    try {
-      const { data, error } = await supabaseClient
-        .from("students")
-        .select("*")
-        .eq("college", selectedCollege)
-        .eq("roll_no_lower", normalize(rollNo))
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (!data || data.passcode !== passcode) {
-        showError("verify-error", "We couldn't verify this roll number and passcode for the selected college. Double-check both, or contact your college admin office.");
-        btn.disabled = false;
-        btn.textContent = "Continue";
-        return;
-      }
-
-      matchedStudent = data;
-      document.getElementById("name-display").value = matchedStudent.name || "";
-      document.getElementById("department-display").value = matchedStudent.department || "";
-      document.getElementById("college-display").value = matchedStudent.college || "";
-      clearError("form-error");
-      showStep("step-form");
-    } catch (err) {
-      showError("verify-error", "Something went wrong checking your details. Please try again.");
-      console.error(err);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Continue";
-    }
-  });
-
-  document.getElementById("submit-ticket-btn").addEventListener("click", async () => {
-    clearError("form-error");
-    const subject = document.getElementById("subject-input").value.trim();
-    const description = document.getElementById("description-input").value.trim();
-    const category = document.getElementById("category-select").value;
-
-    if (!subject || !description) {
-      showError("form-error", "Please fill in both the subject and the description.");
-      return;
-    }
-
-    const btn = document.getElementById("submit-ticket-btn");
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
-
-    try {
-      const ref = makeRef();
-      const { error } = await supabaseClient.from("tickets").insert({
-        ref,
-        roll_no: matchedStudent.roll_no || "",
-        name: matchedStudent.name || "",
-        department: matchedStudent.department || "",
-        college: matchedStudent.college,
-        category,
-        subject,
-        description,
-        status: "Open"
-      });
-
-      if (error) throw error;
-
-      document.getElementById("ref-display").textContent = ref;
-      showStep("step-done");
-    } catch (err) {
-      showError("form-error", "Something went wrong saving your ticket. Please try again.");
-      console.error(err);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Submit ticket";
-    }
-  });
-
-  document.getElementById("reset-btn").addEventListener("click", () => {
-    selectedCollege = "";
-    matchedStudent = null;
-    collegeSelect.value = "";
-    document.getElementById("college-continue-btn").disabled = true;
-    document.getElementById("rollno-input").value = "";
-    document.getElementById("passcode-input").value = "";
-    document.getElementById("subject-input").value = "";
-    document.getElementById("description-input").value = "";
-    document.getElementById("category-select").value = "Academics";
-    showStep("step-college");
-  });
+/* ── boot ── */
+loadData();
+hide('loading-screen');
+show('auth-screen');
 </script>
 </body>
 </html>
