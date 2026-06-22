@@ -54,7 +54,6 @@
   /* ── GLASSMORPHISM HEADER ── */
   .header-outer {
     background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    background: linear-gradient(135deg, #4F7858 0%, #365540 50%, #4F7858 100%);
     position: relative;
     overflow: hidden;
   }
@@ -62,20 +61,15 @@
     position: absolute; width: 260px; height: 260px; border-radius: 50%;
     background: #1da1f2; top: -100px; left: 120px;
     filter: blur(70px); opacity: 0.28; pointer-events: none;
-    background: #B8780F; top: -100px; left: 120px;
-    filter: blur(70px); opacity: 0.3; pointer-events: none;
   }
   .header-orb2 {
     position: absolute; width: 200px; height: 200px; border-radius: 50%;
     background: #00b4d8; bottom: -60px; right: 80px;
     filter: blur(60px); opacity: 0.22; pointer-events: none;
-    background: #FBF7EE; bottom: -60px; right: 80px;
-    filter: blur(60px); opacity: 0.16; pointer-events: none;
   }
   .header-orb3 {
     position: absolute; width: 180px; height: 180px; border-radius: 50%;
     background: #0077b6; top: -40px; right: 300px;
-    background: #BF4E2C; top: -40px; right: 300px;
     filter: blur(55px); opacity: 0.2; pointer-events: none;
   }
 
@@ -90,20 +84,18 @@
     -webkit-backdrop-filter: blur(18px) saturate(1.5);
     background: rgba(255,255,255,0.07);
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 12px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 8px;
+    gap: 12px;
   }
-  @media(min-width: 480px){ .header-top { padding: 12px 20px; gap: 12px; } }
 
-  .header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
+  .header-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
   .header-logo {
-    height: 32px; width: auto; max-width: 90px;
-    object-fit: contain; display: block; border-radius: 8px; flex-shrink: 0;
+    height: 40px; width: auto; max-width: 130px;
+    object-fit: contain; display: block; border-radius: 10px; flex-shrink: 0;
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
   }
@@ -113,41 +105,33 @@
 
   .header-brand .title {
     font-family: 'Fraunces', serif;
-    font-size: 13.5px; line-height: 1.25;
+    font-size: 16px; line-height: 1.25;
     color: #fff; min-width: 0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .header-brand .sub-title {
-    font-size: 10px; color: rgba(255,255,255,0.4);
-    letter-spacing: 0.03em; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    max-width: 140px;
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em; margin-top: 2px;
   }
   @media(min-width: 480px){
     .header-brand .title { font-size: 19px; }
-    .header-brand .sub-title { max-width: none; }
   }
 
-  .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  @media(min-width: 480px){ .header-right { gap: 10px; } }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
   .user-pill {
     display: flex; align-items: center; gap: 9px;
     background: rgba(255,255,255,0.09);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 999px;
-    padding: 4px;
-    flex-shrink: 0;
+    padding: 5px 14px 5px 6px;
   }
-  @media(min-width: 560px){ .user-pill { padding: 5px 14px 5px 6px; } }
   .user-avatar {
-    width: 26px; height: 26px; border-radius: 50%;
+    width: 28px; height: 28px; border-radius: 50%;
     background: rgba(191,78,44,0.85);
     display: flex; align-items: center; justify-content: center;
-    font-size: 10.5px; color: #fff; font-weight: 600;
+    font-size: 11px; color: #fff; font-weight: 600;
     flex-shrink: 0;
   }
-  @media(min-width: 480px){ .user-avatar { width: 28px; height: 28px; font-size: 11px; } }
   .user-info-pill { display: none; }
   @media(min-width: 560px){ .user-info-pill { display: block; } }
   .user-info-pill .uname { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500; }
@@ -155,18 +139,14 @@
 
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
-    font-size: 12px; padding: 7px; border-radius: 9px;
+    font-size: 12px; padding: 7px 13px; border-radius: 9px;
     background: rgba(255,255,255,0.09);
     border: 1px solid rgba(255,255,255,0.15);
     color: rgba(255,255,255,0.7);
     cursor: pointer; font-family: inherit;
     transition: opacity .15s; white-space: nowrap;
-    flex-shrink: 0;
   }
-  @media(min-width: 480px){ .btn-logout { padding: 7px 13px; } }
   .btn-logout:hover { opacity: 0.75; }
-  .btn-logout .logout-text { display: none; }
-  @media(min-width: 480px){ .btn-logout .logout-text { display: inline; } }
 
   /* tab bar */
   .header-tabs {
@@ -174,28 +154,24 @@
     -webkit-backdrop-filter: blur(18px) saturate(1.5);
     background: rgba(255,255,255,0.04);
     border-bottom: 1px solid rgba(255,255,255,0.08);
-    padding: 0 8px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    gap: 0;
-    overflow-x: auto;
+    gap: 2px;
   }
-  @media(min-width: 480px){ .header-tabs { padding: 0 20px; gap: 2px; } }
 
   .nav-tab {
-    display: flex; align-items: center; gap: 6px;
-    padding: 0 12px; height: 40px;
-    font-size: 12.5px; color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; gap: 7px;
+    padding: 0 16px; height: 42px;
+    font-size: 13px; color: rgba(255,255,255,0.4);
     border: none; background: transparent;
     border-bottom: 2px solid transparent;
     cursor: pointer; font-family: 'Inter', sans-serif;
     transition: color .15s, border-color .15s;
-    white-space: nowrap; flex-shrink: 0;
+    white-space: nowrap;
   }
-  @media(min-width: 480px){ .nav-tab { padding: 0 16px; height: 42px; font-size: 13px; gap: 7px; } }
   .nav-tab:hover { color: rgba(255,255,255,0.7); }
   .nav-tab.active { color: rgba(255,255,255,0.95); border-bottom-color: #5DCAA5; font-weight: 500; }
-  .nav-tab.active { color: rgba(255,255,255,0.95); border-bottom-color: #E0A040; font-weight: 500; }
   .nav-tab svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
   /* ── CONTENT PANELS ── */
@@ -403,7 +379,7 @@
               <div class="umeta" id="s-roll"></div>
             </div>
           </div>
-          <button class="btn-logout" onclick="logout()">↩ <span class="logout-text">Log out</span></button>
+          <button class="btn-logout" onclick="logout()">↩ Log out</button>
         </div>
       </div>
       <div class="header-tabs">
@@ -444,6 +420,7 @@
             <option>Sports &amp; Extracurricular</option>
             <option>Ragging / Harassment</option>
             <option>Technical / Portal</option>
+            
             <option>Other</option>
           </select>
         </div>
