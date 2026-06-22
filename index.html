@@ -5,470 +5,377 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FACE Prep Campus Help Desk — Student Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1C2B3A;
-    --ink-light: #5B6B7C;
-    --paper: #FBF7EE;
-    --paper-dark: #F0E8D6;
-    --line: #D8CFB8;
-    --rust: #BF4E2C;
-    --amber: #B8780F;
-    --sage: #4F7858;
+    --gold:        #D1A054;
+    --gold-deep:   #A87C30;
+    --gold-light:  #E8BC78;
+    --gold-pale:   #F5E4C0;
+    --walnut:      #2D2C2A;
+    --walnut-deep: #1A1918;
+    --walnut-mid:  #3E3D3A;
+    --cream:       #F7F1E8;
+    --paper:       #FDFAF5;
+    --line:        #D4B878;
+    --line-soft:   #E8DFC8;
+    --ink:         #F5E4C0;
+    --ink-body:    #C8A85A;
+    --ink-dark:    #1A1918;
+    --ink-dark-lt: #5A5248;
+    --success:     #4A8A3A;
+    --error:       #C85030;
+    --accent:      #1A3A6B;
+    --accent-mid:  #2563EB;
+    --accent-lt:   #3B82F6;
+    --accent-pale: #DBEAFE;
+    --accent-xpale:#EFF6FF;
+    --page:        #F8F5F0;
+    --surface:     #FFFFFF;
+    --surface-mid: #F0EBE3;
+    --border:      #DDD6CC;
+    --border-soft: #EDE9E2;
+    --text:        #1C1C1E;
+    --text-mid:    #3A3A3C;
+    --text-body:   #5A5A6A;
+    --text-muted:  #8A8A9A;
+    --success:     #15803D;
+    --error:       #B91C1C;
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    color: var(--ink);
-    background: var(--paper-dark);
-    min-height: 100vh;
-  }
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink-dark); background: var(--walnut-deep); min-height: 100vh; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--page); min-height: 100vh; }
+  .font-display { font-family: 'Cormorant Garamond', serif; }
+  .font-mono    { font-family: 'DM Mono', monospace; }
 
-  .font-display { font-family: 'Fraunces', serif; }
-  .font-mono { font-family: 'IBM Plex Mono', monospace; }
+  .stamp { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border: 1.5px solid currentColor; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+  .stamp-open     { color: var(--gold-light);  background: rgba(209,160,84,0.12); }
+  .stamp-progress { color: var(--gold);        background: rgba(209,160,84,0.08); }
+  .stamp-resolved { color: var(--success);     background: rgba(74,138,58,0.12); }
+  .stamp-open     { color: var(--accent);     background: rgba(26,58,107,0.07); }
+  .stamp-progress { color: var(--accent-mid); background: rgba(37,99,235,0.08); }
+  .stamp-resolved { color: var(--success);    background: rgba(21,128,61,0.09); }
 
-  .stamp {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border: 2px solid currentColor;
-    border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transform: rotate(-3deg);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .stamp-open    { color: var(--rust);  background: rgba(191,78,44,0.08); }
-  .stamp-progress{ color: var(--amber); background: rgba(184,120,15,0.10); }
-  .stamp-resolved{ color: var(--sage);  background: rgba(79,120,88,0.10); }
-  .stamp-header  { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
+  .ticket-stub { position: relative; border-top: 1.5px dashed rgba(209,160,84,0.25); }
+  .ticket-stub::before, .ticket-stub::after { content: ''; position: absolute; top: -8px; width: 14px; height: 14px; border-radius: 50%; background: var(--walnut-mid); }
+  .ticket-stub { position: relative; border-top: 1.5px dashed rgba(26,58,107,0.18); }
+  .ticket-stub::before, .ticket-stub::after { content: ''; position: absolute; top: -8px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface-mid); }
+  .ticket-stub::before { left: -2px; } .ticket-stub::after { right: -2px; }
 
-  .ticket-stub { position: relative; border-top: 2px dashed var(--line); }
-  .ticket-stub::before, .ticket-stub::after {
-    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
-    border-radius: 50%; background: var(--paper-dark);
-  }
-  .ticket-stub::before { left: -1px; }
-  .ticket-stub::after  { right: -1px; }
+  .header-outer { background: var(--walnut-deep); position: relative; overflow: hidden; }
+  .header-orb1 { position: absolute; width: 380px; height: 380px; border-radius: 50%; background: var(--gold); top: -200px; right: 20px; filter: blur(120px); opacity: 0.20; pointer-events: none; }
+  .header-orb2 { position: absolute; width: 260px; height: 260px; border-radius: 50%; background: var(--gold-deep); bottom: -100px; left: 40px; filter: blur(90px); opacity: 0.35; pointer-events: none; }
+  .header-orb3 { position: absolute; width: 180px; height: 180px; border-radius: 50%; background: var(--gold-light); top: -20px; left: 200px; filter: blur(80px); opacity: 0.10; pointer-events: none; }
+  .header-outer { background: var(--accent); position: relative; overflow: hidden; }
+  .header-orb1 { position: absolute; width: 380px; height: 380px; border-radius: 50%; background: var(--accent-mid); top: -200px; right: 20px; filter: blur(120px); opacity: 0.30; pointer-events: none; }
+  .header-orb2 { position: absolute; width: 260px; height: 260px; border-radius: 50%; background: #0F2150; bottom: -100px; left: 40px; filter: blur(90px); opacity: 0.40; pointer-events: none; }
+  .header-orb3 { position: absolute; width: 180px; height: 180px; border-radius: 50%; background: var(--accent-lt); top: -20px; left: 200px; filter: blur(80px); opacity: 0.15; pointer-events: none; }
 
-  /* ── HEADER ── */
-  header {
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: var(--ink);
-    color: var(--paper);
-  }
+  header { position: relative; z-index: 2; }
 
-  .header-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-  }
+  .header-top { backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); background: rgba(26,25,24,0.6); border-bottom: 1px solid rgba(209,160,84,0.15); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; }
+  .header-top { backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); background: rgba(15,30,70,0.55); border-bottom: 1px solid rgba(255,255,255,0.12); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; }
+  @media(min-width:480px){ .header-top { padding: 14px 24px; gap: 12px; } }
 
-  /* Logo: 48px on mobile, 56px on desktop */
-  .header-logo {
-    height: 48px;
-    width: 48px;
-  /* Logo: tall & wide, natural aspect ratio */
-.header-logo {
-    height: 56px;
-    width: auto;
-    max-width: 160px;
-    object-fit: contain;
-    display: block;
-    border-radius: 10px;
-    flex-shrink: 0;
-    background: rgba(251,247,238,0.08);
-  }
-}
+  .header-brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
+  .header-logo { height: 32px; width: auto; max-width: 90px; object-fit: contain; display: block; border-radius: 6px; flex-shrink: 0; background: rgba(209,160,84,0.10); border: 1px solid rgba(209,160,84,0.20); }
+  .header-logo { height: 32px; width: auto; max-width: 90px; object-fit: contain; display: block; border-radius: 6px; flex-shrink: 0; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); }
+  @media(min-width:480px){ .header-logo { height: 50px; max-width: 160px; border-radius: 8px; } }
+  .header-brand .title { font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.2; font-weight: 600; color: var(--gold-pale); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-brand .sub-title { font-size: 10px; color: rgba(209,160,84,0.45); letter-spacing: 0.07em; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+  .header-brand .title { font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.2; font-weight: 600; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-brand .sub-title { font-size: 10px; color: rgba(255,255,255,0.50); letter-spacing: 0.07em; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+  @media(min-width:480px){ .header-brand .title { font-size: 21px; } .header-brand .sub-title { max-width: none; } }
 
-  .header-brand .title {
-    font-family: 'Fraunces', serif;
-    font-size: 16px;
-    line-height: 1.25;
-    min-width: 0;
-  }
+  .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  @media(min-width:480px){ .header-right { gap: 10px; } }
 
-  header .user-info { text-align: right; display: none; }
-  @media(min-width: 600px){ header .user-info { display: block; } }
-  header .user-info .name { font-size: 14px; font-weight: 500; }
-  header .user-info .roll { font-family: 'IBM Plex Mono', monospace; font-size: 12px; opacity: 0.7; }
+  .user-pill { display: flex; align-items: center; gap: 9px; background: rgba(209,160,84,0.10); border: 1px solid rgba(209,160,84,0.20); border-radius: 4px; padding: 4px; flex-shrink: 0; }
+  .user-pill { display: flex; align-items: center; gap: 9px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.20); border-radius: 4px; padding: 4px; flex-shrink: 0; }
+  @media(min-width:560px){ .user-pill { padding: 5px 14px 5px 6px; } }
+  .user-avatar { width: 26px; height: 26px; border-radius: 3px; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--walnut-deep); font-weight: 700; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .user-avatar { width: 26px; height: 26px; border-radius: 3px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  @media(min-width:480px){ .user-avatar { width: 28px; height: 28px; } }
+  .user-info-pill { display: none; }
+  @media(min-width:560px){ .user-info-pill { display: block; } }
+  .user-info-pill .uname { font-size: 13px; color: var(--gold-pale); font-weight: 500; }
+  .user-info-pill .umeta { font-size: 10px; color: rgba(209,160,84,0.40); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .user-info-pill .uname { font-size: 13px; color: #FFFFFF; font-weight: 500; }
+  .user-info-pill .umeta { font-size: 10px; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
 
-  @media(min-width: 480px){
-    header { padding: 14px 24px; }
-    .header-logo { height: 56px; width: 56px; border-radius: 12px; }
-.header-logo { height: 68px; width: auto; max-width: 200px; border-radius: 12px; }
-    .header-brand .title { font-size: 20px; }
-    .header-brand { gap: 14px; }
-  }
+  .btn-logout { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 7px; border-radius: 4px; background: rgba(209,160,84,0.08); border: 1px solid rgba(209,160,84,0.18); color: rgba(245,228,192,0.65); cursor: pointer; font-family: 'DM Mono', monospace; transition: opacity .15s; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.05em; text-transform: uppercase; }
+  .btn-logout { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 7px; border-radius: 4px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.20); color: rgba(255,255,255,0.75); cursor: pointer; font-family: 'DM Mono', monospace; transition: opacity .15s; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.05em; text-transform: uppercase; }
+  @media(min-width:480px){ .btn-logout { padding: 7px 13px; } }
+  .btn-logout:hover { opacity: 0.75; }
+  .btn-logout .logout-text { display: none; }
+  @media(min-width:480px){ .btn-logout .logout-text { display: inline; } }
 
-  .btn-logout {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; padding: 7px 11px; border-radius: 8px;
-    background: rgba(251,247,238,0.12); color: var(--paper);
-    border: none; cursor: pointer; font-family: inherit;
-    transition: opacity .15s;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .btn-logout:hover { opacity: 0.8; }
-  @media(min-width: 480px){ .btn-logout { font-size: 14px; padding: 6px 12px; } }
+  .header-tabs { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(26,25,24,0.45); border-bottom: 1px solid rgba(209,160,84,0.10); padding: 0 8px; display: flex; align-items: center; overflow-x: auto; }
+  .header-tabs { background: rgba(10,24,60,0.40); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.10); padding: 0 8px; display: flex; align-items: center; overflow-x: auto; }
+  @media(min-width:480px){ .header-tabs { padding: 0 24px; gap: 4px; } }
 
-  main {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 24px 16px 48px;
-    display: grid;
-    gap: 28px;
-  }
-  @media(min-width: 480px){ main { padding: 32px 20px 48px; } }
-  @media(min-width: 760px){ main { grid-template-columns: 2fr 3fr; padding: 40px 24px; gap: 32px; } }
+  .nav-tab { display: flex; align-items: center; gap: 7px; padding: 0 12px; height: 42px; font-size: 12px; color: rgba(209,160,84,0.35); border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color .15s, border-color .15s; white-space: nowrap; flex-shrink: 0; }
+  .nav-tab { display: flex; align-items: center; gap: 7px; padding: 0 12px; height: 42px; font-size: 12px; color: rgba(255,255,255,0.40); border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color .15s, border-color .15s; white-space: nowrap; flex-shrink: 0; }
+  @media(min-width:480px){ .nav-tab { padding: 0 18px; height: 44px; font-size: 13px; } }
+  .nav-tab:hover { color: rgba(209,160,84,0.75); }
+  .nav-tab.active { color: var(--gold-light); border-bottom-color: var(--gold); font-weight: 500; }
+  .nav-tab:hover { color: rgba(255,255,255,0.75); }
+  .nav-tab.active { color: #FFFFFF; border-bottom-color: #93C5FD; font-weight: 500; }
+  .nav-tab svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-  .section-title { font-family: 'Fraunces', serif; font-size: 21px; margin-bottom: 4px; }
-  .section-sub   { font-size: 13.5px; color: var(--ink-light); margin-bottom: 18px; }
-  @media(min-width: 480px){
-    .section-title { font-size: 24px; }
-    .section-sub   { font-size: 14px; margin-bottom: 20px; }
-  }
+  .panel { display: none; } .panel.active { display: block; }
 
-  .card {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px;
-  }
-  @media(min-width: 480px){ .card { padding: 24px; } }
+  main { max-width: 960px; margin: 0 auto; padding: 28px 16px 56px; }
+  @media(min-width:480px){ main { padding: 36px 24px 56px; } }
 
-  label.field-label {
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-light);
-    margin-bottom: 6px;
-  }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; color: var(--gold-pale); }
+  .section-sub   { font-size: 13px; color: var(--ink-body); margin-bottom: 20px; }
+  .section-rule  { width: 32px; height: 2px; background: var(--gold); border-radius: 2px; margin-bottom: 14px; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; color: var(--accent); }
+  .section-sub   { font-size: 13px; color: var(--text-body); margin-bottom: 20px; }
+  .section-rule  { width: 32px; height: 2px; background: var(--accent-mid); border-radius: 2px; margin-bottom: 14px; }
 
-  .field { margin-bottom: 16px; }
+  .card { background: var(--walnut-mid); border: 1px solid rgba(209,160,84,0.20); border-radius: 6px; padding: 20px; max-width: 680px; box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; max-width: 680px; box-shadow: 0 2px 16px rgba(26,58,107,0.08); }
+  @media(min-width:480px){ .card { padding: 28px; } }
 
-  input, select, textarea {
-    width: 100%;
-    padding: 11px 14px;
-    background: var(--paper-dark);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--ink);
-    font-family: inherit;
-    font-size: 16px;
-    outline: none;
-    transition: border-color .15s;
-  }
-  @media(min-width: 480px){ input, select, textarea { font-size: 14px; padding: 10px 14px; } }
-  input:focus, select:focus, textarea:focus { border-color: var(--ink); }
-  input::placeholder, textarea::placeholder { color: var(--ink-light); opacity: 0.6; }
+  label.field-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-body); margin-bottom: 6px; }
+  label.field-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-body); margin-bottom: 6px; }
+  .field { margin-bottom: 18px; }
+
+  input, select, textarea { width: 100%; padding: 11px 14px; background: var(--walnut); border: 1px solid rgba(209,160,84,0.20); border-radius: 4px; color: var(--gold-pale); font-family: 'DM Sans', sans-serif; font-size: 16px; outline: none; transition: border-color .15s, box-shadow .15s; }
+  input, select, textarea { width: 100%; padding: 11px 14px; background: var(--page); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; outline: none; transition: border-color .15s, box-shadow .15s; }
+  @media(min-width:480px){ input, select, textarea { font-size: 14px; padding: 10px 14px; } }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(209,160,84,0.15); }
+  input::placeholder, textarea::placeholder { color: var(--ink-body); opacity: 0.5; }
+  select option { background: var(--walnut); color: var(--gold-pale); }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+  input::placeholder, textarea::placeholder { color: var(--text-muted); }
+  select option { background: var(--surface); color: var(--text); }
   textarea { resize: none; }
 
-  .btn-primary {
-    width: 100%; padding: 14px 12px;
-    background: var(--ink); color: var(--paper);
-    border: none; border-radius: 8px;
-    font-family: inherit; font-size: 15px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: opacity .15s, transform .15s;
-  }
-  @media(min-width: 480px){ .btn-primary { padding: 12px; font-size: 14px; } }
-  .btn-primary:hover  { opacity: 0.85; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-primary { width: 100%; padding: 14px 12px; background: var(--gold); color: var(--walnut-deep); border: none; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .15s; letter-spacing: 0.04em; }
+  .btn-primary:hover { opacity: 0.88; } .btn-primary:active { transform: scale(0.98); } .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { width: 100%; padding: 14px 12px; background: var(--accent); color: #FFFFFF; border: none; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .15s; letter-spacing: 0.04em; }
+  .btn-primary:hover { background: var(--accent-mid); } .btn-primary:active { transform: scale(0.98); } .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .btn-ghost {
-    background: transparent; border: none;
-    font-family: inherit; font-size: 14px;
-    color: var(--ink-light); cursor: pointer;
-    width: 100%; padding: 8px 0; transition: color .15s;
-  }
-  .btn-ghost:hover { color: var(--ink); }
+  .error-msg   { font-size: 13px; color: #E07050; margin-bottom: 10px; }
+  .error-msg   { font-size: 13px; color: var(--error); margin-bottom: 10px; }
+  .success-msg { font-size: 13px; color: var(--success); text-align: center; margin-top: 8px; }
 
-  .error-msg   { font-size: 13px; color: var(--rust); margin-bottom: 10px; }
-  .success-msg { font-size: 13px; color: var(--sage); text-align: center; margin-top: 8px; }
-
-  .auth-wrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px;
-  }
-  .auth-box { width: 100%; max-width: 440px; }
+  /* Auth — walnut bg, gold glow */
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px; background: var(--walnut-deep); position: relative; overflow: hidden; }
+  .auth-wrap::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%; background: var(--gold); top: -220px; right: -80px; filter: blur(130px); opacity: 0.22; }
+  .auth-wrap::after  { content: ''; position: absolute; width: 380px; height: 380px; border-radius: 50%; background: var(--gold-deep); bottom: -180px; left: -60px; filter: blur(120px); opacity: 0.25; }
+  /* Auth */
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px; background: var(--page); position: relative; overflow: hidden; }
+  .auth-wrap::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%; background: var(--accent-pale); top: -220px; right: -80px; filter: blur(100px); opacity: 0.60; }
+  .auth-wrap::after  { content: ''; position: absolute; width: 380px; height: 380px; border-radius: 50%; background: var(--accent-xpale); bottom: -180px; left: -60px; filter: blur(100px); opacity: 0.70; }
+  .auth-box { width: 100%; max-width: 440px; position: relative; z-index: 1; }
   .auth-header { text-align: center; margin-bottom: 24px; }
-  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 28px; line-height: 1.2; margin-top: 12px; }
-  .auth-header p  { font-size: 13.5px; color: var(--ink-light); margin-top: 8px; }
-  @media(min-width: 480px){
-    .auth-wrap { padding: 24px; }
-    .auth-header { margin-bottom: 32px; }
-    .auth-header h1 { font-size: 36px; }
-    .auth-header p  { font-size: 14px; }
-  }
-  .auth-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 0 16px 16px 16px; padding: 20px; }
-  @media(min-width: 480px){ .auth-panel { padding: 28px; } }
+  .auth-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; line-height: 1.15; margin-top: 14px; color: var(--gold); }
+  .auth-header p { font-size: 13.5px; color: rgba(209,160,84,0.55); margin-top: 8px; line-height: 1.6; }
+  .auth-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; line-height: 1.15; margin-top: 14px; color: var(--accent); }
+  .auth-header p { font-size: 13.5px; color: var(--text-body); margin-top: 8px; line-height: 1.6; }
+  @media(min-width:480px){ .auth-header h1 { font-size: 42px; } .auth-header { margin-bottom: 32px; } }
 
-  .ticket-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
-  .ticket-toggle {
-    width: 100%; text-align: left; padding: 16px;
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-    background: transparent; border: none; cursor: pointer; flex-wrap: wrap;
-  }
-  .ticket-toggle .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-light); margin-bottom: 4px; }
-  .ticket-toggle .subject { font-size: 14.5px; font-weight: 500; }
-  .ticket-toggle .time { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+  .auth-panel { background: var(--walnut-mid); border: 1px solid rgba(209,160,84,0.25); border-radius: 6px; padding: 22px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .auth-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 22px; box-shadow: 0 4px 24px rgba(26,58,107,0.10); }
+  @media(min-width:480px){ .auth-panel { padding: 30px; } }
+  /* Override inputs inside auth-panel for light fields */
+  .auth-panel input, .auth-panel select { background: var(--walnut); border-color: rgba(209,160,84,0.22); color: var(--gold-pale); }
+  .auth-panel input::placeholder { color: rgba(209,160,84,0.4); }
+  .auth-panel input, .auth-panel select { background: var(--page); border-color: var(--border); color: var(--text); }
+  .auth-panel input::placeholder { color: var(--text-muted); }
+
+  .btn-ghost { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: rgba(209,160,84,0.55); cursor: pointer; width: 100%; padding: 10px 0; transition: color .15s; text-align: center; }
+  .btn-ghost:hover { color: var(--gold); }
+  .btn-ghost { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-body); cursor: pointer; width: 100%; padding: 10px 0; transition: color .15s; text-align: center; }
+  .btn-ghost:hover { color: var(--accent-mid); }
+
+  .auth-wordmark { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid rgba(209,160,84,0.35); border-radius: 3px; background: rgba(209,160,84,0.08); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; }
+  .auth-wordmark { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid rgba(26,58,107,0.25); border-radius: 3px; background: rgba(26,58,107,0.06); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; }
+
+  .ticket-card { background: var(--walnut-mid); border: 1px solid rgba(209,160,84,0.18); border-radius: 6px; overflow: hidden; margin-bottom: 10px; max-width: 760px; box-shadow: 0 1px 10px rgba(0,0,0,0.25); transition: box-shadow .2s; }
+  .ticket-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  .ticket-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 6px; overflow: hidden; margin-bottom: 10px; max-width: 760px; box-shadow: 0 1px 8px rgba(26,58,107,0.07); transition: box-shadow .2s; }
+  .ticket-card:hover { box-shadow: 0 4px 20px rgba(26,58,107,0.14); }
+  .ticket-toggle { width: 100%; text-align: left; padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; background: transparent; border: none; cursor: pointer; flex-wrap: wrap; }
+  .ticket-toggle .meta { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-body); margin-bottom: 5px; }
+  .ticket-toggle .subject { font-size: 14.5px; font-weight: 500; color: var(--gold-pale); }
+  .ticket-toggle .time { font-size: 11px; color: var(--ink-body); margin-top: 4px; font-family: 'DM Mono', monospace; }
+  .ticket-toggle .meta { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 5px; }
+  .ticket-toggle .subject { font-size: 14.5px; font-weight: 500; color: var(--text); }
+  .ticket-toggle .time { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
   .ticket-body { padding: 0 16px 16px; }
-  @media(min-width: 480px){
-    .ticket-toggle { padding: 20px; gap: 16px; flex-wrap: nowrap; }
-    .ticket-toggle .meta { font-size: 11px; }
-    .ticket-toggle .subject { font-size: 15px; }
-    .ticket-body { padding: 0 20px 20px; }
-  }
-  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; padding-top: 16px; }
-  .admin-note { margin-top: 16px; padding: 14px; background: var(--paper-dark); border-radius: 12px; font-size: 14px; }
-  .admin-note .note-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px; }
+  @media(min-width:480px){ .ticket-toggle { padding: 20px; gap: 16px; flex-wrap: nowrap; } .ticket-body { padding: 0 20px 20px; } }
+  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; padding-top: 16px; line-height: 1.7; color: var(--gold-pale); }
+  .admin-note { margin-top: 16px; padding: 14px 16px; background: rgba(209,160,84,0.08); border-left: 3px solid var(--gold); border-radius: 0 4px 4px 0; font-size: 14px; line-height: 1.65; color: var(--gold-pale); }
+  .admin-note .note-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-body); margin-bottom: 6px; }
+  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; padding-top: 16px; line-height: 1.7; color: var(--text-mid); }
+  .admin-note { margin-top: 16px; padding: 14px 16px; background: var(--accent-xpale); border-left: 3px solid var(--accent-mid); border-radius: 0 4px 4px 0; font-size: 14px; line-height: 1.65; color: var(--text-mid); }
+  .admin-note .note-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-body); margin-bottom: 6px; }
 
-  .empty-state { background: var(--paper); border: 1px dashed var(--line); border-radius: 16px; padding: 32px 20px; text-align: center; color: var(--ink-light); font-size: 14px; }
-  @media(min-width: 480px){ .empty-state { padding: 48px; } }
-
-  .active-badge { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-light); }
   .tickets-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-light); }
-  .hidden { display: none !important; }
-  .icon { display: inline-block; vertical-align: middle; }
+  .active-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-body); background: var(--walnut-mid); border: 1px solid rgba(209,160,84,0.20); padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
+  .empty-state { background: var(--walnut-mid); border: 1px dashed rgba(209,160,84,0.20); border-radius: 6px; padding: 36px 20px; text-align: center; color: var(--ink-body); font-size: 14px; max-width: 760px; line-height: 1.6; }
+  .active-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-body); background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
+  .empty-state { background: var(--surface); border: 1px dashed var(--border); border-radius: 6px; padding: 36px 20px; text-align: center; color: var(--text-body); font-size: 14px; max-width: 760px; line-height: 1.6; }
 
-  .img-drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; background: var(--paper-dark); transition: border-color .15s, background .15s; }
-  .img-drop:hover, .img-drop.drag-over { border-color: var(--amber); background: rgba(184,120,15,0.06); }
-  .img-drop .img-drop-label { font-size: 13px; color: var(--ink-light); }
-  .img-drop .img-drop-label b { color: var(--ink); }
-  .img-drop .img-drop-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-light); opacity: 0.75; margin-top: 4px; }
-
+  .img-drop { border: 1.5px dashed rgba(209,160,84,0.25); border-radius: 5px; padding: 20px; text-align: center; cursor: pointer; background: var(--walnut); transition: border-color .15s, background .15s; }
+  .img-drop:hover, .img-drop.drag-over { border-color: var(--gold); background: rgba(209,160,84,0.06); }
+  .img-drop .img-drop-label { font-size: 13px; color: var(--ink-body); }
+  .img-drop .img-drop-label b { color: var(--gold-pale); font-weight: 500; }
+  .img-drop .img-drop-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-body); opacity: 0.7; margin-top: 5px; }
+  .img-drop { border: 1.5px dashed rgba(26,58,107,0.25); border-radius: 5px; padding: 20px; text-align: center; cursor: pointer; background: var(--page); transition: border-color .15s, background .15s; }
+  .img-drop:hover, .img-drop.drag-over { border-color: var(--accent-mid); background: var(--accent-xpale); }
+  .img-drop .img-drop-label { font-size: 13px; color: var(--text-body); }
+  .img-drop .img-drop-label b { color: var(--text); font-weight: 500; }
+  .img-drop .img-drop-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 5px; }
   .img-preview-wrap { position: relative; display: inline-block; margin-top: 12px; }
-  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 10px; border: 1px solid var(--line); }
-  .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--paper); border: 2px solid var(--paper); cursor: pointer; font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; font-family: inherit; }
-  .img-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-light); margin-top: 6px; }
-  .img-compressing { font-size: 13px; color: var(--ink-light); text-align: center; padding: 10px; }
-
+  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 5px; border: 1px solid rgba(209,160,84,0.25); }
+  .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 3px; background: var(--gold); color: var(--walnut-deep); border: 1.5px solid var(--walnut-mid); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .img-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-body); margin-top: 6px; }
+  .img-compressing { font-size: 13px; color: var(--ink-body); text-align: center; padding: 10px; }
+  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 5px; border: 1px solid var(--border); }
+  .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 3px; background: var(--accent); color: #FFFFFF; border: 1.5px solid var(--surface); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .img-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+  .img-compressing { font-size: 13px; color: var(--text-body); text-align: center; padding: 10px; }
   .ticket-attachment { margin-top: 14px; }
-  .ticket-attachment img { max-width: 100%; max-height: 240px; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
+  .ticket-attachment img { max-width: 100%; max-height: 240px; border-radius: 5px; border: 1px solid rgba(209,160,84,0.20); cursor: zoom-in; display: block; }
+  .ticket-attachment img { max-width: 100%; max-height: 240px; border-radius: 5px; border: 1px solid var(--border); cursor: zoom-in; display: block; }
 
-  .lightbox { position: fixed; inset: 0; background: rgba(28,43,58,0.92); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; cursor: zoom-out; }
-  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+  .lightbox { position: fixed; inset: 0; background: rgba(26,25,24,0.96); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; cursor: zoom-out; }
+  .lightbox { position: fixed; inset: 0; background: rgba(15,25,60,0.92); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; cursor: zoom-out; }
+  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
+
+  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--gold); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; background: var(--walnut-deep); }
+  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--accent); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; background: var(--page); }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
-
-<div id="loading-screen" class="loading">⏳ Loading the help desk…</div>
-
+<div id="loading-screen" class="loading">Loading the help desk…</div>
 <div id="auth-screen" class="auth-wrap hidden">
   <div class="auth-box">
     <div class="auth-header">
-      <span class="stamp stamp-header">FACE Prep Campus Help Desk</span>
-      <h1 class="font-display">One desk. Every answer</h1>
-      <p>Log in with your roll number to raise a doubt or check on one you've already filed.</p>
+      <span class="auth-wordmark">FACE Prep · Campus Help Desk</span>
+      <h1 class="font-display">One desk.<br><em>Every answer.</em></h1>
+      <p>Log in with your roll number to raise a problem or track one you've already filed.</p>
     </div>
     <div class="auth-panel">
       <div id="a-college-wrap" class="field hidden">
         <label class="field-label">College</label>
         <select id="a-college">
-          <option>Kamaraj College</option>
-          <option>Kamaraj Women's College</option>
-          <option>SDNB Vaishnav College for Women</option>
-          <option>Patrician College of Arts & Science</option>
-          <option>TERF's College of Arts and Science</option>
-          <option>Sree Saraswathi Thyagaraja College</option>
-          <option>TJS College of Arts and Science</option>
-          <option>Bharathidasan College of Arts & Science</option>
-          <option>Nagarathinam Angalammal Arts & Science College</option>
-          <option>Vinayaga Mission's Research Foundation School of Arts & Science</option>
-          <option>Sri Amaraavathi College of Arts & Science</option>
-          <option>Takshashila University</option>
-          <option>Study World Group of Institution</option>
-          <option>Rathinam College of Arts & Science</option>
-          <option>Noorul Islam Centre for Higher Education (NICHE)</option>
-          <option>AMET University</option>
-          <option>Joy University</option>
-          <option>Sasurie College of Arts and Science</option>
-          <option>Alliance University</option>
-          <option>Kristu Jayathi University</option>
-          <option>S-VYASA University</option>
-          <option>Asian School of Business</option>
+          <option>Kamaraj College</option><option>Kamaraj Women's College</option><option>SDNB Vaishnav College for Women</option><option>Patrician College of Arts & Science</option><option>TERF's College of Arts and Science</option><option>Sree Saraswathi Thyagaraja College</option><option>TJS College of Arts and Science</option><option>Bharathidasan College of Arts & Science</option><option>Nagarathinam Angalammal Arts & Science College</option><option>Vinayaga Mission's Research Foundation School of Arts & Science</option><option>Sri Amaraavathi College of Arts & Science</option><option>Takshashila University</option><option>Study World Group of Institution</option><option>Rathinam College of Arts & Science</option><option>Noorul Islam Centre for Higher Education (NICHE)</option><option>AMET University</option><option>Joy University</option><option>Sasurie College of Arts and Science</option><option>Alliance University</option><option>Kristu Jayathi University</option><option>S-VYASA University</option><option>Asian School of Business</option>
         </select>
       </div>
-      <div class="field">
-        <label class="field-label">Roll Number</label>
-        <input id="a-roll" type="text" placeholder="e.g. 23CS045" />
-      </div>
-      <div id="a-name-wrap" class="field hidden">
-        <label class="field-label">Full Name</label>
-        <input id="a-name" type="text" placeholder="Your name" />
-      </div>
-      <div class="field">
-        <label class="field-label">Passcode</label>
-        <input id="a-pass" type="password" placeholder="••••••" />
-      </div>
-      <div id="a-confirm-wrap" class="field hidden">
-        <label class="field-label">Confirm Passcode</label>
-        <input id="a-confirm" type="password" placeholder="••••••" />
-      </div>
+      <div class="field"><label class="field-label">Roll Number</label><input id="a-roll" type="text" placeholder="e.g. 23CS045" /></div>
+      <div id="a-name-wrap" class="field hidden"><label class="field-label">Full Name</label><input id="a-name" type="text" placeholder="Your name" /></div>
+      <div class="field"><label class="field-label">Passcode</label><input id="a-pass" type="password" placeholder="••••••" /></div>
+      <div id="a-confirm-wrap" class="field hidden"><label class="field-label">Confirm Passcode</label><input id="a-confirm" type="password" placeholder="••••••" /></div>
       <div id="a-error" class="error-msg hidden"></div>
-      <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()">
-        <span id="a-btn-label">Log in</span> →
-      </button>
-      <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">
-        New here? Create an account
-      </button>
+      <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()"><span id="a-btn-label">Log in</span> →</button>
+      <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">New here? Create an account</button>
     </div>
   </div>
 </div>
-
 <div id="student-screen" class="hidden">
-  <header>
-    <!-- ✅ FIXED: logo now uses .header-logo class with proper responsive sizing -->
-    <div class="header-brand">
-      <img src="Face prep logo.png" alt="FACE Prep logo" class="header-logo" />
-      <span class="title">FACE Prep Campus Help Desk</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px">
-      <div class="user-info">
-        <div class="name" id="s-name"></div>
-        <div class="roll" id="s-roll"></div>
-        <div class="roll" id="s-college"></div>
+  <div class="header-outer">
+    <div class="header-orb1"></div><div class="header-orb2"></div><div class="header-orb3"></div>
+    <header>
+      <div class="header-top">
+        <div class="header-brand">
+          <img src="Face prep logo3.png" alt="FACE Prep" class="header-logo" />
+          <div><div class="title">FACE Prep Campus Help Desk</div><div class="sub-title" id="s-college"></div></div>
+        </div>
+        <div class="header-right">
+          <div class="user-pill">
+            <div class="user-avatar" id="s-avatar">N</div>
+            <div class="user-info-pill"><div class="uname" id="s-name"></div><div class="umeta" id="s-roll"></div></div>
+          </div>
+          <button class="btn-logout" onclick="logout()">↩ <span class="logout-text">Log out</span></button>
+        </div>
       </div>
-      <button class="btn-logout" onclick="logout()">↩ Log out</button>
-    </div>
-  </header>
-  <main>
-    <div>
-      <div class="section-title font-display">Raise a doubt</div>
-      <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
+      <div class="header-tabs">
+        <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Raise your problem
+        </button>
+        <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
+          <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>My tickets
+          <span id="tab-badge" style="display:none;background:var(--gold);color:var(--walnut-deep);font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;"></span>
+          <span id="tab-badge" style="display:none;background:#1A3A6B;color:#FFFFFF;font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;"></span>
+        </button>
+      </div>
+    </header>
+  </div>
+  <div id="panel-raise" class="panel active">
+    <main>
+      <div class="section-rule"></div><div class="section-title font-display">Raise your problem</div><div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
       <div class="card">
-        <div class="field">
-          <label class="field-label">Category</label>
-          <select id="f-cat">
-            <option>Academics</option>
-            <option>Teaching Issue</option>
-            <option>Examinations</option>
-            <option>Fees &amp; Accounts</option>
-            <option>Scholarship &amp; Financial Aid</option>
-            <option>Hostel &amp; Mess</option>
-            <option>Library</option>
-            <option>Transport</option>
-            <option>Placement &amp; Internships</option>
-            <option>Certificates &amp; Documents</option>
-            <option>Health &amp; Wellness</option>
-            <option>Sports &amp; Extracurricular</option>
-            <option>Ragging / Harassment</option>
-            <option>Technical / Portal</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">Query Subject</label>
-          <input id="f-subject" type="text" placeholder="Short summary of your query" />
-        </div>
-        <div class="field">
-          <label class="field-label">Description</label>
-          <textarea id="f-desc" rows="5" placeholder="Explain the doubt in detail…"></textarea>
-        </div>
+        <div class="field"><label class="field-label">Category</label><select id="f-cat"><option>Academics</option><option>Teaching Issue</option><option>Examinations</option><option>Fees &amp; Accounts</option><option>Scholarship &amp; Financial Aid</option><option>Hostel &amp; Mess</option><option>Infrastructure</option><option>Library</option><option>Transport</option><option>Placement &amp; Internships</option><option>Certificates &amp; Documents</option><option>Health &amp; Wellness</option><option>Sports &amp; Extracurricular</option><option>Ragging / Harassment</option><option>Technical / Portal</option><option>Other</option></select></div>
+        <div class="field"><label class="field-label">Query Subject</label><input id="f-subject" type="text" placeholder="Short summary of your query" /></div>
+        <div class="field"><label class="field-label">Description</label><textarea id="f-desc" rows="5" placeholder="Explain the issue in detail…"></textarea></div>
         <div class="field">
           <label class="field-label">Attach a screenshot (optional)</label>
-          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()">
-            <div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div>
-            <div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div>
-          </div>
+          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()"><div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div><div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div></div>
           <input id="img-file-input" type="file" accept="image/*" class="hidden" onchange="handleImageSelect(event)" />
           <div id="img-compressing" class="img-compressing hidden">Compressing image…</div>
-          <div id="img-preview-wrap" class="img-preview-wrap hidden">
-            <img id="img-preview" src="" alt="Attachment preview" />
-            <button type="button" class="img-remove-btn" onclick="removeImage()">✕</button>
-          </div>
+          <div id="img-preview-wrap" class="img-preview-wrap hidden"><img id="img-preview" src="" alt="Attachment preview" /><button type="button" class="img-remove-btn" onclick="removeImage()">✕</button></div>
           <div id="img-meta" class="img-meta hidden"></div>
         </div>
         <button class="btn-primary" id="f-submit-btn" onclick="submitTicket()">+ Submit ticket</button>
         <div id="f-error" class="error-msg hidden"></div>
         <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
       </div>
-    </div>
-    <div>
-      <div class="tickets-header">
-        <div class="section-title font-display">Your tickets</div>
-        <span class="active-badge" id="active-count"></span>
-      </div>
+    </main>
+  </div>
+  <div id="panel-tickets" class="panel">
+    <main>
+      <div class="tickets-header"><div><div class="section-rule"></div><div class="section-title font-display">My tickets</div></div><span class="active-badge" id="active-count"></span></div>
       <div class="section-sub">Everything you've raised, newest first.</div>
       <div id="ticket-list"></div>
-    </div>
-  </main>
+    </main>
+  </div>
 </div>
-
 <script>
-const SUPABASE_URL = 'https://rysajbwcuieovbsllaas.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const IMAGE_BUCKET = 'ticket-images';
-const TARGET_MIN_KB = 200;
-const TARGET_MAX_KB = 300;
-
-let tickets = [];
-let currentRoll = null;
-let currentStudent = null;
-let authMode = 'login';
-let pendingImageBlob = null;
-let pendingImageExt  = 'jpg';
-
-function norm(s){ return (s||'').trim().toUpperCase(); }
-function genId(){ return 'TKT-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2,5).toUpperCase(); }
-function fmtRel(iso){ const diff = Date.now() - new Date(iso).getTime(); const m = Math.floor(diff/60000); if(m<1) return 'just now'; if(m<60) return m+'m ago'; const h = Math.floor(m/60); if(h<24) return h+'h ago'; const d = Math.floor(h/24); if(d<30) return d+'d ago'; return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
-function show(id){ document.getElementById(id).classList.remove('hidden'); }
-function hide(id){ document.getElementById(id).classList.add('hidden'); }
-function setBtnLoading(btnId, loading, idleText){ const btn = document.getElementById(btnId); btn.disabled = loading; if(btnId === 'a-submit-btn'){ document.getElementById('a-btn-label').textContent = loading ? 'Please wait…' : idleText; } else { btn.textContent = loading ? 'Submitting…' : idleText; } }
-
-function loadImageFromFile(file){ return new Promise((resolve, reject) => { const img = new Image(); const url = URL.createObjectURL(file); img.onload = () => { resolve(img); }; img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); }; img.src = url; }); }
-function canvasToBlob(canvas, quality){ return new Promise(resolve => { canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality); }); }
-async function compressImage(file){ const img = await loadImageFromFile(file); const MAX_EDGE = 1600; let { width, height } = img; if (width > MAX_EDGE || height > MAX_EDGE) { const scale = MAX_EDGE / Math.max(width, height); width = Math.round(width * scale); height = Math.round(height * scale); } const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); URL.revokeObjectURL(img.src); const targetMin = TARGET_MIN_KB * 1024; const targetMax = TARGET_MAX_KB * 1024; let lo = 0.3, hi = 0.95; let bestBlob = await canvasToBlob(canvas, hi); if (bestBlob.size <= targetMax) { return bestBlob; } for (let i = 0; i < 7; i++){ const mid = (lo + hi) / 2; const blob = await canvasToBlob(canvas, mid); if (blob.size > targetMax) { hi = mid; } else if (blob.size < targetMin) { lo = mid; bestBlob = blob; } else { return blob; } bestBlob = blob.size <= targetMax ? blob : bestBlob; } if (bestBlob.size > targetMax) { const canvas2 = document.createElement('canvas'); canvas2.width = Math.round(width * 0.7); canvas2.height = Math.round(height * 0.7); const ctx2 = canvas2.getContext('2d'); ctx2.drawImage(canvas, 0, 0, canvas2.width, canvas2.height); bestBlob = await canvasToBlob(canvas2, 0.7); } return bestBlob; }
-
-async function handleImageSelect(event){ const file = event.target.files[0]; event.target.value = ''; if (!file) return; if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); return; } hide('img-preview-wrap'); hide('img-meta'); show('img-compressing'); try { const compressed = await compressImage(file); pendingImageBlob = compressed; pendingImageExt = 'jpg'; const previewUrl = URL.createObjectURL(compressed); document.getElementById('img-preview').src = previewUrl; show('img-preview-wrap'); const kb = (compressed.size / 1024).toFixed(0); document.getElementById('img-meta').textContent = `Ready to attach · ${kb} KB`; show('img-meta'); } catch (e) { console.error(e); alert('Could not process that image. Please try a different file.'); pendingImageBlob = null; } finally { hide('img-compressing'); } }
-function removeImage(){ pendingImageBlob = null; document.getElementById('img-preview').src = ''; hide('img-preview-wrap'); hide('img-meta'); }
-async function uploadTicketImage(ticketId){ if (!pendingImageBlob) return null; const path = `${currentRoll}/${ticketId}.${pendingImageExt}`; const { error: uploadErr } = await sb.storage.from(IMAGE_BUCKET).upload(path, pendingImageBlob, { contentType: 'image/jpeg', upsert: true }); if (uploadErr) throw uploadErr; const { data: pub } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(path); return pub ? pub.publicUrl : null; }
-
-function toggleMode(){ authMode = authMode === 'login' ? 'register' : 'login'; document.getElementById('a-btn-label').textContent = authMode === 'register' ? 'Create account' : 'Log in'; document.getElementById('a-mode-toggle').textContent = authMode === 'login' ? 'New here? Create an account' : 'Already registered? Log in'; if(authMode === 'register'){ show('a-college-wrap'); show('a-name-wrap'); show('a-confirm-wrap'); } else { hide('a-college-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap'); } hide('a-error'); }
-function showError(msg, isSuccess){ const el = document.getElementById('a-error'); el.textContent = msg; el.style.color = isSuccess ? 'var(--sage)' : ''; show('a-error'); }
-
-async function submitStudent(){ hide('a-error'); const roll = norm(document.getElementById('a-roll').value); const pass = document.getElementById('a-pass').value; if(!roll || !pass){ showError('Enter your roll number and passcode.'); return; } setBtnLoading('a-submit-btn', true, authMode === 'register' ? 'Create account' : 'Log in'); try { if(authMode === 'register'){ const college = document.getElementById('a-college').value; const name = document.getElementById('a-name').value.trim(); const confirm = document.getElementById('a-confirm').value; if(!college){ showError('Select your college.'); return; } if(!name){ showError('Enter your full name.'); return; } if(pass.length < 4){ showError('Passcode must be at least 4 characters.'); return; } if(pass !== confirm){ showError('Passcodes do not match.'); return; } const { data: existing, error: checkErr } = await sb.from('students').select('roll_number').eq('roll_number', roll).maybeSingle(); if(checkErr) throw checkErr; if(existing){ showError('This roll number is already registered. Log in instead.'); return; } const { error: insertErr } = await sb.from('students').insert({ roll_number: roll, name, passcode: pass, college }); if(insertErr) throw insertErr; document.getElementById('a-name').value = ''; document.getElementById('a-pass').value = ''; document.getElementById('a-confirm').value = ''; authMode = 'login'; hide('a-name-wrap'); hide('a-confirm-wrap'); document.getElementById('a-btn-label').textContent = 'Log in'; document.getElementById('a-mode-toggle').textContent = 'New here? Create an account'; showError('Account created! Log in with your roll number and passcode.', true); return; } else { const { data: rec, error } = await sb.from('students').select('*').eq('roll_number', roll).maybeSingle(); if(error) throw error; if(!rec){ showError('No account found for this roll number. Create one below.'); return; } if(rec.passcode !== pass){ showError('Incorrect passcode.'); return; } currentRoll = roll; currentStudent = rec; await showDashboard(); } } catch(e){ console.error(e); showError('Something went wrong reaching the server. Please try again.'); } finally { setBtnLoading('a-submit-btn', false, authMode === 'register' ? 'Create account' : 'Log in'); } }
-
-async function showDashboard(){ hide('auth-screen'); show('student-screen'); document.getElementById('s-name').textContent = currentStudent ? currentStudent.name : ''; document.getElementById('s-roll').textContent = currentStudent ? currentStudent.roll_number : ''; document.getElementById('s-college').textContent = currentStudent ? currentStudent.college : ''; await loadTickets(); }
-function logout(){ currentRoll = null; currentStudent = null; hide('student-screen'); show('auth-screen'); ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = ''); document.getElementById('a-college').selectedIndex = 0; hide('a-error'); authMode = 'login'; document.getElementById('a-btn-label').textContent = 'Log in'; document.getElementById('a-mode-toggle').textContent = 'New here? Create an account'; hide('a-college-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap'); removeImage(); }
-
-async function submitTicket(){ const cat = document.getElementById('f-cat').value; const subj = document.getElementById('f-subject').value.trim(); const desc = document.getElementById('f-desc').value.trim(); hide('f-error'); if(!subj || !desc) return; setBtnLoading('f-submit-btn', true, '+ Submit ticket'); try { const nowIso = new Date().toISOString(); const ticketId = genId(); let imageUrl = null; if (pendingImageBlob) { imageUrl = await uploadTicketImage(ticketId); } const ticket = { id: ticketId, roll_number: currentRoll, student_name: currentStudent ? currentStudent.name : currentRoll, college: currentStudent ? currentStudent.college : null, category: cat, subject: subj, description: desc, image_url: imageUrl, status: 'open', admin_note: '', created_at: nowIso, updated_at: nowIso }; const { error } = await sb.from('tickets').insert(ticket); if(error) throw error; document.getElementById('f-subject').value = ''; document.getElementById('f-desc').value = ''; removeImage(); show('f-success'); setTimeout(() => hide('f-success'), 3000); await loadTickets(); } catch(e){ console.error(e); document.getElementById('f-error').textContent = 'Could not submit the ticket. Please try again.'; show('f-error'); } finally { setBtnLoading('f-submit-btn', false, '+ Submit ticket'); } }
-
-function stampHTML(status){ const labels = { open:'Open', progress:'In Progress', resolved:'Resolved' }; return `<span class="stamp stamp-${status}">${labels[status]}</span>`; }
-let openCards = {};
-function toggleCard(id){ const isExpanded = openCards[id] !== false; openCards[id] = !isExpanded; renderTickets(); }
-function openLightbox(url){ const box = document.createElement('div'); box.className = 'lightbox'; box.onclick = () => box.remove(); const img = document.createElement('img'); img.src = url; box.appendChild(img); document.body.appendChild(box); }
-
-async function loadTickets(){ const list = document.getElementById('ticket-list'); list.innerHTML = `<div class="empty-state">Loading your tickets…</div>`; try { const { data, error } = await sb.from('tickets').select('*').eq('roll_number', currentRoll).order('created_at', { ascending: false }); if(error) throw error; tickets = data || []; } catch(e){ console.error(e); list.innerHTML = `<div class="empty-state">Couldn't load tickets. Please refresh.</div>`; return; } renderTickets(); }
-
-function renderTickets(){ const myTickets = tickets; const openCount = myTickets.filter(t => t.status !== 'resolved').length; document.getElementById('active-count').textContent = openCount + ' active'; const list = document.getElementById('ticket-list'); if(myTickets.length === 0){ list.innerHTML = `<div class="empty-state">No tickets yet. Raise your first doubt on the left.</div>`; return; } list.innerHTML = myTickets.map(t => { const expanded = openCards[t.id] !== false; const bodyHTML = expanded ? `<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url ? `<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation(); openLightbox('${escHTML(t.image_url)}')" /></div>` : ''}${t.admin_note ? `<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>` : ''}</div>` : ''; return `<div class="ticket-card"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`; }).join(''); }
-
-function escHTML(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function boot(){ hide('loading-screen'); show('auth-screen'); ['a-roll','a-name','a-pass','a-confirm'].forEach(id => { document.getElementById(id).addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); submitStudent(); } }); }); const dropZone = document.getElementById('img-drop'); ['dragenter','dragover'].forEach(evt => { dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('drag-over'); }); }); ['dragleave','drop'].forEach(evt => { dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); }); }); dropZone.addEventListener('drop', e => { const file = e.dataTransfer.files && e.dataTransfer.files[0]; if (file) { handleImageSelect({ target: { files: [file], value: '' } }); } }); }
-
+const SUPABASE_URL='https://rysajbwcuieovbsllaas.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const IMAGE_BUCKET='ticket-images';
+const TARGET_MIN_KB=200,TARGET_MAX_KB=300;
+let tickets=[],currentRoll=null,currentStudent=null,authMode='login',pendingImageBlob=null,pendingImageExt='jpg';
+function norm(s){return (s||'').trim().toUpperCase();}
+function genId(){return 'TKT-'+Date.now().toString(36).toUpperCase().slice(-5)+Math.random().toString(36).slice(2,5).toUpperCase();}
+function fmtRel(iso){const diff=Date.now()-new Date(iso).getTime(),m=Math.floor(diff/60000);if(m<1)return 'just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';const d=Math.floor(h/24);if(d<30)return d+'d ago';return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
+function setBtnLoading(btnId,loading,idleText){const btn=document.getElementById(btnId);btn.disabled=loading;if(btnId==='a-submit-btn'){document.getElementById('a-btn-label').textContent=loading?'Please wait…':idleText;}else{btn.textContent=loading?'Submitting…':idleText;}}
+function switchTab(tab){document.getElementById('tab-raise').classList.toggle('active',tab==='raise');document.getElementById('tab-tickets').classList.toggle('active',tab==='tickets');document.getElementById('panel-raise').classList.toggle('active',tab==='raise');document.getElementById('panel-tickets').classList.toggle('active',tab==='tickets');if(tab==='tickets')loadTickets();}
+function loadImageFromFile(file){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>resolve(img);img.onerror=(e)=>{URL.revokeObjectURL(url);reject(e);};img.src=url;});}
+function canvasToBlob(canvas,quality){return new Promise(resolve=>{canvas.toBlob(blob=>resolve(blob),'image/jpeg',quality);});}
+async function compressImage(file){const img=await loadImageFromFile(file);const MAX_EDGE=1600;let{width,height}=img;if(width>MAX_EDGE||height>MAX_EDGE){const scale=MAX_EDGE/Math.max(width,height);width=Math.round(width*scale);height=Math.round(height*scale);}const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,width,height);URL.revokeObjectURL(img.src);const targetMin=TARGET_MIN_KB*1024,targetMax=TARGET_MAX_KB*1024;let lo=0.3,hi=0.95,bestBlob=await canvasToBlob(canvas,hi);if(bestBlob.size<=targetMax)return bestBlob;for(let i=0;i<7;i++){const mid=(lo+hi)/2,blob=await canvasToBlob(canvas,mid);if(blob.size>targetMax)hi=mid;else if(blob.size<targetMin){lo=mid;bestBlob=blob;}else return blob;bestBlob=blob.size<=targetMax?blob:bestBlob;}if(bestBlob.size>targetMax){const c2=document.createElement('canvas');c2.width=Math.round(width*0.7);c2.height=Math.round(height*0.7);c2.getContext('2d').drawImage(canvas,0,0,c2.width,c2.height);bestBlob=await canvasToBlob(c2,0.7);}return bestBlob;}
+async function handleImageSelect(event){const file=event.target.files[0];event.target.value='';if(!file)return;if(!file.type.startsWith('image/')){alert('Please choose an image file.');return;}hide('img-preview-wrap');hide('img-meta');show('img-compressing');try{const compressed=await compressImage(file);pendingImageBlob=compressed;pendingImageExt='jpg';document.getElementById('img-preview').src=URL.createObjectURL(compressed);show('img-preview-wrap');document.getElementById('img-meta').textContent=`Ready to attach · ${(compressed.size/1024).toFixed(0)} KB`;show('img-meta');}catch(e){console.error(e);alert('Could not process that image.');pendingImageBlob=null;}finally{hide('img-compressing');}}
+function removeImage(){pendingImageBlob=null;document.getElementById('img-preview').src='';hide('img-preview-wrap');hide('img-meta');}
+async function uploadTicketImage(ticketId){if(!pendingImageBlob)return null;const path=`${currentRoll}/${ticketId}.${pendingImageExt}`;const{error}=await sb.storage.from(IMAGE_BUCKET).upload(path,pendingImageBlob,{contentType:'image/jpeg',upsert:true});if(error)throw error;const{data:pub}=sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);return pub?pub.publicUrl:null;}
+function toggleMode(){authMode=authMode==='login'?'register':'login';document.getElementById('a-btn-label').textContent=authMode==='register'?'Create account':'Log in';document.getElementById('a-mode-toggle').textContent=authMode==='login'?'New here? Create an account':'Already registered? Log in';if(authMode==='register'){show('a-college-wrap');show('a-name-wrap');show('a-confirm-wrap');}else{hide('a-college-wrap');hide('a-name-wrap');hide('a-confirm-wrap');}hide('a-error');}
+function showError(msg,isSuccess){const el=document.getElementById('a-error');el.textContent=msg;el.style.color=isSuccess?'#4A8A3A':'';show('a-error');}
+function showError(msg,isSuccess){const el=document.getElementById('a-error');el.textContent=msg;el.style.color=isSuccess?'#15803D':'';show('a-error');}
+async function submitStudent(){hide('a-error');const roll=norm(document.getElementById('a-roll').value),pass=document.getElementById('a-pass').value;if(!roll||!pass){showError('Enter your roll number and passcode.');return;}setBtnLoading('a-submit-btn',true,authMode==='register'?'Create account':'Log in');try{if(authMode==='register'){const college=document.getElementById('a-college').value,name=document.getElementById('a-name').value.trim(),confirm=document.getElementById('a-confirm').value;if(!college){showError('Select your college.');return;}if(!name){showError('Enter your full name.');return;}if(pass.length<4){showError('Passcode must be at least 4 characters.');return;}if(pass!==confirm){showError('Passcodes do not match.');return;}const{data:existing,error:checkErr}=await sb.from('students').select('roll_number').eq('roll_number',roll).maybeSingle();if(checkErr)throw checkErr;if(existing){showError('This roll number is already registered. Log in instead.');return;}const{error:insertErr}=await sb.from('students').insert({roll_number:roll,name,passcode:pass,college});if(insertErr)throw insertErr;['a-name','a-pass','a-confirm'].forEach(id=>document.getElementById(id).value='');authMode='login';hide('a-name-wrap');hide('a-confirm-wrap');document.getElementById('a-btn-label').textContent='Log in';document.getElementById('a-mode-toggle').textContent='New here? Create an account';showError('Account created! Log in with your roll number and passcode.',true);return;}else{const{data:rec,error}=await sb.from('students').select('*').eq('roll_number',roll).maybeSingle();if(error)throw error;if(!rec){showError('No account found for this roll number. Create one below.');return;}if(rec.passcode!==pass){showError('Incorrect passcode.');return;}currentRoll=roll;currentStudent=rec;await showDashboard();}}catch(e){console.error(e);showError('Something went wrong reaching the server. Please try again.');}finally{setBtnLoading('a-submit-btn',false,authMode==='register'?'Create account':'Log in');}}
+async function showDashboard(){hide('auth-screen');show('student-screen');const name=currentStudent?currentStudent.name:'';const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';document.getElementById('s-avatar').textContent=initials;document.getElementById('s-name').textContent=name;document.getElementById('s-roll').textContent=currentStudent?currentStudent.roll_number:'';document.getElementById('s-college').textContent=currentStudent?currentStudent.college:'';await loadTickets();}
+function logout(){currentRoll=null;currentStudent=null;hide('student-screen');show('auth-screen');['a-roll','a-name','a-pass','a-confirm'].forEach(id=>document.getElementById(id).value='');document.getElementById('a-college').selectedIndex=0;hide('a-error');authMode='login';document.getElementById('a-btn-label').textContent='Log in';document.getElementById('a-mode-toggle').textContent='New here? Create an account';hide('a-college-wrap');hide('a-name-wrap');hide('a-confirm-wrap');removeImage();switchTab('raise');}
+async function submitTicket(){const cat=document.getElementById('f-cat').value,subj=document.getElementById('f-subject').value.trim(),desc=document.getElementById('f-desc').value.trim();hide('f-error');if(!subj||!desc)return;setBtnLoading('f-submit-btn',true,'+ Submit ticket');try{const nowIso=new Date().toISOString(),ticketId=genId();let imageUrl=null;if(pendingImageBlob)imageUrl=await uploadTicketImage(ticketId);const ticket={id:ticketId,roll_number:currentRoll,student_name:currentStudent?currentStudent.name:currentRoll,college:currentStudent?currentStudent.college:null,category:cat,subject:subj,description:desc,image_url:imageUrl,status:'open',admin_note:'',created_at:nowIso,updated_at:nowIso};const{error}=await sb.from('tickets').insert(ticket);if(error)throw error;document.getElementById('f-subject').value='';document.getElementById('f-desc').value='';removeImage();show('f-success');setTimeout(()=>hide('f-success'),3000);await loadTickets();}catch(e){console.error(e);document.getElementById('f-error').textContent='Could not submit the ticket. Please try again.';show('f-error');}finally{setBtnLoading('f-submit-btn',false,'+ Submit ticket');}}
+function stampHTML(status){const labels={open:'Open',progress:'In Progress',resolved:'Resolved'};return `<span class="stamp stamp-${status}">${labels[status]||status}</span>`;}
+let openCards={};
+function toggleCard(id){openCards[id]=openCards[id]===false?true:false;renderTickets();}
+function openLightbox(url){const box=document.createElement('div');box.className='lightbox';box.onclick=()=>box.remove();const img=document.createElement('img');img.src=url;box.appendChild(img);document.body.appendChild(box);}
+async function loadTickets(){const list=document.getElementById('ticket-list');list.innerHTML=`<div class="empty-state">Loading your tickets…</div>`;try{const{data,error}=await sb.from('tickets').select('*').eq('roll_number',currentRoll).order('created_at',{ascending:false});if(error)throw error;tickets=data||[];}catch(e){console.error(e);list.innerHTML=`<div class="empty-state">Couldn't load tickets. Please refresh.</div>`;return;}renderTickets();}
+function renderTickets(){const openCount=tickets.filter(t=>t.status!=='resolved').length;document.getElementById('active-count').textContent=openCount+' active';const badge=document.getElementById('tab-badge');if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}else badge.style.display='none';const list=document.getElementById('ticket-list');if(tickets.length===0){list.innerHTML=`<div class="empty-state">No tickets yet — raise your first problem from the tab above.</div>`;return;}list.innerHTML=tickets.map(t=>{const expanded=openCards[t.id]!==false;const bodyHTML=expanded?`<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url?`<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation();openLightbox('${escHTML(t.image_url)}')" /></div>`:''}${t.admin_note?`<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>`:''}</div>`:'';return `<div class="ticket-card"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`;}).join('');}
+function escHTML(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function boot(){hide('loading-screen');show('auth-screen');['a-roll','a-name','a-pass','a-confirm'].forEach(id=>{document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitStudent();}});});const dropZone=document.getElementById('img-drop');['dragenter','dragover'].forEach(evt=>{dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.add('drag-over');});});['dragleave','drop'].forEach(evt=>{dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.remove('drag-over');});});dropZone.addEventListener('drop',e=>{const file=e.dataTransfer.files&&e.dataTransfer.files[0];if(file)handleImageSelect({target:{files:[file],value:''}});});}
 boot();
 </script>
 </body>
