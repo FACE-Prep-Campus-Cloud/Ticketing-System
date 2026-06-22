@@ -78,18 +78,21 @@
     min-width: 0;
   }
 
+  /* Logo: 48px on mobile, 56px on desktop */
+  .header-logo {
+    height: 48px;
+    width: 48px;
   /* Logo: tall & wide, natural aspect ratio */
 .header-logo {
     height: 56px;
-    height: 40px;
     width: auto;
     max-width: 160px;
-    max-width: 130px;
     object-fit: contain;
     display: block;
     border-radius: 10px;
     flex-shrink: 0;
     background: rgba(251,247,238,0.08);
+  }
 }
 
   .header-brand .title {
@@ -106,6 +109,7 @@
 
   @media(min-width: 480px){
     header { padding: 14px 24px; }
+    .header-logo { height: 56px; width: 56px; border-radius: 12px; }
 .header-logo { height: 68px; width: auto; max-width: 200px; border-radius: 12px; }
     .header-brand .title { font-size: 20px; }
     .header-brand { gap: 14px; }
@@ -336,7 +340,7 @@
   <header>
     <!-- ✅ FIXED: logo now uses .header-logo class with proper responsive sizing -->
     <div class="header-brand">
-      <img src="Face prep logo3.png" alt="FACE Prep logo" class="header-logo" />
+      <img src="Face prep logo.png" alt="FACE Prep logo" class="header-logo" />
       <span class="title">FACE Prep Campus Help Desk</span>
     </div>
     <div style="display:flex;align-items:center;gap:16px">
