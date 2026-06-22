@@ -461,7 +461,7 @@ async function submitTicket(){
     const nowIso=new Date().toISOString(),ticketId=genId();
     let imageUrl=null;
     if(pendingImageBlob)imageUrl=await uploadTicketImage(ticketId);
-    const ticket={id:ticketId,roll_number:currentRoll,student_name:currentStudent?currentStudent.name:currentRoll,college:currentStudent?currentStudent.college:null,category:cat,subject:subj,description:desc,image_url:imageUrl,status:'open',admin_note:'',created_at:nowIso,updated_at:nowIso};
+   const ticket={id:ticketId,roll_number:currentRoll,student_name:currentStudent?currentStudent.name:currentRoll,college:currentStudent?currentStudent.college:null,department:currentStudent?currentStudent.department:null,category:cat,subject:subj,description:desc,image_url:imageUrl,status:'open',admin_note:'',created_at:nowIso,updated_at:nowIso};
     const{error}=await sb.from('tickets').insert(ticket);
     if(error)throw error;
     document.getElementById('f-subject').value='';
