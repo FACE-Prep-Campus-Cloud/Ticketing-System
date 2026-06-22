@@ -11,349 +11,161 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ruby:        #570300;   /* Dark Ruby — primary dark */
-    --ruby-deep:   #3D0200;   /* deeper ruby for depth */
-    --ruby-mid:    #7A0500;   /* lighter ruby for hover states */
-    --lemon:       #F7E493;   /* Lemon Mist — primary accent */
-    --lemon-light: #FBF0B5;   /* lighter lemon for highlights */
-    --lemon-pale:  #FEFBE8;   /* near-white lemon tint */
-    --cream:       #FFFDF0;   /* warm page background */
-    --paper:       #FFFFFF;   /* card surface */
-    --line:        #E8D87A;   /* lemon-tinted border */
-    --line-soft:   #F0EAC8;   /* softer border */
-    --ink:         #1A0000;   /* near black (ruby-tinted) for text */
-    --ink-light:   #6B3A38;   /* muted ruby-tinted body text */
-    --success:     #2D5A1B;   /* deep green for success */
-    --error:       #7A0500;   /* ruby for errors */
+    --goldenrod:       #E8A736;
+    --goldenrod-deep:  #C4891A;
+    --goldenrod-mid:   #F0BC5E;
+    --parchment:       #FAEFD9;
+    --parchment-light: #FDF6EC;
+    --parchment-deep:  #F0DFB8;
+    --cream:           #FDF8F0;
+    --paper:           #FFFFFF;
+    --line:            #EDD89A;
+    --line-soft:       #F2E5C0;
+    --ink:             #2A1F00;
+    --ink-light:       #7A5E2A;
+    --success:         #2D5A1B;
+    --error:           #8B2500;
   }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    color: var(--ink);
-    background: var(--cream);
-    min-height: 100vh;
-  }
-
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--parchment); min-height: 100vh; }
   .font-display { font-family: 'Cormorant Garamond', serif; }
   .font-mono    { font-family: 'DM Mono', monospace; }
 
-  /* ── STAMPS ── */
-  .stamp {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 12px; border: 1.5px solid currentColor; border-radius: 3px;
-    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .stamp-open     { color: var(--ruby);     background: rgba(87,3,0,0.08); }
-  .stamp-progress { color: var(--ruby-mid); background: rgba(87,3,0,0.06); }
-  .stamp-resolved { color: var(--success);  background: rgba(45,90,27,0.10); }
-  .stamp-header   { color: var(--lemon);    background: rgba(247,228,147,0.15); }
+  .stamp { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border: 1.5px solid currentColor; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+  .stamp-open     { color: var(--goldenrod-deep); background: rgba(232,167,54,0.12); }
+  .stamp-progress { color: var(--goldenrod);      background: rgba(232,167,54,0.08); }
+  .stamp-resolved { color: var(--success);        background: rgba(45,90,27,0.10); }
 
   .ticket-stub { position: relative; border-top: 1.5px dashed var(--line-soft); }
-  .ticket-stub::before, .ticket-stub::after {
-    content: ''; position: absolute; top: -8px; width: 14px; height: 14px;
-    border-radius: 50%; background: var(--cream);
-  }
-  .ticket-stub::before { left: -2px; }
-  .ticket-stub::after  { right: -2px; }
+  .ticket-stub::before, .ticket-stub::after { content: ''; position: absolute; top: -8px; width: 14px; height: 14px; border-radius: 50%; background: var(--parchment); }
+  .ticket-stub::before { left: -2px; } .ticket-stub::after { right: -2px; }
 
-  /* ── HEADER — Dark Ruby dominant with Lemon accents ── */
-  .header-outer {
-    background: var(--ruby-deep);
-    position: relative; overflow: hidden;
-  }
-  /* Lemon glow orbs against the deep ruby */
-  .header-orb1 {
-    position: absolute; width: 360px; height: 360px; border-radius: 50%;
-    background: var(--lemon); top: -180px; right: 40px;
-    filter: blur(110px); opacity: 0.18; pointer-events: none;
-  }
-  .header-orb2 {
-    position: absolute; width: 280px; height: 280px; border-radius: 50%;
-    background: var(--ruby-mid); bottom: -120px; left: 20px;
-    filter: blur(90px); opacity: 0.6; pointer-events: none;
-  }
-  .header-orb3 {
-    position: absolute; width: 200px; height: 200px; border-radius: 50%;
-    background: var(--lemon-light); top: -30px; left: 160px;
-    filter: blur(80px); opacity: 0.10; pointer-events: none;
-  }
+  .header-outer { background: var(--goldenrod-deep); position: relative; overflow: hidden; }
+  .header-orb1 { position: absolute; width: 360px; height: 360px; border-radius: 50%; background: var(--parchment); top: -180px; right: 40px; filter: blur(110px); opacity: 0.25; pointer-events: none; }
+  .header-orb2 { position: absolute; width: 280px; height: 280px; border-radius: 50%; background: var(--goldenrod); bottom: -120px; left: 20px; filter: blur(90px); opacity: 0.5; pointer-events: none; }
+  .header-orb3 { position: absolute; width: 200px; height: 200px; border-radius: 50%; background: var(--parchment-light); top: -30px; left: 160px; filter: blur(80px); opacity: 0.15; pointer-events: none; }
 
   header { position: relative; z-index: 2; }
 
-  .header-top {
-    backdrop-filter: blur(20px) saturate(1.3);
-    -webkit-backdrop-filter: blur(20px) saturate(1.3);
-    background: rgba(61,2,0,0.5);
-    border-bottom: 1px solid rgba(247,228,147,0.12);
-    padding: 10px 12px;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: nowrap; gap: 8px;
-  }
+  .header-top { backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); background: rgba(150,100,10,0.45); border-bottom: 1px solid rgba(250,239,217,0.15); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; }
   @media(min-width:480px){ .header-top { padding: 14px 24px; gap: 12px; } }
 
   .header-brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
-  .header-logo {
-    height: 32px; width: auto; max-width: 90px;
-    object-fit: contain; display: block; border-radius: 6px; flex-shrink: 0;
-    background: rgba(247,228,147,0.1); border: 1px solid rgba(247,228,147,0.2);
-  }
+  .header-logo { height: 32px; width: auto; max-width: 90px; object-fit: contain; display: block; border-radius: 6px; flex-shrink: 0; background: rgba(250,239,217,0.15); border: 1px solid rgba(250,239,217,0.25); }
   @media(min-width:480px){ .header-logo { height: 50px; max-width: 160px; border-radius: 8px; } }
-
-  .header-brand .title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px; line-height: 1.2; font-weight: 600; color: var(--lemon-pale);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .header-brand .sub-title {
-    font-size: 10px; color: rgba(247,228,147,0.45);
-    letter-spacing: 0.07em; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
-    font-family: 'DM Mono', monospace; text-transform: uppercase;
-  }
+  .header-brand .title { font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.2; font-weight: 600; color: var(--parchment-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-brand .sub-title { font-size: 10px; color: rgba(250,239,217,0.5); letter-spacing: 0.07em; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
   @media(min-width:480px){ .header-brand .title { font-size: 21px; } .header-brand .sub-title { max-width: none; } }
 
   .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   @media(min-width:480px){ .header-right { gap: 10px; } }
 
-  .user-pill {
-    display: flex; align-items: center; gap: 9px;
-    background: rgba(247,228,147,0.10); border: 1px solid rgba(247,228,147,0.20);
-    border-radius: 4px; padding: 4px; flex-shrink: 0;
-  }
+  .user-pill { display: flex; align-items: center; gap: 9px; background: rgba(250,239,217,0.15); border: 1px solid rgba(250,239,217,0.25); border-radius: 4px; padding: 4px; flex-shrink: 0; }
   @media(min-width:560px){ .user-pill { padding: 5px 14px 5px 6px; } }
-  .user-avatar {
-    width: 26px; height: 26px; border-radius: 3px;
-    background: var(--lemon);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: var(--ruby-deep); font-weight: 700;
-    flex-shrink: 0; font-family: 'DM Mono', monospace;
-  }
+  .user-avatar { width: 26px; height: 26px; border-radius: 3px; background: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--goldenrod-deep); font-weight: 700; flex-shrink: 0; font-family: 'DM Mono', monospace; }
   @media(min-width:480px){ .user-avatar { width: 28px; height: 28px; } }
   .user-info-pill { display: none; }
   @media(min-width:560px){ .user-info-pill { display: block; } }
-  .user-info-pill .uname { font-size: 13px; color: var(--lemon-pale); font-weight: 500; }
-  .user-info-pill .umeta { font-size: 10px; color: rgba(247,228,147,0.40); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .user-info-pill .uname { font-size: 13px; color: var(--parchment-light); font-weight: 500; }
+  .user-info-pill .umeta { font-size: 10px; color: rgba(250,239,217,0.45); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
 
-  .btn-logout {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; padding: 7px; border-radius: 4px;
-    background: rgba(247,228,147,0.08); border: 1px solid rgba(247,228,147,0.18);
-    color: rgba(254,251,232,0.65); cursor: pointer; font-family: 'DM Mono', monospace;
-    transition: opacity .15s; white-space: nowrap; flex-shrink: 0;
-    letter-spacing: 0.05em; text-transform: uppercase;
-  }
+  .btn-logout { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 7px; border-radius: 4px; background: rgba(250,239,217,0.12); border: 1px solid rgba(250,239,217,0.22); color: rgba(253,246,236,0.7); cursor: pointer; font-family: 'DM Mono', monospace; transition: opacity .15s; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.05em; text-transform: uppercase; }
   @media(min-width:480px){ .btn-logout { padding: 7px 13px; } }
   .btn-logout:hover { opacity: 0.75; }
   .btn-logout .logout-text { display: none; }
   @media(min-width:480px){ .btn-logout .logout-text { display: inline; } }
 
-  .header-tabs {
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    background: rgba(61,2,0,0.35);
-    border-bottom: 1px solid rgba(247,228,147,0.08);
-    padding: 0 8px;
-    display: flex; align-items: center; overflow-x: auto;
-  }
+  .header-tabs { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(150,100,10,0.3); border-bottom: 1px solid rgba(250,239,217,0.10); padding: 0 8px; display: flex; align-items: center; overflow-x: auto; }
   @media(min-width:480px){ .header-tabs { padding: 0 24px; gap: 4px; } }
 
-  .nav-tab {
-    display: flex; align-items: center; gap: 7px;
-    padding: 0 12px; height: 42px;
-    font-size: 12px; color: rgba(247,228,147,0.35);
-    border: none; background: transparent;
-    border-bottom: 2px solid transparent;
-    cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: color .15s, border-color .15s;
-    white-space: nowrap; flex-shrink: 0;
-  }
+  .nav-tab { display: flex; align-items: center; gap: 7px; padding: 0 12px; height: 42px; font-size: 12px; color: rgba(250,239,217,0.4); border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color .15s, border-color .15s; white-space: nowrap; flex-shrink: 0; }
   @media(min-width:480px){ .nav-tab { padding: 0 18px; height: 44px; font-size: 13px; } }
-  .nav-tab:hover { color: rgba(247,228,147,0.75); }
-  .nav-tab.active { color: var(--lemon); border-bottom-color: var(--lemon); font-weight: 500; }
+  .nav-tab:hover { color: rgba(250,239,217,0.8); }
+  .nav-tab.active { color: var(--parchment-light); border-bottom-color: var(--parchment); font-weight: 500; }
   .nav-tab svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-  /* ── PANELS ── */
-  .panel { display: none; }
-  .panel.active { display: block; }
+  .panel { display: none; } .panel.active { display: block; }
 
   main { max-width: 960px; margin: 0 auto; padding: 28px 16px 56px; }
   @media(min-width:480px){ main { padding: 36px 24px 56px; } }
 
   .section-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
   .section-sub   { font-size: 13px; color: var(--ink-light); margin-bottom: 20px; }
-  .section-rule  { width: 32px; height: 2px; background: var(--ruby); border-radius: 2px; margin-bottom: 14px; }
+  .section-rule  { width: 32px; height: 2px; background: var(--goldenrod); border-radius: 2px; margin-bottom: 14px; }
 
-  .card {
-    background: var(--paper); border: 1px solid var(--line-soft);
-    border-radius: 6px; padding: 20px; max-width: 680px;
-    box-shadow: 0 2px 16px rgba(87,3,0,0.08);
-  }
+  .card { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 6px; padding: 20px; max-width: 680px; box-shadow: 0 2px 16px rgba(232,167,54,0.10); }
   @media(min-width:480px){ .card { padding: 28px; } }
 
-  label.field-label {
-    display: block; font-family: 'DM Mono', monospace;
-    font-size: 10px; font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--ink-light); margin-bottom: 6px;
-  }
+  label.field-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-light); margin-bottom: 6px; }
   .field { margin-bottom: 18px; }
 
-  input, select, textarea {
-    width: 100%; padding: 11px 14px;
-    background: var(--cream); border: 1px solid var(--line-soft);
-    border-radius: 4px; color: var(--ink); font-family: 'DM Sans', sans-serif;
-    font-size: 16px; outline: none; transition: border-color .15s, box-shadow .15s;
-  }
+  input, select, textarea { width: 100%; padding: 11px 14px; background: var(--parchment-light); border: 1px solid var(--line-soft); border-radius: 4px; color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 16px; outline: none; transition: border-color .15s, box-shadow .15s; }
   @media(min-width:480px){ input, select, textarea { font-size: 14px; padding: 10px 14px; } }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--ruby);
-    box-shadow: 0 0 0 3px rgba(87,3,0,0.12);
-  }
+  input:focus, select:focus, textarea:focus { border-color: var(--goldenrod); box-shadow: 0 0 0 3px rgba(232,167,54,0.15); }
   input::placeholder, textarea::placeholder { color: var(--ink-light); opacity: 0.6; }
   textarea { resize: none; }
 
-  .btn-primary {
-    width: 100%; padding: 14px 12px;
-    background: var(--ruby); color: var(--lemon);
-    border: none; border-radius: 4px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: opacity .15s, transform .15s; letter-spacing: 0.04em;
-  }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { width: 100%; padding: 14px 12px; background: var(--goldenrod); color: var(--ink); border: none; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .15s; letter-spacing: 0.04em; }
+  .btn-primary:hover { opacity: 0.88; } .btn-primary:active { transform: scale(0.98); } .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .error-msg   { font-size: 13px; color: var(--error); margin-bottom: 10px; }
   .success-msg { font-size: 13px; color: var(--success); text-align: center; margin-top: 8px; }
 
-  /* ── AUTH ── */
-  .auth-wrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 20px 16px;
-    background: var(--ruby-deep);
-    position: relative; overflow: hidden;
-  }
-  /* Lemon orbs on deep ruby — the defining visual moment */
-  .auth-wrap::before {
-    content: ''; position: absolute; width: 550px; height: 550px; border-radius: 50%;
-    background: var(--lemon); top: -240px; right: -80px;
-    filter: blur(120px); opacity: 0.28;
-  }
-  .auth-wrap::after {
-    content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
-    background: var(--lemon-light); bottom: -180px; left: -60px;
-    filter: blur(110px); opacity: 0.18;
-  }
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px; background: var(--goldenrod-deep); position: relative; overflow: hidden; }
+  .auth-wrap::before { content: ''; position: absolute; width: 550px; height: 550px; border-radius: 50%; background: var(--parchment); top: -240px; right: -80px; filter: blur(120px); opacity: 0.30; }
+  .auth-wrap::after  { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%; background: var(--goldenrod-mid); bottom: -180px; left: -60px; filter: blur(110px); opacity: 0.35; }
   .auth-box { width: 100%; max-width: 440px; position: relative; z-index: 1; }
   .auth-header { text-align: center; margin-bottom: 24px; }
-  .auth-header h1 {
-    font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600;
-    line-height: 1.15; margin-top: 14px; color: var(--lemon);
-  }
-  .auth-header p { font-size: 13.5px; color: rgba(247,228,147,0.55); margin-top: 8px; line-height: 1.6; }
+  .auth-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; line-height: 1.15; margin-top: 14px; color: var(--parchment); }
+  .auth-header p { font-size: 13.5px; color: rgba(250,239,217,0.6); margin-top: 8px; line-height: 1.6; }
   @media(min-width:480px){ .auth-header h1 { font-size: 42px; } .auth-header { margin-bottom: 32px; } }
 
-  .auth-panel {
-    background: rgba(255,253,240,0.97); border: 1px solid rgba(247,228,147,0.4);
-    border-radius: 6px; padding: 22px;
-    box-shadow: 0 8px 40px rgba(87,3,0,0.35);
-  }
+  .auth-panel { background: var(--parchment-light); border: 1px solid rgba(232,167,54,0.35); border-radius: 6px; padding: 22px; box-shadow: 0 8px 40px rgba(196,137,26,0.3); }
   @media(min-width:480px){ .auth-panel { padding: 30px; } }
 
-  .btn-ghost {
-    background: transparent; border: none; font-family: 'DM Sans', sans-serif;
-    font-size: 13px; color: var(--ink-light); cursor: pointer;
-    width: 100%; padding: 10px 0; transition: color .15s; text-align: center;
-  }
-  .btn-ghost:hover { color: var(--ruby); }
+  .btn-ghost { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink-light); cursor: pointer; width: 100%; padding: 10px 0; transition: color .15s; text-align: center; }
+  .btn-ghost:hover { color: var(--goldenrod-deep); }
 
-  .auth-wordmark {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 6px 14px; border: 1px solid rgba(247,228,147,0.4);
-    border-radius: 3px; background: rgba(247,228,147,0.12);
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    color: var(--lemon); letter-spacing: 0.14em; text-transform: uppercase;
-  }
+  .auth-wordmark { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid rgba(250,239,217,0.4); border-radius: 3px; background: rgba(250,239,217,0.12); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--parchment); letter-spacing: 0.14em; text-transform: uppercase; }
 
-  /* ── TICKETS ── */
-  .ticket-card {
-    background: var(--paper); border: 1px solid var(--line-soft);
-    border-radius: 6px; overflow: hidden; margin-bottom: 10px; max-width: 760px;
-    box-shadow: 0 1px 8px rgba(87,3,0,0.06);
-    transition: box-shadow .2s;
-  }
-  .ticket-card:hover { box-shadow: 0 4px 20px rgba(87,3,0,0.12); }
-  .ticket-toggle {
-    width: 100%; text-align: left; padding: 16px;
-    display: flex; align-items: flex-start; justify-content: space-between;
-    gap: 10px; background: transparent; border: none; cursor: pointer; flex-wrap: wrap;
-  }
-  .ticket-toggle .meta {
-    font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 5px;
-  }
+  .ticket-card { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 6px; overflow: hidden; margin-bottom: 10px; max-width: 760px; box-shadow: 0 1px 8px rgba(232,167,54,0.08); transition: box-shadow .2s; }
+  .ticket-card:hover { box-shadow: 0 4px 20px rgba(232,167,54,0.15); }
+  .ticket-toggle { width: 100%; text-align: left; padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; background: transparent; border: none; cursor: pointer; flex-wrap: wrap; }
+  .ticket-toggle .meta { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 5px; }
   .ticket-toggle .subject { font-size: 14.5px; font-weight: 500; color: var(--ink); }
   .ticket-toggle .time { font-size: 11px; color: var(--ink-light); margin-top: 4px; font-family: 'DM Mono', monospace; }
   .ticket-body { padding: 0 16px 16px; }
   @media(min-width:480px){ .ticket-toggle { padding: 20px; gap: 16px; flex-wrap: nowrap; } .ticket-body { padding: 0 20px 20px; } }
   .ticket-body .desc { font-size: 14px; white-space: pre-wrap; padding-top: 16px; line-height: 1.7; }
-  .admin-note {
-    margin-top: 16px; padding: 14px 16px;
-    background: #FFFDE8; border-left: 3px solid var(--lemon);
-    border-radius: 0 4px 4px 0; font-size: 14px; line-height: 1.65;
-  }
-  .admin-note .note-label {
-    font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--ink-light); margin-bottom: 6px;
-  }
+  .admin-note { margin-top: 16px; padding: 14px 16px; background: var(--parchment); border-left: 3px solid var(--goldenrod); border-radius: 0 4px 4px 0; font-size: 14px; line-height: 1.65; }
+  .admin-note .note-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-light); margin-bottom: 6px; }
 
   .tickets-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .active-badge {
-    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-light);
-    background: var(--paper); border: 1px solid var(--line-soft);
-    padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em;
-  }
-  .empty-state {
-    background: var(--paper); border: 1px dashed var(--line-soft);
-    border-radius: 6px; padding: 36px 20px; text-align: center;
-    color: var(--ink-light); font-size: 14px; max-width: 760px; line-height: 1.6;
-  }
+  .active-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-light); background: var(--paper); border: 1px solid var(--line-soft); padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
+  .empty-state { background: var(--paper); border: 1px dashed var(--line-soft); border-radius: 6px; padding: 36px 20px; text-align: center; color: var(--ink-light); font-size: 14px; max-width: 760px; line-height: 1.6; }
 
-  /* ── IMAGE UPLOAD ── */
-  .img-drop {
-    border: 1.5px dashed var(--line-soft); border-radius: 5px; padding: 20px;
-    text-align: center; cursor: pointer; background: var(--cream);
-    transition: border-color .15s, background .15s;
-  }
-  .img-drop:hover, .img-drop.drag-over { border-color: var(--ruby); background: rgba(87,3,0,0.04); }
+  .img-drop { border: 1.5px dashed var(--line-soft); border-radius: 5px; padding: 20px; text-align: center; cursor: pointer; background: var(--parchment-light); transition: border-color .15s, background .15s; }
+  .img-drop:hover, .img-drop.drag-over { border-color: var(--goldenrod); background: rgba(232,167,54,0.06); }
   .img-drop .img-drop-label { font-size: 13px; color: var(--ink-light); }
   .img-drop .img-drop-label b { color: var(--ink); font-weight: 500; }
   .img-drop .img-drop-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-light); opacity: 0.7; margin-top: 5px; }
   .img-preview-wrap { position: relative; display: inline-block; margin-top: 12px; }
   .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 5px; border: 1px solid var(--line-soft); }
-  .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 3px; background: var(--ruby); color: var(--lemon); border: 1.5px solid var(--paper); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+  .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 3px; background: var(--goldenrod-deep); color: var(--parchment); border: 1.5px solid var(--paper); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
   .img-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-light); margin-top: 6px; }
   .img-compressing { font-size: 13px; color: var(--ink-light); text-align: center; padding: 10px; }
   .ticket-attachment { margin-top: 14px; }
   .ticket-attachment img { max-width: 100%; max-height: 240px; border-radius: 5px; border: 1px solid var(--line-soft); cursor: zoom-in; display: block; }
 
-  .lightbox {
-    position: fixed; inset: 0; background: rgba(61,2,0,0.93);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px; z-index: 100; cursor: zoom-out;
-  }
+  .lightbox { position: fixed; inset: 0; background: rgba(42,31,0,0.93); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; cursor: zoom-out; }
   .lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
 
-  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--lemon); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; background: var(--ruby-deep); }
+  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--parchment); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; background: var(--goldenrod-deep); }
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
-
 <div id="loading-screen" class="loading">Loading the help desk…</div>
-
 <div id="auth-screen" class="auth-wrap hidden">
   <div class="auth-box">
     <div class="auth-header">
@@ -365,45 +177,19 @@
       <div id="a-college-wrap" class="field hidden">
         <label class="field-label">College</label>
         <select id="a-college">
-          <option>Kamaraj College</option><option>Kamaraj Women's College</option>
-          <option>SDNB Vaishnav College for Women</option><option>Patrician College of Arts & Science</option>
-          <option>TERF's College of Arts and Science</option><option>Sree Saraswathi Thyagaraja College</option>
-          <option>TJS College of Arts and Science</option><option>Bharathidasan College of Arts & Science</option>
-          <option>Nagarathinam Angalammal Arts & Science College</option>
-          <option>Vinayaga Mission's Research Foundation School of Arts & Science</option>
-          <option>Sri Amaraavathi College of Arts & Science</option><option>Takshashila University</option>
-          <option>Study World Group of Institution</option><option>Rathinam College of Arts & Science</option>
-          <option>Noorul Islam Centre for Higher Education (NICHE)</option><option>AMET University</option>
-          <option>Joy University</option><option>Sasurie College of Arts and Science</option>
-          <option>Alliance University</option><option>Kristu Jayathi University</option>
-          <option>S-VYASA University</option><option>Asian School of Business</option>
+          <option>Kamaraj College</option><option>Kamaraj Women's College</option><option>SDNB Vaishnav College for Women</option><option>Patrician College of Arts & Science</option><option>TERF's College of Arts and Science</option><option>Sree Saraswathi Thyagaraja College</option><option>TJS College of Arts and Science</option><option>Bharathidasan College of Arts & Science</option><option>Nagarathinam Angalammal Arts & Science College</option><option>Vinayaga Mission's Research Foundation School of Arts & Science</option><option>Sri Amaraavathi College of Arts & Science</option><option>Takshashila University</option><option>Study World Group of Institution</option><option>Rathinam College of Arts & Science</option><option>Noorul Islam Centre for Higher Education (NICHE)</option><option>AMET University</option><option>Joy University</option><option>Sasurie College of Arts and Science</option><option>Alliance University</option><option>Kristu Jayathi University</option><option>S-VYASA University</option><option>Asian School of Business</option>
         </select>
       </div>
-      <div class="field">
-        <label class="field-label">Roll Number</label>
-        <input id="a-roll" type="text" placeholder="e.g. 23CS045" />
-      </div>
-      <div id="a-name-wrap" class="field hidden">
-        <label class="field-label">Full Name</label>
-        <input id="a-name" type="text" placeholder="Your name" />
-      </div>
-      <div class="field">
-        <label class="field-label">Passcode</label>
-        <input id="a-pass" type="password" placeholder="••••••" />
-      </div>
-      <div id="a-confirm-wrap" class="field hidden">
-        <label class="field-label">Confirm Passcode</label>
-        <input id="a-confirm" type="password" placeholder="••••••" />
-      </div>
+      <div class="field"><label class="field-label">Roll Number</label><input id="a-roll" type="text" placeholder="e.g. 23CS045" /></div>
+      <div id="a-name-wrap" class="field hidden"><label class="field-label">Full Name</label><input id="a-name" type="text" placeholder="Your name" /></div>
+      <div class="field"><label class="field-label">Passcode</label><input id="a-pass" type="password" placeholder="••••••" /></div>
+      <div id="a-confirm-wrap" class="field hidden"><label class="field-label">Confirm Passcode</label><input id="a-confirm" type="password" placeholder="••••••" /></div>
       <div id="a-error" class="error-msg hidden"></div>
-      <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()">
-        <span id="a-btn-label">Log in</span> →
-      </button>
+      <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()"><span id="a-btn-label">Log in</span> →</button>
       <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">New here? Create an account</button>
     </div>
   </div>
 </div>
-
 <div id="student-screen" class="hidden">
   <div class="header-outer">
     <div class="header-orb1"></div><div class="header-orb2"></div><div class="header-orb3"></div>
@@ -411,74 +197,40 @@
       <div class="header-top">
         <div class="header-brand">
           <img src="Face prep logo3.png" alt="FACE Prep" class="header-logo" />
-          <div>
-            <div class="title">FACE Prep Campus Help Desk</div>
-            <div class="sub-title" id="s-college"></div>
-          </div>
+          <div><div class="title">FACE Prep Campus Help Desk</div><div class="sub-title" id="s-college"></div></div>
         </div>
         <div class="header-right">
           <div class="user-pill">
             <div class="user-avatar" id="s-avatar">N</div>
-            <div class="user-info-pill">
-              <div class="uname" id="s-name"></div>
-              <div class="umeta" id="s-roll"></div>
-            </div>
+            <div class="user-info-pill"><div class="uname" id="s-name"></div><div class="umeta" id="s-roll"></div></div>
           </div>
           <button class="btn-logout" onclick="logout()">↩ <span class="logout-text">Log out</span></button>
         </div>
       </div>
       <div class="header-tabs">
         <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Raise your problem
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Raise your problem
         </button>
         <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
-          <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>
-          My tickets
-          <span id="tab-badge" style="display:none;background:var(--lemon);color:var(--ruby-deep);font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;"></span>
+          <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>My tickets
+          <span id="tab-badge" style="display:none;background:var(--parchment);color:var(--goldenrod-deep);font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;"></span>
         </button>
       </div>
     </header>
   </div>
-
   <div id="panel-raise" class="panel active">
     <main>
-      <div class="section-rule"></div>
-      <div class="section-title font-display">Raise your problem</div>
-      <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
+      <div class="section-rule"></div><div class="section-title font-display">Raise your problem</div><div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
       <div class="card">
-        <div class="field">
-          <label class="field-label">Category</label>
-          <select id="f-cat">
-            <option>Academics</option><option>Teaching Issue</option><option>Examinations</option>
-            <option>Fees &amp; Accounts</option><option>Scholarship &amp; Financial Aid</option>
-            <option>Hostel &amp; Mess</option><option>Infrastructure</option><option>Library</option>
-            <option>Transport</option><option>Placement &amp; Internships</option>
-            <option>Certificates &amp; Documents</option><option>Health &amp; Wellness</option>
-            <option>Sports &amp; Extracurricular</option><option>Ragging / Harassment</option>
-            <option>Technical / Portal</option><option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">Query Subject</label>
-          <input id="f-subject" type="text" placeholder="Short summary of your query" />
-        </div>
-        <div class="field">
-          <label class="field-label">Description</label>
-          <textarea id="f-desc" rows="5" placeholder="Explain the issue in detail…"></textarea>
-        </div>
+        <div class="field"><label class="field-label">Category</label><select id="f-cat"><option>Academics</option><option>Teaching Issue</option><option>Examinations</option><option>Fees &amp; Accounts</option><option>Scholarship &amp; Financial Aid</option><option>Hostel &amp; Mess</option><option>Infrastructure</option><option>Library</option><option>Transport</option><option>Placement &amp; Internships</option><option>Certificates &amp; Documents</option><option>Health &amp; Wellness</option><option>Sports &amp; Extracurricular</option><option>Ragging / Harassment</option><option>Technical / Portal</option><option>Other</option></select></div>
+        <div class="field"><label class="field-label">Query Subject</label><input id="f-subject" type="text" placeholder="Short summary of your query" /></div>
+        <div class="field"><label class="field-label">Description</label><textarea id="f-desc" rows="5" placeholder="Explain the issue in detail…"></textarea></div>
         <div class="field">
           <label class="field-label">Attach a screenshot (optional)</label>
-          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()">
-            <div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div>
-            <div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div>
-          </div>
+          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()"><div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div><div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div></div>
           <input id="img-file-input" type="file" accept="image/*" class="hidden" onchange="handleImageSelect(event)" />
           <div id="img-compressing" class="img-compressing hidden">Compressing image…</div>
-          <div id="img-preview-wrap" class="img-preview-wrap hidden">
-            <img id="img-preview" src="" alt="Attachment preview" />
-            <button type="button" class="img-remove-btn" onclick="removeImage()">✕</button>
-          </div>
+          <div id="img-preview-wrap" class="img-preview-wrap hidden"><img id="img-preview" src="" alt="Attachment preview" /><button type="button" class="img-remove-btn" onclick="removeImage()">✕</button></div>
           <div id="img-meta" class="img-meta hidden"></div>
         </div>
         <button class="btn-primary" id="f-submit-btn" onclick="submitTicket()">+ Submit ticket</button>
@@ -487,19 +239,14 @@
       </div>
     </main>
   </div>
-
   <div id="panel-tickets" class="panel">
     <main>
-      <div class="tickets-header">
-        <div><div class="section-rule"></div><div class="section-title font-display">My tickets</div></div>
-        <span class="active-badge" id="active-count"></span>
-      </div>
+      <div class="tickets-header"><div><div class="section-rule"></div><div class="section-title font-display">My tickets</div></div><span class="active-badge" id="active-count"></span></div>
       <div class="section-sub">Everything you've raised, newest first.</div>
       <div id="ticket-list"></div>
     </main>
   </div>
 </div>
-
 <script>
 const SUPABASE_URL='https://rysajbwcuieovbsllaas.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
