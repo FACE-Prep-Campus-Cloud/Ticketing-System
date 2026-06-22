@@ -62,8 +62,7 @@
 
   /* ── HEADER ── */
   header {
-    padding: 0 16px;
-    height: 64px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -71,60 +70,58 @@
     background: var(--ink);
     color: var(--paper);
   }
-  @media(min-width: 480px){ header { padding: 0 24px; } }
 
   .header-brand {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    gap: 12px;
     min-width: 0;
-    gap: 2px;
   }
 
-  .header-brand .brand-name {
+  /* Logo: tall & wide, natural aspect ratio */
+.header-logo {
+    height: 56px;
+    height: 40px;
+    width: auto;
+    max-width: 160px;
+    max-width: 130px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+    flex-shrink: 0;
+    background: rgba(251,247,238,0.08);
+}
+
+  .header-brand .title {
     font-family: 'Fraunces', serif;
-    font-size: 17px;
-    font-weight: 600;
-    font-style: italic;
-    color: #FBF7EE;
-    line-height: 1.15;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: 0.01em;
+    font-size: 16px;
+    line-height: 1.25;
+    min-width: 0;
   }
-  @media(min-width: 480px){ .header-brand .brand-name { font-size: 21px; } }
-
-  .header-brand .brand-sub {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.10em;
-    color: rgba(251,247,238,0.45);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  @media(min-width: 480px){ .header-brand .brand-sub { font-size: 10px; } }
-
-  .header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 
   header .user-info { text-align: right; display: none; }
   @media(min-width: 600px){ header .user-info { display: block; } }
-  header .user-info .name { font-size: 13px; font-weight: 500; color: var(--paper); }
-  header .user-info .roll { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(251,247,238,0.55); }
+  header .user-info .name { font-size: 14px; font-weight: 500; }
+  header .user-info .roll { font-family: 'IBM Plex Mono', monospace; font-size: 12px; opacity: 0.7; }
+
+  @media(min-width: 480px){
+    header { padding: 14px 24px; }
+.header-logo { height: 68px; width: auto; max-width: 200px; border-radius: 12px; }
+    .header-brand .title { font-size: 20px; }
+    .header-brand { gap: 14px; }
+  }
 
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
-    font-size: 11px; padding: 7px 11px; border-radius: 8px;
-    background: rgba(251,247,238,0.10); color: rgba(251,247,238,0.75);
-    border: 1px solid rgba(251,247,238,0.18); cursor: pointer; font-family: 'IBM Plex Mono', monospace;
-    transition: opacity .15s; white-space: nowrap; flex-shrink: 0;
-    letter-spacing: 0.05em; text-transform: uppercase;
+    font-size: 13px; padding: 7px 11px; border-radius: 8px;
+    background: rgba(251,247,238,0.12); color: var(--paper);
+    border: none; cursor: pointer; font-family: inherit;
+    transition: opacity .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .btn-logout:hover { opacity: 0.8; }
-  @media(min-width: 480px){ .btn-logout { font-size: 11px; padding: 7px 13px; } }
+  @media(min-width: 480px){ .btn-logout { font-size: 14px; padding: 6px 12px; } }
 
   main {
     max-width: 960px;
@@ -271,7 +268,7 @@
 </head>
 <body>
 
-<div id="loading-screen" class="loading">Loading the help desk…</div>
+<div id="loading-screen" class="loading">⏳ Loading the help desk…</div>
 
 <div id="auth-screen" class="auth-wrap hidden">
   <div class="auth-box">
@@ -337,14 +334,16 @@
 
 <div id="student-screen" class="hidden">
   <header>
+    <!-- ✅ FIXED: logo now uses .header-logo class with proper responsive sizing -->
     <div class="header-brand">
-      <span class="brand-name">FACE Prep</span>
-      <span class="brand-sub">Campus Help Desk · <span id="s-college"></span></span>
+      <img src="Face prep logo3.png" alt="FACE Prep logo" class="header-logo" />
+      <span class="title">FACE Prep Campus Help Desk</span>
     </div>
-    <div class="header-right">
+    <div style="display:flex;align-items:center;gap:16px">
       <div class="user-info">
         <div class="name" id="s-name"></div>
         <div class="roll" id="s-roll"></div>
+        <div class="roll" id="s-college"></div>
       </div>
       <button class="btn-logout" onclick="logout()">↩ Log out</button>
     </div>
@@ -453,7 +452,7 @@ function logout(){ currentRoll = null; currentStudent = null; hide('student-scre
 
 async function submitTicket(){ const cat = document.getElementById('f-cat').value; const subj = document.getElementById('f-subject').value.trim(); const desc = document.getElementById('f-desc').value.trim(); hide('f-error'); if(!subj || !desc) return; setBtnLoading('f-submit-btn', true, '+ Submit ticket'); try { const nowIso = new Date().toISOString(); const ticketId = genId(); let imageUrl = null; if (pendingImageBlob) { imageUrl = await uploadTicketImage(ticketId); } const ticket = { id: ticketId, roll_number: currentRoll, student_name: currentStudent ? currentStudent.name : currentRoll, college: currentStudent ? currentStudent.college : null, category: cat, subject: subj, description: desc, image_url: imageUrl, status: 'open', admin_note: '', created_at: nowIso, updated_at: nowIso }; const { error } = await sb.from('tickets').insert(ticket); if(error) throw error; document.getElementById('f-subject').value = ''; document.getElementById('f-desc').value = ''; removeImage(); show('f-success'); setTimeout(() => hide('f-success'), 3000); await loadTickets(); } catch(e){ console.error(e); document.getElementById('f-error').textContent = 'Could not submit the ticket. Please try again.'; show('f-error'); } finally { setBtnLoading('f-submit-btn', false, '+ Submit ticket'); } }
 
-function stampHTML(status){ const labels = { open:'Open', progress:'In Progress', resolved:'Resolved' }; return `<span class="stamp stamp-${status}">${labels[status]||status}</span>`; }
+function stampHTML(status){ const labels = { open:'Open', progress:'In Progress', resolved:'Resolved' }; return `<span class="stamp stamp-${status}">${labels[status]}</span>`; }
 let openCards = {};
 function toggleCard(id){ const isExpanded = openCards[id] !== false; openCards[id] = !isExpanded; renderTickets(); }
 function openLightbox(url){ const box = document.createElement('div'); box.className = 'lightbox'; box.onclick = () => box.remove(); const img = document.createElement('img'); img.src = url; box.appendChild(img); document.body.appendChild(box); }
