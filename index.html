@@ -222,9 +222,9 @@
         </select>
       </div>
       <div class="field"><label class="field-label">Roll Number</label><input id="a-roll" type="text" placeholder="e.g. 23CS045" /></div>
-      <div id="a-name-wrap" class="field hidden"><label class="field-label">Full Name</label><input id="a-name" type="text" placeholder="Your name" /></div>
-      <div class="field"><label class="field-label">Passcode</label><input id="a-pass" type="password" placeholder="••••••" /></div>
-      <div id="a-confirm-wrap" class="field hidden"><label class="field-label">Confirm Passcode</label><input id="a-confirm" type="password" placeholder="••••••" /></div>
+      <div id="a-name-wrap" class="field hidden"><label class="field-label">Full Name</label><input id="a-name" type="text" placeholder="Your name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')" /></div>
+      <div class="field"><label class="field-label">Passcode <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-transform:none;letter-spacing:0">(4-digit number)</span></label><input id="a-pass" type="password" placeholder="e.g. 1234" maxlength="4" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" /></div>
+      <div id="a-confirm-wrap" class="field hidden"><label class="field-label">Confirm Passcode</label><input id="a-confirm" type="password" placeholder="e.g. 1234" maxlength="4" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" /></div>
       <div id="a-error" class="error-msg hidden"></div>
       <button class="btn-primary" id="a-submit-btn" onclick="submitStudent()"><span id="a-btn-label">Log in</span> →</button>
       <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">New here? Create an account</button>
@@ -401,7 +401,7 @@ async function submitStudent(){
       if(!college){showError('Select your college.');return;}
       if(!dept){showError('Select your department.');return;}
       if(!name){showError('Enter your full name.');return;}
-      if(pass.length<4){showError('Passcode must be at least 4 characters.');return;}
+      if(!/^\d{4}$/.test(pass)){showError('Passcode must be exactly 4 digits (numbers only).');return;}
       if(pass!==confirm){showError('Passcodes do not match.');return;}
       const{data:existing,error:checkErr}=await sb.from('students').select('roll_number').eq('roll_number',roll).maybeSingle();
       if(checkErr)throw checkErr;
@@ -461,7 +461,7 @@ async function submitTicket(){
     const nowIso=new Date().toISOString(),ticketId=genId();
     let imageUrl=null;
     if(pendingImageBlob)imageUrl=await uploadTicketImage(ticketId);
-    const ticket={id:ticketId,roll_number:currentRoll,student_name:currentStudent?currentStudent.name:currentRoll,college:currentStudent?currentStudent.college:null,category:cat,subject:subj,description:desc,image_url:imageUrl,status:'open',admin_note:'',created_at:nowIso,updated_at:nowIso};
+   const ticket={id:ticketId,roll_number:currentRoll,student_name:currentStudent?currentStudent.name:currentRoll,college:currentStudent?currentStudent.college:null,department:currentStudent?currentStudent.department:null,category:cat,subject:subj,description:desc,image_url:imageUrl,status:'open',admin_note:'',created_at:nowIso,updated_at:nowIso};
     const{error}=await sb.from('tickets').insert(ticket);
     if(error)throw error;
     document.getElementById('f-subject').value='';
