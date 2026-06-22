@@ -1,3 +1,4 @@
+cat > /home/claude/helpdesk.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,25 +33,16 @@
   .font-mono { font-family: 'IBM Plex Mono', monospace; }
 
   .stamp {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border: 2px solid currentColor;
-    border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transform: rotate(-3deg);
-    white-space: nowrap;
-    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border: 2px solid currentColor; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; transform: rotate(-3deg);
+    white-space: nowrap; flex-shrink: 0;
   }
-  .stamp-open    { color: var(--rust);  background: rgba(191,78,44,0.08); }
-  .stamp-progress{ color: var(--amber); background: rgba(184,120,15,0.10); }
-  .stamp-resolved{ color: var(--sage);  background: rgba(79,120,88,0.10); }
-  .stamp-header  { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
+  .stamp-open     { color: var(--rust);  background: rgba(191,78,44,0.08); }
+  .stamp-progress { color: var(--amber); background: rgba(184,120,15,0.10); }
+  .stamp-resolved { color: var(--sage);  background: rgba(79,120,88,0.10); }
+  .stamp-header   { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
 
   .ticket-stub { position: relative; border-top: 2px dashed var(--line); }
   .ticket-stub::before, .ticket-stub::after {
@@ -60,116 +52,164 @@
   .ticket-stub::before { left: -1px; }
   .ticket-stub::after  { right: -1px; }
 
-  /* ── HEADER ── */
+  /* ── GLASSMORPHISM HEADER ── */
+  .header-outer {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-orb1 {
+    position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    background: #1da1f2; top: -100px; left: 120px;
+    filter: blur(70px); opacity: 0.28; pointer-events: none;
+  }
+  .header-orb2 {
+    position: absolute; width: 200px; height: 200px; border-radius: 50%;
+    background: #00b4d8; bottom: -60px; right: 80px;
+    filter: blur(60px); opacity: 0.22; pointer-events: none;
+  }
+  .header-orb3 {
+    position: absolute; width: 180px; height: 180px; border-radius: 50%;
+    background: #0077b6; top: -40px; right: 300px;
+    filter: blur(55px); opacity: 0.2; pointer-events: none;
+  }
+
   header {
-    padding: 12px 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* top bar */
+  .header-top {
+    backdrop-filter: blur(18px) saturate(1.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    background: rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: var(--ink);
-    color: var(--paper);
   }
 
-  .header-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-  }
+  .header-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
-  /* Logo: tall & wide, natural aspect ratio */
-.header-logo {
-    height: 40px;
-    width: auto;
-    max-width: 130px;
-    object-fit: contain;
-    display: block;
-    border-radius: 10px;
-    flex-shrink: 0;
-    background: rgba(251,247,238,0.08);
-}
+  .header-logo {
+    height: 40px; width: auto; max-width: 130px;
+    object-fit: contain; display: block; border-radius: 10px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  @media(min-width: 480px){
+    .header-logo { height: 52px; max-width: 170px; border-radius: 12px; }
+  }
 
   .header-brand .title {
     font-family: 'Fraunces', serif;
-    font-size: 16px;
-    line-height: 1.25;
-    min-width: 0;
+    font-size: 16px; line-height: 1.25;
+    color: #fff; min-width: 0;
   }
-
-  header .user-info { text-align: right; display: none; }
-  @media(min-width: 600px){ header .user-info { display: block; } }
-  header .user-info .name { font-size: 14px; font-weight: 500; }
-  header .user-info .roll { font-family: 'IBM Plex Mono', monospace; font-size: 12px; opacity: 0.7; }
-
+  .header-brand .sub-title {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em; margin-top: 2px;
+  }
   @media(min-width: 480px){
-    header { padding: 14px 24px; }
-.header-logo { height: 68px; width: auto; max-width: 200px; border-radius: 12px; }
-    .header-brand .title { font-size: 20px; }
-    .header-brand { gap: 14px; }
+    .header-brand .title { font-size: 19px; }
   }
+
+  .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 9px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    padding: 5px 14px 5px 6px;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(191,78,44,0.85);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #fff; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .user-info-pill { display: none; }
+  @media(min-width: 560px){ .user-info-pill { display: block; } }
+  .user-info-pill .uname { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500; }
+  .user-info-pill .umeta { font-size: 10px; color: rgba(255,255,255,0.38); font-family: 'IBM Plex Mono', monospace; }
 
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
-    font-size: 13px; padding: 7px 11px; border-radius: 8px;
-    background: rgba(251,247,238,0.12); color: var(--paper);
-    border: none; cursor: pointer; font-family: inherit;
-    transition: opacity .15s;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-size: 12px; padding: 7px 13px; border-radius: 9px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer; font-family: inherit;
+    transition: opacity .15s; white-space: nowrap;
   }
-  .btn-logout:hover { opacity: 0.8; }
-  @media(min-width: 480px){ .btn-logout { font-size: 14px; padding: 6px 12px; } }
+  .btn-logout:hover { opacity: 0.75; }
+
+  /* tab bar */
+  .header-tabs {
+    backdrop-filter: blur(18px) saturate(1.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .nav-tab {
+    display: flex; align-items: center; gap: 7px;
+    padding: 0 16px; height: 42px;
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    border: none; background: transparent;
+    border-bottom: 2px solid transparent;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: color .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: rgba(255,255,255,0.7); }
+  .nav-tab.active { color: rgba(255,255,255,0.95); border-bottom-color: #5DCAA5; font-weight: 500; }
+  .nav-tab svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ── CONTENT PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
 
   main {
-    max-width: 960px;
-    margin: 0 auto;
+    max-width: 960px; margin: 0 auto;
     padding: 24px 16px 48px;
-    display: grid;
-    gap: 28px;
   }
   @media(min-width: 480px){ main { padding: 32px 20px 48px; } }
-  @media(min-width: 760px){ main { grid-template-columns: 2fr 3fr; padding: 40px 24px; gap: 32px; } }
 
+  /* raise-a-doubt panel uses single col, tickets panel single col */
   .section-title { font-family: 'Fraunces', serif; font-size: 21px; margin-bottom: 4px; }
   .section-sub   { font-size: 13.5px; color: var(--ink-light); margin-bottom: 18px; }
-  @media(min-width: 480px){
-    .section-title { font-size: 24px; }
-    .section-sub   { font-size: 14px; margin-bottom: 20px; }
-  }
 
   .card {
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 16px;
     padding: 18px;
+    max-width: 680px;
   }
   @media(min-width: 480px){ .card { padding: 24px; } }
 
   label.field-label {
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-light);
-    margin-bottom: 6px;
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px;
   }
-
   .field { margin-bottom: 16px; }
 
   input, select, textarea {
-    width: 100%;
-    padding: 11px 14px;
-    background: var(--paper-dark);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--ink);
-    font-family: inherit;
-    font-size: 16px;
-    outline: none;
-    transition: border-color .15s;
+    width: 100%; padding: 11px 14px;
+    background: var(--paper-dark); border: 1px solid var(--line);
+    border-radius: 8px; color: var(--ink); font-family: inherit;
+    font-size: 16px; outline: none; transition: border-color .15s;
   }
   @media(min-width: 480px){ input, select, textarea { font-size: 14px; padding: 10px 14px; } }
   input:focus, select:focus, textarea:focus { border-color: var(--ink); }
@@ -189,39 +229,27 @@
   .btn-primary:active { transform: scale(0.98); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .btn-ghost {
-    background: transparent; border: none;
-    font-family: inherit; font-size: 14px;
-    color: var(--ink-light); cursor: pointer;
-    width: 100%; padding: 8px 0; transition: color .15s;
-  }
-  .btn-ghost:hover { color: var(--ink); }
-
   .error-msg   { font-size: 13px; color: var(--rust); margin-bottom: 10px; }
   .success-msg { font-size: 13px; color: var(--sage); text-align: center; margin-top: 8px; }
 
-  .auth-wrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px;
-  }
+  /* auth */
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px 16px; }
   .auth-box { width: 100%; max-width: 440px; }
   .auth-header { text-align: center; margin-bottom: 24px; }
   .auth-header h1 { font-family: 'Fraunces', serif; font-size: 28px; line-height: 1.2; margin-top: 12px; }
   .auth-header p  { font-size: 13.5px; color: var(--ink-light); margin-top: 8px; }
   @media(min-width: 480px){
-    .auth-wrap { padding: 24px; }
     .auth-header { margin-bottom: 32px; }
     .auth-header h1 { font-size: 36px; }
-    .auth-header p  { font-size: 14px; }
   }
   .auth-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 0 16px 16px 16px; padding: 20px; }
   @media(min-width: 480px){ .auth-panel { padding: 28px; } }
+  .btn-ghost { background: transparent; border: none; font-family: inherit; font-size: 14px; color: var(--ink-light); cursor: pointer; width: 100%; padding: 8px 0; transition: color .15s; }
+  .btn-ghost:hover { color: var(--ink); }
 
-  .ticket-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
-  .ticket-toggle {
-    width: 100%; text-align: left; padding: 16px;
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-    background: transparent; border: none; cursor: pointer; flex-wrap: wrap;
-  }
+  /* tickets */
+  .ticket-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 12px; max-width: 760px; }
+  .ticket-toggle { width: 100%; text-align: left; padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; background: transparent; border: none; cursor: pointer; flex-wrap: wrap; }
   .ticket-toggle .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-light); margin-bottom: 4px; }
   .ticket-toggle .subject { font-size: 14.5px; font-weight: 500; }
   .ticket-toggle .time { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
@@ -236,32 +264,30 @@
   .admin-note { margin-top: 16px; padding: 14px; background: var(--paper-dark); border-radius: 12px; font-size: 14px; }
   .admin-note .note-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px; }
 
-  .empty-state { background: var(--paper); border: 1px dashed var(--line); border-radius: 16px; padding: 32px 20px; text-align: center; color: var(--ink-light); font-size: 14px; }
+  .tickets-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .active-badge { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-light); }
+  .empty-state { background: var(--paper); border: 1px dashed var(--line); border-radius: 16px; padding: 32px 20px; text-align: center; color: var(--ink-light); font-size: 14px; max-width: 760px; }
   @media(min-width: 480px){ .empty-state { padding: 48px; } }
 
-  .active-badge { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-light); }
-  .tickets-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-light); }
-  .hidden { display: none !important; }
-  .icon { display: inline-block; vertical-align: middle; }
-
+  /* image upload */
   .img-drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; background: var(--paper-dark); transition: border-color .15s, background .15s; }
   .img-drop:hover, .img-drop.drag-over { border-color: var(--amber); background: rgba(184,120,15,0.06); }
   .img-drop .img-drop-label { font-size: 13px; color: var(--ink-light); }
   .img-drop .img-drop-label b { color: var(--ink); }
   .img-drop .img-drop-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-light); opacity: 0.75; margin-top: 4px; }
-
   .img-preview-wrap { position: relative; display: inline-block; margin-top: 12px; }
   .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 10px; border: 1px solid var(--line); }
   .img-remove-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--paper); border: 2px solid var(--paper); cursor: pointer; font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; font-family: inherit; }
   .img-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-light); margin-top: 6px; }
   .img-compressing { font-size: 13px; color: var(--ink-light); text-align: center; padding: 10px; }
-
   .ticket-attachment { margin-top: 14px; }
   .ticket-attachment img { max-width: 100%; max-height: 240px; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
 
   .lightbox { position: fixed; inset: 0; background: rgba(28,43,58,0.92); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; cursor: zoom-out; }
   .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+
+  .loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-light); }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -331,23 +357,49 @@
 </div>
 
 <div id="student-screen" class="hidden">
-  <header>
-    <!-- ✅ FIXED: logo now uses .header-logo class with proper responsive sizing -->
-    <div class="header-brand">
-      <img src="Face prep logo3.png" alt="FACE Prep logo" class="header-logo" />
-      <span class="title">FACE Prep Campus Help Desk</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px">
-      <div class="user-info">
-        <div class="name" id="s-name"></div>
-        <div class="roll" id="s-roll"></div>
-        <div class="roll" id="s-college"></div>
+
+  <!-- ── GLASSMORPHISM HEADER ── -->
+  <div class="header-outer">
+    <div class="header-orb1"></div>
+    <div class="header-orb2"></div>
+    <div class="header-orb3"></div>
+    <header>
+      <div class="header-top">
+        <div class="header-brand">
+          <img src="Face prep logo3.png" alt="FACE Prep logo" class="header-logo" />
+          <div>
+            <div class="title">FACE Prep Campus Help Desk</div>
+            <div class="sub-title" id="s-college"></div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="user-pill">
+            <div class="user-avatar" id="s-avatar">N</div>
+            <div class="user-info-pill">
+              <div class="uname" id="s-name"></div>
+              <div class="umeta" id="s-roll"></div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="logout()">↩ Log out</button>
+        </div>
       </div>
-      <button class="btn-logout" onclick="logout()">↩ Log out</button>
-    </div>
-  </header>
-  <main>
-    <div>
+      <div class="header-tabs">
+        <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Raise a doubt
+        </button>
+        <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
+          <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>
+          My tickets
+          <span id="tab-badge" style="display:none;background:rgba(191,78,44,0.85);color:#fff;font-size:10px;border-radius:999px;padding:1px 7px;font-family:'IBM Plex Mono',monospace;"></span>
+        </button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ── RAISE A DOUBT PANEL ── -->
+  <div id="panel-raise" class="panel active">
+    <main>
       <div class="section-title font-display">Raise a doubt</div>
       <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
       <div class="card">
@@ -397,16 +449,21 @@
         <div id="f-error" class="error-msg hidden"></div>
         <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
       </div>
-    </div>
-    <div>
+    </main>
+  </div>
+
+  <!-- ── MY TICKETS PANEL ── -->
+  <div id="panel-tickets" class="panel">
+    <main>
       <div class="tickets-header">
-        <div class="section-title font-display">Your tickets</div>
+        <div class="section-title font-display">My tickets</div>
         <span class="active-badge" id="active-count"></span>
       </div>
       <div class="section-sub">Everything you've raised, newest first.</div>
       <div id="ticket-list"></div>
-    </div>
-  </main>
+    </main>
+  </div>
+
 </div>
 
 <script>
@@ -432,6 +489,13 @@ function show(id){ document.getElementById(id).classList.remove('hidden'); }
 function hide(id){ document.getElementById(id).classList.add('hidden'); }
 function setBtnLoading(btnId, loading, idleText){ const btn = document.getElementById(btnId); btn.disabled = loading; if(btnId === 'a-submit-btn'){ document.getElementById('a-btn-label').textContent = loading ? 'Please wait…' : idleText; } else { btn.textContent = loading ? 'Submitting…' : idleText; } }
 
+function switchTab(tab) {
+  document.getElementById('tab-raise').classList.toggle('active', tab === 'raise');
+  document.getElementById('tab-tickets').classList.toggle('active', tab === 'tickets');
+  document.getElementById('panel-raise').classList.toggle('active', tab === 'raise');
+  document.getElementById('panel-tickets').classList.toggle('active', tab === 'tickets');
+}
+
 function loadImageFromFile(file){ return new Promise((resolve, reject) => { const img = new Image(); const url = URL.createObjectURL(file); img.onload = () => { resolve(img); }; img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); }; img.src = url; }); }
 function canvasToBlob(canvas, quality){ return new Promise(resolve => { canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality); }); }
 async function compressImage(file){ const img = await loadImageFromFile(file); const MAX_EDGE = 1600; let { width, height } = img; if (width > MAX_EDGE || height > MAX_EDGE) { const scale = MAX_EDGE / Math.max(width, height); width = Math.round(width * scale); height = Math.round(height * scale); } const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); URL.revokeObjectURL(img.src); const targetMin = TARGET_MIN_KB * 1024; const targetMax = TARGET_MAX_KB * 1024; let lo = 0.3, hi = 0.95; let bestBlob = await canvasToBlob(canvas, hi); if (bestBlob.size <= targetMax) { return bestBlob; } for (let i = 0; i < 7; i++){ const mid = (lo + hi) / 2; const blob = await canvasToBlob(canvas, mid); if (blob.size > targetMax) { hi = mid; } else if (blob.size < targetMin) { lo = mid; bestBlob = blob; } else { return blob; } bestBlob = blob.size <= targetMax ? blob : bestBlob; } if (bestBlob.size > targetMax) { const canvas2 = document.createElement('canvas'); canvas2.width = Math.round(width * 0.7); canvas2.height = Math.round(height * 0.7); const ctx2 = canvas2.getContext('2d'); ctx2.drawImage(canvas, 0, 0, canvas2.width, canvas2.height); bestBlob = await canvasToBlob(canvas2, 0.7); } return bestBlob; }
@@ -445,8 +509,19 @@ function showError(msg, isSuccess){ const el = document.getElementById('a-error'
 
 async function submitStudent(){ hide('a-error'); const roll = norm(document.getElementById('a-roll').value); const pass = document.getElementById('a-pass').value; if(!roll || !pass){ showError('Enter your roll number and passcode.'); return; } setBtnLoading('a-submit-btn', true, authMode === 'register' ? 'Create account' : 'Log in'); try { if(authMode === 'register'){ const college = document.getElementById('a-college').value; const name = document.getElementById('a-name').value.trim(); const confirm = document.getElementById('a-confirm').value; if(!college){ showError('Select your college.'); return; } if(!name){ showError('Enter your full name.'); return; } if(pass.length < 4){ showError('Passcode must be at least 4 characters.'); return; } if(pass !== confirm){ showError('Passcodes do not match.'); return; } const { data: existing, error: checkErr } = await sb.from('students').select('roll_number').eq('roll_number', roll).maybeSingle(); if(checkErr) throw checkErr; if(existing){ showError('This roll number is already registered. Log in instead.'); return; } const { error: insertErr } = await sb.from('students').insert({ roll_number: roll, name, passcode: pass, college }); if(insertErr) throw insertErr; document.getElementById('a-name').value = ''; document.getElementById('a-pass').value = ''; document.getElementById('a-confirm').value = ''; authMode = 'login'; hide('a-name-wrap'); hide('a-confirm-wrap'); document.getElementById('a-btn-label').textContent = 'Log in'; document.getElementById('a-mode-toggle').textContent = 'New here? Create an account'; showError('Account created! Log in with your roll number and passcode.', true); return; } else { const { data: rec, error } = await sb.from('students').select('*').eq('roll_number', roll).maybeSingle(); if(error) throw error; if(!rec){ showError('No account found for this roll number. Create one below.'); return; } if(rec.passcode !== pass){ showError('Incorrect passcode.'); return; } currentRoll = roll; currentStudent = rec; await showDashboard(); } } catch(e){ console.error(e); showError('Something went wrong reaching the server. Please try again.'); } finally { setBtnLoading('a-submit-btn', false, authMode === 'register' ? 'Create account' : 'Log in'); } }
 
-async function showDashboard(){ hide('auth-screen'); show('student-screen'); document.getElementById('s-name').textContent = currentStudent ? currentStudent.name : ''; document.getElementById('s-roll').textContent = currentStudent ? currentStudent.roll_number : ''; document.getElementById('s-college').textContent = currentStudent ? currentStudent.college : ''; await loadTickets(); }
-function logout(){ currentRoll = null; currentStudent = null; hide('student-screen'); show('auth-screen'); ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = ''); document.getElementById('a-college').selectedIndex = 0; hide('a-error'); authMode = 'login'; document.getElementById('a-btn-label').textContent = 'Log in'; document.getElementById('a-mode-toggle').textContent = 'New here? Create an account'; hide('a-college-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap'); removeImage(); }
+async function showDashboard(){
+  hide('auth-screen');
+  show('student-screen');
+  const name = currentStudent ? currentStudent.name : '';
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || '?';
+  document.getElementById('s-avatar').textContent = initials;
+  document.getElementById('s-name').textContent = name;
+  document.getElementById('s-roll').textContent = currentStudent ? currentStudent.roll_number : '';
+  document.getElementById('s-college').textContent = currentStudent ? currentStudent.college : '';
+  await loadTickets();
+}
+
+function logout(){ currentRoll = null; currentStudent = null; hide('student-screen'); show('auth-screen'); ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = ''); document.getElementById('a-college').selectedIndex = 0; hide('a-error'); authMode = 'login'; document.getElementById('a-btn-label').textContent = 'Log in'; document.getElementById('a-mode-toggle').textContent = 'New here? Create an account'; hide('a-college-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap'); removeImage(); switchTab('raise'); }
 
 async function submitTicket(){ const cat = document.getElementById('f-cat').value; const subj = document.getElementById('f-subject').value.trim(); const desc = document.getElementById('f-desc').value.trim(); hide('f-error'); if(!subj || !desc) return; setBtnLoading('f-submit-btn', true, '+ Submit ticket'); try { const nowIso = new Date().toISOString(); const ticketId = genId(); let imageUrl = null; if (pendingImageBlob) { imageUrl = await uploadTicketImage(ticketId); } const ticket = { id: ticketId, roll_number: currentRoll, student_name: currentStudent ? currentStudent.name : currentRoll, college: currentStudent ? currentStudent.college : null, category: cat, subject: subj, description: desc, image_url: imageUrl, status: 'open', admin_note: '', created_at: nowIso, updated_at: nowIso }; const { error } = await sb.from('tickets').insert(ticket); if(error) throw error; document.getElementById('f-subject').value = ''; document.getElementById('f-desc').value = ''; removeImage(); show('f-success'); setTimeout(() => hide('f-success'), 3000); await loadTickets(); } catch(e){ console.error(e); document.getElementById('f-error').textContent = 'Could not submit the ticket. Please try again.'; show('f-error'); } finally { setBtnLoading('f-submit-btn', false, '+ Submit ticket'); } }
 
@@ -457,7 +532,15 @@ function openLightbox(url){ const box = document.createElement('div'); box.class
 
 async function loadTickets(){ const list = document.getElementById('ticket-list'); list.innerHTML = `<div class="empty-state">Loading your tickets…</div>`; try { const { data, error } = await sb.from('tickets').select('*').eq('roll_number', currentRoll).order('created_at', { ascending: false }); if(error) throw error; tickets = data || []; } catch(e){ console.error(e); list.innerHTML = `<div class="empty-state">Couldn't load tickets. Please refresh.</div>`; return; } renderTickets(); }
 
-function renderTickets(){ const myTickets = tickets; const openCount = myTickets.filter(t => t.status !== 'resolved').length; document.getElementById('active-count').textContent = openCount + ' active'; const list = document.getElementById('ticket-list'); if(myTickets.length === 0){ list.innerHTML = `<div class="empty-state">No tickets yet. Raise your first doubt on the left.</div>`; return; } list.innerHTML = myTickets.map(t => { const expanded = openCards[t.id] !== false; const bodyHTML = expanded ? `<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url ? `<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation(); openLightbox('${escHTML(t.image_url)}')" /></div>` : ''}${t.admin_note ? `<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>` : ''}</div>` : ''; return `<div class="ticket-card"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`; }).join(''); }
+function renderTickets(){
+  const openCount = tickets.filter(t => t.status !== 'resolved').length;
+  document.getElementById('active-count').textContent = openCount + ' active';
+  const badge = document.getElementById('tab-badge');
+  if(openCount > 0){ badge.textContent = openCount; badge.style.display = 'inline'; } else { badge.style.display = 'none'; }
+  const list = document.getElementById('ticket-list');
+  if(tickets.length === 0){ list.innerHTML = `<div class="empty-state">No tickets yet — raise your first doubt from the tab above.</div>`; return; }
+  list.innerHTML = tickets.map(t => { const expanded = openCards[t.id] !== false; const bodyHTML = expanded ? `<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url ? `<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation(); openLightbox('${escHTML(t.image_url)}')" /></div>` : ''}${t.admin_note ? `<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>` : ''}</div>` : ''; return `<div class="ticket-card"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`; }).join('');
+}
 
 function escHTML(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
