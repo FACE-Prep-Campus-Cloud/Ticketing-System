@@ -298,7 +298,7 @@
     <div class="auth-header">
       <span class="stamp stamp-header">FACE Prep Campus Help Desk</span>
       <h1 class="font-display">One desk. Every answer</h1>
-      <p>Log in with your roll number to raise a doubt or check on one you've already filed.</p>
+      <p>Log in with your roll number to raise your problem or check on one you've already filed.</p>
     </div>
     <div class="auth-panel">
       <div id="a-college-wrap" class="field hidden">
@@ -385,7 +385,7 @@
       <div class="header-tabs">
         <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Raise a doubt
+          Raise your problem
         </button>
         <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
           <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>
@@ -399,7 +399,7 @@
   <!-- ── RAISE A DOUBT PANEL ── -->
   <div id="panel-raise" class="panel active">
     <main>
-      <div class="section-title font-display">Raise a doubt</div>
+      <div class="section-title font-display">Raise your problem</div>
       <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
       <div class="card">
         <div class="field">
@@ -537,7 +537,7 @@ function renderTickets(){
   const badge = document.getElementById('tab-badge');
   if(openCount > 0){ badge.textContent = openCount; badge.style.display = 'inline'; } else { badge.style.display = 'none'; }
   const list = document.getElementById('ticket-list');
-  if(tickets.length === 0){ list.innerHTML = `<div class="empty-state">No tickets yet — raise your first doubt from the tab above.</div>`; return; }
+  if(tickets.length === 0){ list.innerHTML = `<div class="empty-state">No tickets yet — raise your first problem from the tab above.</div>`; return; }
   list.innerHTML = tickets.map(t => { const expanded = openCards[t.id] !== false; const bodyHTML = expanded ? `<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url ? `<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation(); openLightbox('${escHTML(t.image_url)}')" /></div>` : ''}${t.admin_note ? `<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>` : ''}</div>` : ''; return `<div class="ticket-card"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`; }).join('');
 }
 
