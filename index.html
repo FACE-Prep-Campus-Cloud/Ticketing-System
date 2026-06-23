@@ -509,8 +509,9 @@
       <div class="card">
         <div class="field">
           <label class="field-label" for="f-cat">Category</label>
-          <select id="f-cat" onchange="showCatHint()">
-            <option value="Academics">Academics</option>
+         <select id="f-cat" onchange="showCatHint()">
+  <option value="" disabled selected>Select the Category</option>
+  <option value="Academics">Academics</option>
             <option value="Teaching Issue">Teaching Issue</option>
             <option value="Examinations">Examinations</option>
             <option value="Fees &amp; Accounts">Fees &amp; Accounts</option>
@@ -1120,7 +1121,11 @@ async function submitTicket() {
   const desc = document.getElementById('f-desc').value.trim();
   hide('f-error');
 
-  if(!subj || !desc) {
+if(!cat) {
+  document.getElementById('f-error').textContent = 'Please select a category.';
+  show('f-error'); return;
+}
+if(!subj || !desc) {
     document.getElementById('f-error').textContent = 'Please fill in the subject and description.';
     show('f-error'); return;
   }
