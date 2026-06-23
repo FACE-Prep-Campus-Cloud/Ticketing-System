@@ -48,7 +48,6 @@
   .font-display { font-family: 'Cormorant Garamond', serif; }
   .font-mono    { font-family: 'DM Mono', monospace; }
 
-  /* ─── ANIMATIONS ─── */
   @keyframes fadeUp    { from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);} }
   @keyframes slideIn   { from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:translateX(0);} }
   @keyframes pop       { from{opacity:0;transform:scale(0.82);}to{opacity:1;transform:scale(1);} }
@@ -73,7 +72,6 @@
   .panel.active { animation: tabSlide 0.25s ease both; }
   .btn-primary:not(:disabled):active { animation: pulse 0.45s ease forwards; }
 
-  /* ─── STAMPS / STATUS ─── */
   .stamp { display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border:1.5px solid currentColor;border-radius:3px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;flex-shrink:0; }
   .stamp-open     { color:var(--accent);    background:rgba(26,58,107,0.07); }
   .stamp-progress { color:var(--accent-mid);background:rgba(37,99,235,0.08); }
@@ -83,7 +81,6 @@
   .ticket-stub::before,.ticket-stub::after{content:'';position:absolute;top:-8px;width:14px;height:14px;border-radius:50%;background:var(--surface-mid);}
   .ticket-stub::before{left:-2px;}.ticket-stub::after{right:-2px;}
 
-  /* ─── DASHBOARD HEADER ─── */
   .header-outer{background:var(--accent);position:relative;overflow:hidden;}
   .header-orb1{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--accent-mid);top:-200px;right:20px;filter:blur(120px);opacity:0.30;pointer-events:none;animation:drift 8s ease-in-out infinite alternate;}
   .header-orb2{position:absolute;width:260px;height:260px;border-radius:50%;background:#0F2150;bottom:-100px;left:40px;filter:blur(90px);opacity:0.40;pointer-events:none;animation:drift 11s ease-in-out infinite alternate-reverse;}
@@ -136,9 +133,6 @@
   .error-msg{font-size:13px;color:var(--error);margin-bottom:10px;}
   .success-msg{font-size:13px;color:var(--success);text-align:center;margin-top:8px;}
 
-  /* ═══════════════════════════════════════════════
-     NEW AUTH / LANDING PAGE STYLES
-  ═══════════════════════════════════════════════ */
   .auth-wrap{
     min-height:100vh;display:flex;align-items:center;justify-content:center;
     padding:32px 16px;position:relative;overflow:hidden;
@@ -167,28 +161,24 @@
   .auth-header{text-align:center;margin-bottom:24px;}
 
   .logo-wrap{
-    display:inline-flex;align-items:center;justify-content:center;
-    gap:12px;margin-bottom:16px;
+    display:inline-flex;flex-direction:column;align-items:center;
+    gap:5px;margin-bottom:18px;
     background:rgba(255,255,255,0.70);border:1px solid rgba(37,99,235,0.12);
-    border-radius:50px;padding:9px 18px;
+    border-radius:50px;padding:14px 32px;
     backdrop-filter:blur(12px);
     animation:fadeUp 0.5s ease 0.1s both;
   }
-  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent-mid);animation:blink 1.8s ease-in-out infinite;flex-shrink:0;}
-  .logo-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);}
+  .logo-brand-name{font-family:'Cormorant Garamond',serif;font-size:38px;line-height:1.08;font-weight:600;color:var(--accent);letter-spacing:0.01em;}
+  .logo-support-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent-mid);}
 
   .hero-headline{
     font-family:'Cormorant Garamond',serif;
-    font-size:38px;line-height:1.14;font-weight:600;
+    font-size:36px;line-height:1.16;font-weight:600;
     color:var(--accent);margin-bottom:12px;
+    white-space:nowrap;
     animation:fadeUp 0.6s ease 0.2s both;
   }
   .hero-headline em{font-style:italic;color:var(--accent-mid);}
-  .hero-headline .brand-line{
-    display:block;font-size:18px;font-weight:400;
-    color:var(--gold);letter-spacing:0.04em;margin-bottom:6px;
-    font-style:normal;
-  }
   .underline-anim{position:relative;display:inline-block;}
   .underline-anim::after{
     content:'';position:absolute;bottom:-2px;left:0;height:2px;
@@ -240,11 +230,9 @@
     border-radius:50px;padding:5px 12px;backdrop-filter:blur(6px);
   }
 
-  /* auth error message */
   .auth-error{font-size:13px;color:var(--error);margin-bottom:10px;}
   .auth-error.is-success{color:var(--success);}
 
-  /* ─── TICKET / DASHBOARD STYLES ─── */
   .ticket-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;margin-bottom:10px;max-width:760px;box-shadow:0 1px 8px rgba(26,58,107,0.07);transition:box-shadow .2s,transform .2s;}
   .ticket-card:hover{box-shadow:0 4px 20px rgba(26,58,107,0.14);transform:translateY(-1px);}
   .ticket-toggle{width:100%;text-align:left;padding:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:transparent;border:none;cursor:pointer;flex-wrap:wrap;}
@@ -279,7 +267,6 @@
   .hidden{display:none!important;}
   #tab-badge{background:#1A3A6B;color:#FFFFFF;font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;animation:pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
 
-  /* ─── MOBILE ─── */
   @media(max-width:480px){
     .auth-wrap{padding:20px 14px;align-items:flex-start;padding-top:36px;}
     .auth-box{max-width:100%;}
@@ -289,10 +276,10 @@
     .auth-orb4{width:100px;height:100px;}
     .ring1{width:280px;height:280px;}
     .ring2{width:190px;height:190px;}
-    .logo-wrap{padding:7px 14px;gap:8px;margin-bottom:14px;}
-    .logo-label{font-size:10px;}
-    .hero-headline{font-size:28px;line-height:1.18;}
-    .hero-headline .brand-line{font-size:15px;margin-bottom:4px;}
+    .logo-wrap{padding:10px 22px;gap:4px;margin-bottom:14px;}
+    .logo-brand-name{font-size:26px;}
+    .logo-support-label{font-size:10px;}
+    .hero-headline{font-size:22px;white-space:normal;}
     .hero-sub{font-size:13px;max-width:100%;padding:0 6px;}
     .auth-panel{padding:20px 16px;margin-top:18px;border-radius:8px;}
     .secure-note span{font-size:11.5px;}
@@ -300,20 +287,16 @@
     .fpill{font-size:9.5px;padding:4px 10px;}
   }
   @media(max-width:360px){
-    .hero-headline{font-size:25px;}
-    .hero-headline .brand-line{font-size:14px;}
+    .logo-brand-name{font-size:22px;}
+    .hero-headline{font-size:20px;}
     .auth-panel{padding:18px 14px;}
   }
 </style>
 </head>
 <body>
 
-<!-- ─── LOADING ─── -->
 <div id="loading-screen" class="loading">Loading the help desk…</div>
 
-<!-- ═══════════════════════════════════════════════
-     AUTH / LANDING PAGE  (new design)
-═══════════════════════════════════════════════ -->
 <div id="auth-screen" class="auth-wrap hidden">
   <div class="grid-bg"></div>
   <div class="auth-orb auth-orb1"></div>
@@ -323,7 +306,6 @@
   <div class="ring ring1"></div>
   <div class="ring ring2"></div>
 
-  <!-- sparkle dots -->
   <div class="spark" style="top:15%;left:12%;--d:4s;--delay:0s;"></div>
   <div class="spark" style="top:28%;right:14%;--d:3.5s;--delay:0.7s;background:var(--gold);"></div>
   <div class="spark" style="top:70%;left:8%;--d:5s;--delay:1.2s;"></div>
@@ -335,18 +317,14 @@
   <div class="auth-box">
     <div class="auth-header">
       <div class="logo-wrap">
-        <div class="logo-dot"></div>
-        <span class="logo-label">Live Support Desk</span>
+        <span class="logo-brand-name"><span class="underline-anim">FACE Prep Campus</span></span>
+        <span class="logo-support-label">Live Support Desk</span>
       </div>
-      <h1 class="hero-headline">
-        <span class="brand-line"><span class="underline-anim">FACE Prep Campus</span></span>
-        One desk.<br><em>Every answer.</em>
-      </h1>
+      <h1 class="hero-headline">One desk. <em>Every answer.</em></h1>
       <p class="hero-sub">Log in with your roll number to raise your query or track one you've already filed.</p>
     </div>
 
     <div class="auth-panel">
-      <!-- Register-only fields -->
       <div id="a-college-wrap" class="field hidden">
         <label class="field-label">College</label>
         <select id="a-college" onchange="handleCollegeChange()">
@@ -382,7 +360,6 @@
         </select>
       </div>
 
-      <!-- Always-visible fields -->
       <div class="field">
         <label class="field-label">Roll Number</label>
         <input id="a-roll" type="text" placeholder="e.g. 23CS045" />
@@ -423,9 +400,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     STUDENT DASHBOARD  (unchanged)
-═══════════════════════════════════════════════ -->
 <div id="student-screen" class="hidden">
   <div class="header-outer">
     <div class="header-orb1"></div><div class="header-orb2"></div><div class="header-orb3"></div>
@@ -483,7 +457,6 @@
 </div>
 
 <script>
-/* ─── SUPABASE SETUP (unchanged) ─── */
 const SUPABASE_URL='https://rysajbwcuieovbsllaas.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
@@ -491,7 +464,6 @@ const IMAGE_BUCKET='ticket-images';
 const TARGET_MIN_KB=200,TARGET_MAX_KB=300;
 let tickets=[],currentRoll=null,currentStudent=null,authMode='login',pendingImageBlob=null,pendingImageExt='jpg';
 
-/* ─── COLLEGE → DEPARTMENT MAP (unchanged) ─── */
 const COLLEGE_DEPARTMENTS = {
   "Kamaraj College": ["I BCA - A","I BCA - B","II BCA","B.Com Honors","BBA Digital Marketing"],
   "Kamaraj Women's College": ["I BCA - A"],
@@ -536,7 +508,6 @@ function handleCollegeChange(){
   }
 }
 
-/* ─── UTILITIES (unchanged) ─── */
 function norm(s){return (s||'').trim().toUpperCase();}
 function genId(){return 'TKT-'+Date.now().toString(36).toUpperCase().slice(-5)+Math.random().toString(36).slice(2,5).toUpperCase();}
 function fmtRel(iso){const diff=Date.now()-new Date(iso).getTime(),m=Math.floor(diff/60000);if(m<1)return 'just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';const d=Math.floor(h/24);if(d<30)return d+'d ago';return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
@@ -565,7 +536,6 @@ function switchTab(tab){
   else{panelTickets.classList.add('active');loadTickets();}
 }
 
-/* ─── IMAGE HANDLING (unchanged) ─── */
 function loadImageFromFile(file){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>resolve(img);img.onerror=(e)=>{URL.revokeObjectURL(url);reject(e);};img.src=url;});}
 function canvasToBlob(canvas,quality){return new Promise(resolve=>{canvas.toBlob(blob=>resolve(blob),'image/jpeg',quality);});}
 async function compressImage(file){const img=await loadImageFromFile(file);const MAX_EDGE=1600;let{width,height}=img;if(width>MAX_EDGE||height>MAX_EDGE){const scale=MAX_EDGE/Math.max(width,height);width=Math.round(width*scale);height=Math.round(height*scale);}const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,width,height);URL.revokeObjectURL(img.src);const targetMin=TARGET_MIN_KB*1024,targetMax=TARGET_MAX_KB*1024;let lo=0.3,hi=0.95,bestBlob=await canvasToBlob(canvas,hi);if(bestBlob.size<=targetMax)return bestBlob;for(let i=0;i<7;i++){const mid=(lo+hi)/2,blob=await canvasToBlob(canvas,mid);if(blob.size>targetMax)hi=mid;else if(blob.size<targetMin){lo=mid;bestBlob=blob;}else return blob;bestBlob=blob.size<=targetMax?blob:bestBlob;}if(bestBlob.size>targetMax){const c2=document.createElement('canvas');c2.width=Math.round(width*0.7);c2.height=Math.round(height*0.7);c2.getContext('2d').drawImage(canvas,0,0,c2.width,c2.height);bestBlob=await canvasToBlob(c2,0.7);}return bestBlob;}
@@ -574,7 +544,6 @@ async function handleImageSelect(event){const file=event.target.files[0];event.t
 function removeImage(){pendingImageBlob=null;document.getElementById('img-preview').src='';hide('img-preview-wrap');hide('img-meta');}
 async function uploadTicketImage(ticketId){if(!pendingImageBlob)return null;const path=`${currentRoll}/${ticketId}.${pendingImageExt}`;const{error}=await sb.storage.from(IMAGE_BUCKET).upload(path,pendingImageBlob,{contentType:'image/jpeg',upsert:true});if(error)throw error;const{data:pub}=sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);return pub?pub.publicUrl:null;}
 
-/* ─── AUTH (unchanged logic, updated error display) ─── */
 function toggleMode(){
   authMode=authMode==='login'?'register':'login';
   document.getElementById('a-btn-label').textContent=authMode==='register'?'Create account':'Log in';
@@ -666,7 +635,6 @@ function logout(){
   removeImage();switchTab('raise');
 }
 
-/* ─── TICKET SUBMISSION (unchanged) ─── */
 async function submitTicket(){
   const cat=document.getElementById('f-cat').value,subj=document.getElementById('f-subject').value.trim(),desc=document.getElementById('f-desc').value.trim();
   hide('f-error');
@@ -698,7 +666,6 @@ async function submitTicket(){
   }
 }
 
-/* ─── TICKET RENDERING (unchanged) ─── */
 function stampHTML(status){const labels={open:'Open',progress:'In Progress',resolved:'Resolved'};return `<span class="stamp stamp-${status}">${labels[status]||status}</span>`;}
 let openCards={};
 function toggleCard(id){openCards[id]=openCards[id]===false?true:false;renderTickets();}
@@ -736,7 +703,6 @@ function renderTickets(){
 
 function escHTML(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-/* ─── BOOT (unchanged) ─── */
 function boot(){
   hide('loading-screen');
   show('auth-screen');
