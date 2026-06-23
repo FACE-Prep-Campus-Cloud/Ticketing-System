@@ -48,29 +48,30 @@
   .font-display { font-family: 'Cormorant Garamond', serif; }
   .font-mono    { font-family: 'DM Mono', monospace; }
 
+  /* FIX: Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
   @keyframes fadeUp    { from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);} }
   @keyframes slideIn   { from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:translateX(0);} }
   @keyframes pop       { from{opacity:0;transform:scale(0.82);}to{opacity:1;transform:scale(1);} }
   @keyframes stampIn   { from{opacity:0;transform:scale(0.65) rotate(-5deg);}to{opacity:1;transform:scale(1) rotate(0deg);} }
-  @keyframes pulse     { 0%{box-shadow:0 0 0 0 rgba(37,99,235,0.45);}100%{box-shadow:0 0 0 14px rgba(37,99,235,0);} }
   @keyframes tabSlide  { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
   @keyframes staggerIn { from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);} }
   @keyframes successPop{ 0%{opacity:0;transform:scale(0.8);}60%{transform:scale(1.06);}100%{opacity:1;transform:scale(1);} }
+  /* REDUCED: Only 1 subtle ambient animation on login */
   @keyframes drift     { from{transform:translateY(0) scale(1);}to{transform:translateY(32px) scale(1.04);} }
-  @keyframes drift2    { from{transform:translateY(0) scale(1);}to{transform:translateY(-24px) scale(0.97);} }
-  @keyframes slowSpin  { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
   @keyframes sparkle   { 0%,100%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);} }
-  @keyframes blink     { 0%,100%{opacity:1;}50%{opacity:0.3;} }
   @keyframes float1    { 0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(8px,-12px) scale(1.05);}66%{transform:translate(-6px,8px) scale(0.96);} }
-  @keyframes float2    { 0%,100%{transform:translate(0,0);}40%{transform:translate(-10px,14px);}75%{transform:translate(12px,-8px);} }
-  @keyframes typeIn    { from{width:0;border-color:var(--accent-mid);}to{width:100%;border-color:transparent;} }
+  @keyframes pulse     { 0%{box-shadow:0 0 0 0 rgba(37,99,235,0.45);}100%{box-shadow:0 0 0 14px rgba(37,99,235,0);} }
   @keyframes gridMove  { from{background-position:0 0;}to{background-position:40px 40px;} }
+  @keyframes typeIn    { from{width:0;border-color:var(--accent-mid);}to{width:100%;border-color:transparent;} }
 
   .auth-box { animation: fadeUp 0.55s ease both; }
   .success-msg.show { animation: successPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
   .stamp { animation: stampIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
   .panel.active { animation: tabSlide 0.25s ease both; }
-  .btn-primary:not(:disabled):active { animation: pulse 0.45s ease forwards; }
 
   .stamp { display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border:1.5px solid currentColor;border-radius:3px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;flex-shrink:0; }
   .stamp-open     { color:var(--accent);    background:rgba(26,58,107,0.07); }
@@ -82,9 +83,8 @@
   .ticket-stub::before{left:-2px;}.ticket-stub::after{right:-2px;}
 
   .header-outer{background:var(--accent);position:relative;overflow:hidden;}
-  .header-orb1{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--accent-mid);top:-200px;right:20px;filter:blur(120px);opacity:0.30;pointer-events:none;animation:drift 8s ease-in-out infinite alternate;}
-  .header-orb2{position:absolute;width:260px;height:260px;border-radius:50%;background:#0F2150;bottom:-100px;left:40px;filter:blur(90px);opacity:0.40;pointer-events:none;animation:drift 11s ease-in-out infinite alternate-reverse;}
-  .header-orb3{position:absolute;width:180px;height:180px;border-radius:50%;background:var(--accent-lt);top:-20px;left:200px;filter:blur(80px);opacity:0.15;pointer-events:none;animation:drift 9s ease-in-out infinite alternate;}
+  /* REDUCED: Only one subtle orb, no rings */
+  .header-orb1{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--accent-mid);top:-200px;right:20px;filter:blur(120px);opacity:0.20;pointer-events:none;}
 
   header{position:relative;z-index:2;}
   .header-top{backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);background:rgba(15,30,70,0.55);border-bottom:1px solid rgba(255,255,255,0.12);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px;}
@@ -97,15 +97,18 @@
   @media(min-width:480px){.header-brand .title{font-size:21px;}.header-brand .sub-title{max-width:none;}}
   .header-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
   @media(min-width:480px){.header-right{gap:10px;}}
-  .btn-logout{display:flex;align-items:center;gap:6px;font-size:11px;padding:7px;border-radius:4px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:rgba(255,255,255,0.75);cursor:pointer;font-family:'DM Mono',monospace;transition:opacity .15s,background .15s;white-space:nowrap;flex-shrink:0;letter-spacing:0.05em;text-transform:uppercase;}
+  /* FIX: Minimum 44px touch target on logout */
+  .btn-logout{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;min-width:44px;min-height:44px;padding:7px;border-radius:4px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:rgba(255,255,255,0.75);cursor:pointer;font-family:'DM Mono',monospace;transition:opacity .15s,background .15s;white-space:nowrap;flex-shrink:0;letter-spacing:0.05em;text-transform:uppercase;}
   @media(min-width:480px){.btn-logout{padding:7px 13px;}}
   .btn-logout:hover{opacity:0.75;}
+  /* FIX: aria-label added in HTML, text always visible on mobile via aria */
   .btn-logout .logout-text{display:none;}
   @media(min-width:480px){.btn-logout .logout-text{display:inline;}}
   .header-tabs{background:rgba(10,24,60,0.40);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.10);padding:0 8px;display:flex;align-items:center;overflow-x:auto;}
   @media(min-width:480px){.header-tabs{padding:0 24px;gap:4px;}}
-  .nav-tab{display:flex;align-items:center;gap:7px;padding:0 12px;height:42px;font-size:12px;color:rgba(255,255,255,0.40);border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s,border-color .25s ease;white-space:nowrap;flex-shrink:0;}
-  @media(min-width:480px){.nav-tab{padding:0 18px;height:44px;font-size:13px;}}
+  /* FIX: min 44px height for nav tabs */
+  .nav-tab{display:flex;align-items:center;gap:7px;padding:0 12px;height:44px;min-height:44px;font-size:12px;color:rgba(255,255,255,0.40);border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s,border-color .25s ease;white-space:nowrap;flex-shrink:0;}
+  @media(min-width:480px){.nav-tab{padding:0 18px;font-size:13px;}}
   .nav-tab:hover{color:rgba(255,255,255,0.75);}
   .nav-tab.active{color:#FFFFFF;border-bottom-color:#93C5FD;font-weight:500;}
   .nav-tab svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
@@ -126,36 +129,30 @@
   select option{background:var(--surface);color:var(--text);}
   textarea{resize:none;}
   select:disabled{opacity:0.5;cursor:not-allowed;}
-  .btn-primary{width:100%;padding:14px 12px;background:var(--accent);color:#FFFFFF;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .15s;letter-spacing:0.04em;}
+  .btn-primary{width:100%;padding:14px 12px;background:var(--accent);color:#FFFFFF;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .15s;letter-spacing:0.04em;min-height:44px;}
   .btn-primary:hover{background:var(--accent-mid);}
   .btn-primary:active{transform:scale(0.98);}
   .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
   .error-msg{font-size:13px;color:var(--error);margin-bottom:10px;}
   .success-msg{font-size:13px;color:var(--success);text-align:center;margin-top:8px;}
 
+  /* ===================== AUTH SCREEN ===================== */
   .auth-wrap{
     min-height:100vh;display:flex;align-items:center;justify-content:center;
     padding:32px 16px;position:relative;overflow:hidden;
     background:linear-gradient(160deg,#EEF4FF 0%,#F8F5F0 45%,#FDF6EC 100%);
   }
+  /* REDUCED: Single subtle grid, one orb only */
   .grid-bg{
     position:absolute;inset:0;
     background-image:
-      linear-gradient(rgba(37,99,235,0.06) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(37,99,235,0.06) 1px,transparent 1px);
+      linear-gradient(rgba(37,99,235,0.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(37,99,235,0.04) 1px,transparent 1px);
     background-size:40px 40px;
-    animation:gridMove 6s linear infinite;
     pointer-events:none;
   }
   .auth-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
-  .auth-orb1{width:480px;height:480px;background:rgba(37,99,235,0.14);top:-200px;right:-80px;animation:float1 12s ease-in-out infinite;}
-  .auth-orb2{width:340px;height:340px;background:rgba(209,160,84,0.18);bottom:-140px;left:-60px;animation:float2 15s ease-in-out infinite;}
-  .auth-orb3{width:220px;height:220px;background:rgba(59,130,246,0.12);top:35%;left:15%;animation:drift 10s ease-in-out infinite alternate;}
-  .auth-orb4{width:160px;height:160px;background:rgba(209,160,84,0.10);top:20%;right:20%;animation:drift2 9s ease-in-out infinite alternate;}
-  .ring{position:absolute;border-radius:50%;border:1.5px dashed rgba(37,99,235,0.12);animation:slowSpin var(--speed,20s) linear infinite;pointer-events:none;}
-  .ring1{width:420px;height:420px;top:50%;left:50%;transform:translate(-50%,-50%);--speed:28s;}
-  .ring2{width:280px;height:280px;top:50%;left:50%;transform:translate(-50%,-50%);--speed:18s;animation-direction:reverse;}
-  .spark{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--accent-mid);opacity:0;animation:sparkle var(--d,3s) ease-in-out var(--delay,0s) infinite;}
+  .auth-orb1{width:480px;height:480px;background:rgba(37,99,235,0.10);top:-200px;right:-80px;animation:float1 12s ease-in-out infinite;}
 
   .auth-box{width:100%;max-width:460px;position:relative;z-index:2;animation:fadeUp 0.65s ease both;}
   .auth-header{text-align:center;margin-bottom:24px;}
@@ -175,25 +172,17 @@
   .logo-support-eyebrow{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);}
   .logo-support-label{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.10em;text-transform:uppercase;color:var(--accent);}
 
-  .hero-headline{
-    font-family:'Cormorant Garamond',serif;
-    font-size:36px;line-height:1.16;font-weight:600;
-    color:var(--accent);margin-bottom:12px;
-    white-space:nowrap;
-    animation:fadeUp 0.6s ease 0.2s both;
-  }
+  .hero-headline{font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1.16;font-weight:600;color:var(--accent);margin-bottom:12px;white-space:nowrap;animation:fadeUp 0.6s ease 0.2s both;}
   .hero-headline em{font-style:italic;color:var(--accent-mid);}
   .underline-anim{position:relative;display:inline-block;}
-  .underline-anim::after{
-    content:'';position:absolute;bottom:-2px;left:0;height:2px;
-    background:var(--gold-light);border-radius:2px;
-    width:0;animation:typeIn 1.2s ease 0.8s forwards;
-  }
-  .hero-sub{
-    font-size:13.5px;color:var(--text-body);line-height:1.65;
-    max-width:340px;margin:0 auto;
-    animation:fadeUp 0.6s ease 0.35s both;
-  }
+  .underline-anim::after{content:'';position:absolute;bottom:-2px;left:0;height:2px;background:var(--gold-light);border-radius:2px;width:0;animation:typeIn 1.2s ease 0.8s forwards;}
+  .hero-sub{font-size:13.5px;color:var(--text-body);line-height:1.65;max-width:340px;margin:0 auto;animation:fadeUp 0.6s ease 0.35s both;}
+
+  /* FIX: Login/Register tab toggle instead of ghost button */
+  .auth-mode-tabs{display:flex;background:rgba(26,58,107,0.08);border-radius:8px;padding:4px;gap:2px;margin-bottom:20px;}
+  .auth-mode-tab{flex:1;padding:9px 0;border:none;background:transparent;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-body);cursor:pointer;transition:background .15s,color .15s;min-height:36px;}
+  .auth-mode-tab.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(26,58,107,0.12);}
+  .auth-mode-tab:hover:not(.active){color:var(--accent);}
 
   .auth-panel{
     background:rgba(255,255,255,0.90);border:1px solid var(--border);border-radius:10px;
@@ -209,37 +198,35 @@
     border:none;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:15px;
     font-weight:600;cursor:pointer;display:flex;align-items:center;
     justify-content:center;gap:8px;transition:background .2s,transform .15s;
-    letter-spacing:0.04em;margin-top:4px;
-    animation:pulse 2.5s ease-out 1.5s infinite;
+    letter-spacing:0.04em;margin-top:4px;min-height:44px;
     -webkit-tap-highlight-color:transparent;
   }
   .auth-btn-primary:hover{background:var(--accent-mid);transform:translateY(-1px);}
-  .auth-btn-primary:disabled{opacity:0.5;cursor:not-allowed;animation:none;}
-  .btn-ghost{
-    background:transparent;border:none;font-family:'DM Sans',sans-serif;
-    font-size:13.5px;color:var(--text-body);cursor:pointer;width:100%;
-    padding:12px 0 4px;transition:color .15s;text-align:center;display:block;margin-top:6px;
-  }
-  .btn-ghost:hover{color:var(--accent-mid);}
+  .auth-btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
 
   .secure-note{display:flex;align-items:center;gap:8px;margin-top:18px;}
-
-  .feature-row{
-    display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap;
-    animation:fadeUp 0.5s ease 0.85s both;
-  }
-  .fpill{
-    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;
-    color:var(--text-muted);background:rgba(255,255,255,0.70);border:1px solid var(--border-soft);
-    border-radius:50px;padding:5px 12px;backdrop-filter:blur(6px);
-  }
-
+  .feature-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap;animation:fadeUp 0.5s ease 0.85s both;}
+  .fpill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);background:rgba(255,255,255,0.70);border:1px solid var(--border-soft);border-radius:50px;padding:5px 12px;backdrop-filter:blur(6px);}
   .auth-error{font-size:13px;color:var(--error);margin-bottom:10px;}
   .auth-error.is-success{color:var(--success);}
 
+  /* FIX: Password reveal toggle */
+  .pass-wrap{position:relative;}
+  .pass-wrap input{padding-right:44px;}
+  .pass-toggle{position:absolute;right:0;top:0;height:100%;width:44px;background:transparent;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;padding:0;transition:color .15s;}
+  .pass-toggle:hover{color:var(--accent);}
+  .pass-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* FIX: Character counter on description */
+  .char-counter{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);text-align:right;margin-top:4px;}
+  .char-counter.warn{color:var(--error);}
+  .field-hint{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5;}
+
+  /* ===================== TICKET LIST ===================== */
   .ticket-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;margin-bottom:10px;max-width:760px;box-shadow:0 1px 8px rgba(26,58,107,0.07);transition:box-shadow .2s,transform .2s;}
   .ticket-card:hover{box-shadow:0 4px 20px rgba(26,58,107,0.14);transform:translateY(-1px);}
-  .ticket-toggle{width:100%;text-align:left;padding:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:transparent;border:none;cursor:pointer;flex-wrap:wrap;}
+  /* FIX: min 44px height for ticket toggle button */
+  .ticket-toggle{width:100%;text-align:left;padding:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:transparent;border:none;cursor:pointer;flex-wrap:wrap;min-height:44px;}
   .ticket-toggle .meta{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:5px;}
   .ticket-toggle .subject{font-size:14.5px;font-weight:500;color:var(--text);}
   .ticket-toggle .time{font-size:11px;color:var(--text-muted);margin-top:4px;font-family:'DM Mono',monospace;}
@@ -248,9 +235,26 @@
   .ticket-body .desc{font-size:14px;white-space:pre-wrap;padding-top:16px;line-height:1.7;color:var(--text-mid);}
   .admin-note{margin-top:16px;padding:14px 16px;background:var(--accent-xpale);border-left:3px solid var(--accent-mid);border-radius:0 4px 4px 0;font-size:14px;line-height:1.65;color:var(--text-mid);}
   .admin-note .note-label{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-body);margin-bottom:6px;}
-  .tickets-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+
+  /* FIX: Ticket filters + search bar */
+  .tickets-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;max-width:760px;}
+  .tickets-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
   .active-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-body);background:var(--surface);border:1px solid var(--border);padding:4px 10px;border-radius:3px;letter-spacing:0.05em;}
+  .ticket-search{flex:1;min-width:160px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;}
+  .ticket-search:focus{border-color:var(--accent-mid);box-shadow:0 0 0 3px rgba(37,99,235,0.12);}
+  .ticket-search::placeholder{color:var(--text-muted);}
+  .filter-pills{display:flex;gap:6px;flex-wrap:wrap;}
+  .filter-pill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:6px 12px;border-radius:50px;border:1px solid var(--border);background:var(--surface);color:var(--text-body);cursor:pointer;transition:background .15s,color .15s,border-color .15s;min-height:32px;display:flex;align-items:center;}
+  .filter-pill:hover{border-color:var(--accent-mid);color:var(--accent);}
+  .filter-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  /* FIX: Expand/collapse all toggle */
+  .expand-toggle{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);background:transparent;border:none;cursor:pointer;letter-spacing:0.07em;text-transform:uppercase;padding:0;text-decoration:underline;text-underline-offset:3px;}
+  .expand-toggle:hover{color:var(--accent);}
+
   .empty-state{background:var(--surface);border:1px dashed var(--border);border-radius:6px;padding:36px 20px;text-align:center;color:var(--text-body);font-size:14px;max-width:760px;line-height:1.6;animation:fadeUp 0.4s ease both;}
+
+  /* Image upload */
   .img-drop{border:1.5px dashed rgba(26,58,107,0.25);border-radius:5px;padding:20px;text-align:center;cursor:pointer;background:var(--page);transition:border-color .15s,background .15s;}
   .img-drop:hover,.img-drop.drag-over{border-color:var(--accent-mid);background:var(--accent-xpale);}
   .img-drop .img-drop-label{font-size:13px;color:var(--text-body);}
@@ -258,7 +262,8 @@
   .img-drop .img-drop-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:5px;}
   .img-preview-wrap{position:relative;display:inline-block;margin-top:12px;animation:pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
   .img-preview-wrap img{display:block;max-width:100%;max-height:180px;border-radius:5px;border:1px solid var(--border);}
-  .img-remove-btn{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:3px;background:var(--accent);color:#FFFFFF;border:1.5px solid var(--surface);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;transition:background .15s;}
+  /* FIX: aria-label on remove button */
+  .img-remove-btn{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:3px;background:var(--accent);color:#FFFFFF;border:1.5px solid var(--surface);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;transition:background .15s;}
   .img-remove-btn:hover{background:var(--accent-mid);}
   .img-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:6px;}
   .img-compressing{font-size:13px;color:var(--text-body);text-align:center;padding:10px;}
@@ -271,15 +276,26 @@
   .hidden{display:none!important;}
   #tab-badge{background:#1A3A6B;color:#FFFFFF;font-size:10px;border-radius:3px;padding:2px 7px;font-family:'DM Mono',monospace;letter-spacing:0.05em;font-weight:600;animation:pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
 
+  /* FIX: Success toast with ticket ID */
+  .submit-success-box{background:var(--accent-xpale);border:1px solid rgba(37,99,235,0.18);border-radius:5px;padding:14px 16px;margin-top:14px;display:none;}
+  .submit-success-box.show{display:block;animation:fadeUp 0.3s ease both;}
+  .submit-success-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px;}
+  .submit-success-id{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent-mid);letter-spacing:0.06em;}
+  .submit-success-note{font-size:12px;color:var(--text-body);margin-top:4px;}
+
+  /* FIX: Forgot passcode hint */
+  .forgot-hint{font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.5;}
+
+  /* FIX: Category tooltip */
+  .cat-hint{font-size:12px;color:var(--text-body);margin-top:4px;padding:8px 10px;background:var(--accent-xpale);border-radius:4px;display:none;line-height:1.5;}
+
+  /* Updated ticket time with title for absolute date */
+  .ticket-toggle .time[title]{cursor:help;text-decoration:underline dotted;text-underline-offset:2px;}
+
   @media(max-width:480px){
     .auth-wrap{padding:20px 14px;align-items:flex-start;padding-top:36px;}
     .auth-box{max-width:100%;}
     .auth-orb1{width:300px;height:300px;top:-140px;right:-100px;}
-    .auth-orb2{width:220px;height:220px;bottom:-100px;left:-60px;}
-    .auth-orb3{width:140px;height:140px;}
-    .auth-orb4{width:100px;height:100px;}
-    .ring1{width:280px;height:280px;}
-    .ring2{width:190px;height:190px;}
     .logo-wrap{padding:11px 16px;margin-bottom:16px;border-radius:12px;gap:0;}
     .auth-logo-img{height:38px;}
     .logo-divider{height:28px;margin:0 14px;}
@@ -291,6 +307,7 @@
     .secure-note span{font-size:11.5px;}
     .feature-row{gap:6px;margin-top:16px;}
     .fpill{font-size:9.5px;padding:4px 10px;}
+    .tickets-toolbar{flex-direction:column;align-items:stretch;}
   }
   @media(max-width:360px){
     .auth-logo-img{height:32px;}
@@ -308,24 +325,11 @@
 <div id="auth-screen" class="auth-wrap hidden">
   <div class="grid-bg"></div>
   <div class="auth-orb auth-orb1"></div>
-  <div class="auth-orb auth-orb2"></div>
-  <div class="auth-orb auth-orb3"></div>
-  <div class="auth-orb auth-orb4"></div>
-  <div class="ring ring1"></div>
-  <div class="ring ring2"></div>
-
-  <div class="spark" style="top:15%;left:12%;--d:4s;--delay:0s;"></div>
-  <div class="spark" style="top:28%;right:14%;--d:3.5s;--delay:0.7s;background:var(--gold);"></div>
-  <div class="spark" style="top:70%;left:8%;--d:5s;--delay:1.2s;"></div>
-  <div class="spark" style="top:60%;right:10%;--d:3.2s;--delay:0.4s;background:var(--gold-light);"></div>
-  <div class="spark" style="top:45%;left:5%;--d:4.5s;--delay:1.8s;width:4px;height:4px;"></div>
-  <div class="spark" style="top:82%;right:18%;--d:3.8s;--delay:0.9s;width:4px;height:4px;"></div>
-  <div class="spark" style="top:10%;right:30%;--d:4.2s;--delay:1.5s;width:5px;height:5px;background:var(--accent-lt);"></div>
 
   <div class="auth-box">
     <div class="auth-header">
-            <div class="logo-wrap">
-        <img src="data:image/png;base64,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" alt="FACE Prep Campus" class="auth-logo-img" />
+      <div class="logo-wrap">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACJCAYAAAACEW4rAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAALEsAACxLAaU9lqkAADWmSURBVHhe7Z17fFzVfe9/+5wzI1myxdiWgQDGI/LAJE2QQxISQ65HCXk1aSzTJg3JDZaT0qbkppITHqEvSdyUkEIruc3n9hFSyW1ye3NzbySRfpoAJZIBQ+6HgAWln0ATogFDy8PGA1iy9Zg994+91z777DkzOjMayZKyvp/P0Zw5j332HM2s314r7b2P8H3fB8MwDMNUiGNvYBiGYZg4sIAwDMMwVcECwjAMw1QFCwjDMAxTFSwgDMMwTFWwgDAMwzBVwQLCMAzDVAULCMMwDFMVLCAMwzBMVbCAMAzDMFXBAsIwDMNUBQsIwzAMUxUsIAzDMExVsIAwDMMwVcECwjAMw1QFCwjDMAxTFSwgDMMwTFWwgDAMwzBVwQLCMAzDVAULCMMwDFMVLCAMwzBMVbCAMAzDMFXBAsIwDMNUBQsIwzAMUxUsIAzDMExVsIAwDMMwVcECwjAMw1QFCwjDMAxTFf8fSLGn+7jh0bQAAAAASUVORK5CYII=" alt="FACE Prep Campus" class="auth-logo-img" />
         <div class="logo-divider"></div>
         <div class="logo-support-wrap">
           <span class="logo-support-eyebrow">Student</span>
@@ -333,12 +337,18 @@
         </div>
       </div>
       <h1 class="hero-headline">One desk. <em>Every answer.</em></h1>
-      <p class="hero-sub">Log in with your roll number to raise your query or track one you've already filed.</p>
+      <p class="hero-sub">Log in with your roll number to raise a query or track one you've already filed.</p>
     </div>
 
     <div class="auth-panel">
+      <!-- FIX: Visible Login / Register tab toggle -->
+      <div class="auth-mode-tabs" role="tablist" aria-label="Authentication mode">
+        <button class="auth-mode-tab active" id="tab-login-btn" role="tab" aria-selected="true" onclick="setMode('login')">Log in</button>
+        <button class="auth-mode-tab" id="tab-register-btn" role="tab" aria-selected="false" onclick="setMode('register')">Create account</button>
+      </div>
+
       <div id="a-college-wrap" class="field hidden">
-        <label class="field-label">College</label>
+        <label class="field-label" for="a-college">College</label>
         <select id="a-college" onchange="handleCollegeChange()">
           <option value="">Select your college</option>
           <option>Kamaraj College</option>
@@ -366,27 +376,39 @@
         </select>
       </div>
       <div id="a-dept-wrap" class="field hidden">
-        <label class="field-label">Department</label>
+        <label class="field-label" for="a-dept">Department</label>
         <select id="a-dept" disabled>
           <option value="">First select your college</option>
         </select>
       </div>
 
       <div class="field">
-        <label class="field-label">Roll Number</label>
-        <input id="a-roll" type="text" placeholder="e.g. 23CS045" />
+        <label class="field-label" for="a-roll">Roll Number</label>
+        <input id="a-roll" type="text" placeholder="e.g. 23CS045" autocomplete="username" />
       </div>
       <div id="a-name-wrap" class="field hidden">
-        <label class="field-label">Full Name</label>
-        <input id="a-name" type="text" placeholder="Your name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')" />
+        <label class="field-label" for="a-name">Full Name</label>
+        <input id="a-name" type="text" placeholder="Your name" autocomplete="name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')" />
       </div>
+
       <div class="field">
-        <label class="field-label">Passcode <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);text-transform:none;letter-spacing:0"></span></label>
-        <input id="a-pass" type="password" placeholder="e.g. 1234" maxlength="4" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+        <label class="field-label" for="a-pass">Passcode</label>
+        <!-- FIX: Password show/hide toggle -->
+        <div class="pass-wrap">
+          <input id="a-pass" type="password" placeholder="4-digit PIN" maxlength="4" inputmode="numeric" autocomplete="current-password" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+          <button type="button" class="pass-toggle" onclick="togglePass('a-pass','eye-pass')" aria-label="Show passcode">
+            <svg id="eye-pass" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
       <div id="a-confirm-wrap" class="field hidden">
-        <label class="field-label">Confirm Passcode</label>
-        <input id="a-confirm" type="password" placeholder="e.g. 1234" maxlength="4" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+        <label class="field-label" for="a-confirm">Confirm Passcode</label>
+        <div class="pass-wrap">
+          <input id="a-confirm" type="password" placeholder="Re-enter 4-digit PIN" maxlength="4" inputmode="numeric" autocomplete="new-password" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+          <button type="button" class="pass-toggle" onclick="togglePass('a-confirm','eye-confirm')" aria-label="Show confirm passcode">
+            <svg id="eye-confirm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
 
       <div id="a-error" class="auth-error hidden"></div>
@@ -394,10 +416,12 @@
       <button class="auth-btn-primary" id="a-submit-btn" onclick="submitStudent()">
         <span id="a-btn-label">Log in</span> →
       </button>
-      <button class="btn-ghost" onclick="toggleMode()" id="a-mode-toggle">New here? Create an account</button>
+
+      <!-- FIX: Forgot passcode recovery hint -->
+      <p id="forgot-hint" class="forgot-hint">Forgot your passcode? Contact your coordinator or email <strong>campus@faceprep.in</strong></p>
 
       <div class="secure-note">
-        <svg style="width:14px;height:14px;stroke:var(--text-muted);fill:none;stroke-width:1.7;stroke-linecap:round;flex-shrink:0;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg style="width:14px;height:14px;stroke:var(--text-muted);fill:none;stroke-width:1.7;stroke-linecap:round;flex-shrink:0;" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <span style="font-size:12px;color:var(--text-muted);">Your data is encrypted and accessible only to you and campus admin.</span>
       </div>
     </div>
@@ -405,7 +429,7 @@
     <div class="feature-row">
       <span class="fpill">Academics</span>
       <span class="fpill">Fees &amp; Accounts</span>
-      <span class="fpill">Infrastruture</span>
+      <span class="fpill">Infrastructure</span>
       <span class="fpill">Placements</span>
       <span class="fpill">+ more</span>
     </div>
@@ -414,7 +438,7 @@
 
 <div id="student-screen" class="hidden">
   <div class="header-outer">
-    <div class="header-orb1"></div><div class="header-orb2"></div><div class="header-orb3"></div>
+    <div class="header-orb1"></div>
     <header>
       <div class="header-top">
         <div class="header-brand">
@@ -422,47 +446,108 @@
           <div><div class="title">FACE Prep Campus Help Desk</div><div class="sub-title" id="s-college"></div></div>
         </div>
         <div class="header-right">
-          <button class="btn-logout" onclick="logout()">↩ <span class="logout-text">Log out</span></button>
+          <!-- FIX: aria-label on logout -->
+          <button class="btn-logout" onclick="logout()" aria-label="Log out">↩ <span class="logout-text">Log out</span></button>
         </div>
       </div>
-      <div class="header-tabs">
-        <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Raise your Query
+      <div class="header-tabs" role="tablist">
+        <button class="nav-tab active" id="tab-raise" onclick="switchTab('raise')" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Raise a query
         </button>
-        <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
-          <svg viewBox="0 0 24 24"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>My tickets
+        <button class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2Z"/><path d="M7 13v-2"/><path d="M12 13v-2"/><path d="M17 13v-2"/></svg>My tickets
           <span id="tab-badge" style="display:none;"></span>
         </button>
       </div>
     </header>
   </div>
 
-  <div id="panel-raise" class="panel active">
+  <div id="panel-raise" class="panel active" role="tabpanel">
     <main>
-      <div class="section-rule"></div><div class="section-title font-display">Raise your Query </div><div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
+      <div class="section-rule"></div>
+      <div class="section-title font-display">Raise a query</div>
+      <div class="section-sub">Tell us what's wrong — we'll route it to the right desk.</div>
       <div class="card">
-        <div class="field"><label class="field-label">Category</label><select id="f-cat"><option>Academics</option><option>Teaching Issue</option><option>Examinations</option><option>Fees &amp; Accounts</option><option>Scholarship &amp; Financial Aid</option><option>Hostel &amp; Mess</option><option>Infrastructure</option><option>Library</option><option>Transport</option><option>Placement &amp; Internships</option><option>Certificates &amp; Documents</option><option>Health &amp; Wellness</option><option>Sports &amp; Extracurricular</option><option>Ragging / Harassment</option><option>Technical / Portal</option><option>Other</option></select></div>
-        <div class="field"><label class="field-label">Query Subject</label><input id="f-subject" type="text" placeholder="Short summary of your query" /></div>
-        <div class="field"><label class="field-label">Description</label><textarea id="f-desc" rows="5" placeholder="Explain the issue in detail…"></textarea></div>
+        <div class="field">
+          <label class="field-label" for="f-cat">Category</label>
+          <select id="f-cat" onchange="showCatHint()">
+            <option value="Academics">Academics</option>
+            <option value="Teaching Issue">Teaching Issue</option>
+            <option value="Examinations">Examinations</option>
+            <option value="Fees &amp; Accounts">Fees &amp; Accounts</option>
+            <option value="Scholarship &amp; Financial Aid">Scholarship &amp; Financial Aid</option>
+            <option value="Hostel &amp; Mess">Hostel &amp; Mess</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Library">Library</option>
+            <option value="Transport">Transport</option>
+            <option value="Placement &amp; Internships">Placement &amp; Internships</option>
+            <option value="Certificates &amp; Documents">Certificates &amp; Documents</option>
+            <option value="Health &amp; Wellness">Health &amp; Wellness</option>
+            <option value="Sports &amp; Extracurricular">Sports &amp; Extracurricular</option>
+            <option value="Ragging / Harassment">Ragging / Harassment</option>
+            <option value="Technical / Portal">Technical / Portal</option>
+            <option value="Other">Other</option>
+          </select>
+          <!-- FIX: Category description tooltip -->
+          <div id="cat-hint" class="cat-hint"></div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-subject">Query subject</label>
+          <input id="f-subject" type="text" placeholder="Short summary of your query" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-desc">Description</label>
+          <textarea id="f-desc" rows="5" placeholder="Explain the issue in detail — include dates, names, or error messages if relevant…" oninput="updateCharCount()"></textarea>
+          <!-- FIX: Character count + minimum word guidance -->
+          <div class="char-counter" id="char-counter">0 characters · aim for at least 30</div>
+        </div>
         <div class="field">
           <label class="field-label">Attach a screenshot (optional)</label>
-          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()"><div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div><div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div></div>
-          <input id="img-file-input" type="file" accept="image/*" class="hidden" onchange="handleImageSelect(event)" />
+          <div id="img-drop" class="img-drop" onclick="document.getElementById('img-file-input').click()" role="button" aria-label="Upload screenshot attachment" tabindex="0">
+            <div class="img-drop-label"><b>Tap to upload</b> a photo or screenshot</div>
+            <div class="img-drop-sub">JPG / PNG · auto-compressed to ~200–300 KB</div>
+          </div>
+          <input id="img-file-input" type="file" accept="image/*" class="hidden" onchange="handleImageSelect(event)" aria-label="Choose image file" />
           <div id="img-compressing" class="img-compressing hidden">Compressing image…</div>
-          <div id="img-preview-wrap" class="img-preview-wrap hidden"><img id="img-preview" src="" alt="Attachment preview" /><button type="button" class="img-remove-btn" onclick="removeImage()">✕</button></div>
+          <div id="img-preview-wrap" class="img-preview-wrap hidden">
+            <img id="img-preview" src="" alt="Attachment preview" />
+            <!-- FIX: aria-label on remove button -->
+            <button type="button" class="img-remove-btn" onclick="removeImage()" aria-label="Remove attached image">✕</button>
+          </div>
           <div id="img-meta" class="img-meta hidden"></div>
         </div>
         <button class="btn-primary" id="f-submit-btn" onclick="submitTicket()">+ Submit ticket</button>
         <div id="f-error" class="error-msg hidden"></div>
-        <div id="f-success" class="success-msg hidden">✓ Ticket raised — we'll keep you posted.</div>
+        <!-- FIX: Success shows ticket ID for reference -->
+        <div id="submit-success-box" class="submit-success-box">
+          <div class="submit-success-title">✓ Ticket raised successfully</div>
+          <div class="submit-success-id" id="submit-success-id"></div>
+          <div class="submit-success-note">Save this ID — you can quote it when following up in person.</div>
+        </div>
       </div>
     </main>
   </div>
 
-  <div id="panel-tickets" class="panel">
+  <div id="panel-tickets" class="panel" role="tabpanel">
     <main>
-      <div class="tickets-header"><div><div class="section-rule"></div><div class="section-title font-display">My tickets</div></div><span class="active-badge" id="active-count"></span></div>
+      <div class="tickets-header-row">
+        <div><div class="section-rule"></div><div class="section-title font-display">My tickets</div></div>
+        <span class="active-badge" id="active-count"></span>
+      </div>
       <div class="section-sub">Everything you've raised, newest first.</div>
+
+      <!-- FIX: Search + filter toolbar -->
+      <div class="tickets-toolbar">
+        <input type="search" class="ticket-search" id="ticket-search" placeholder="Search by subject or ticket ID…" oninput="renderTickets()" aria-label="Search tickets" />
+        <div class="filter-pills" role="group" aria-label="Filter by status">
+          <button class="filter-pill active" data-filter="all" onclick="setFilter('all')">All</button>
+          <button class="filter-pill" data-filter="open" onclick="setFilter('open')">Open</button>
+          <button class="filter-pill" data-filter="progress" onclick="setFilter('progress')">In progress</button>
+          <button class="filter-pill" data-filter="resolved" onclick="setFilter('resolved')">Resolved</button>
+        </div>
+        <button class="expand-toggle" id="expand-toggle" onclick="toggleExpandAll()">Expand all</button>
+      </div>
+
       <div id="ticket-list"></div>
     </main>
   </div>
@@ -475,6 +560,28 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const IMAGE_BUCKET='ticket-images';
 const TARGET_MIN_KB=200,TARGET_MAX_KB=300;
 let tickets=[],currentRoll=null,currentStudent=null,authMode='login',pendingImageBlob=null,pendingImageExt='jpg';
+let activeFilter='all', allExpanded=false;
+let refreshTimer=null;
+
+// FIX: Category descriptions for tooltip hints
+const CAT_HINTS = {
+  'Academics': 'Course materials, syllabus, attendance, grades, or academic performance issues.',
+  'Teaching Issue': 'Concerns about teaching quality, faculty availability, or classroom conduct.',
+  'Examinations': 'Exam scheduling, hall tickets, results, re-evaluation requests.',
+  'Fees & Accounts': 'Fee payment, receipts, pending dues, or billing discrepancies.',
+  'Scholarship & Financial Aid': 'Scholarship applications, disbursement delays, or eligibility queries.',
+  'Hostel & Mess': 'Accommodation, food quality, hostel facilities, or warden concerns.',
+  'Infrastructure': 'Classrooms, labs, toilets, electricity, Wi-Fi, or campus facilities.',
+  'Library': 'Book availability, borrowing issues, library access, or digital resources.',
+  'Transport': 'Bus routes, timing, driver conduct, or transport pass queries.',
+  'Placement & Internships': 'Placement drives, company visits, internship support, or career guidance.',
+  'Certificates & Documents': 'Bonafide, TC, migration, degree, or other document requests.',
+  'Health & Wellness': 'Medical emergencies, health center access, or mental wellness support.',
+  'Sports & Extracurricular': 'Sports facilities, club activities, events, or cultural programs.',
+  'Ragging / Harassment': 'Report ragging, bullying, or any form of harassment. Will be treated with strict confidentiality.',
+  'Technical / Portal': 'Issues with student portal login, apps, or online systems.',
+  'Other': 'Anything that doesn\'t fit the above categories.',
+};
 
 const COLLEGE_DEPARTMENTS = {
   "Kamaraj College": ["I BCA - A","I BCA - B","II BCA","B.Com Honors","BBA Digital Marketing"],
@@ -501,6 +608,40 @@ const COLLEGE_DEPARTMENTS = {
   "Asian School of Business": ["BCA","BBA","B.Com"]
 };
 
+// FIX: Show/hide passcode toggle
+function togglePass(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const ico = document.getElementById(iconId);
+  const showing = inp.type === 'text';
+  inp.type = showing ? 'password' : 'text';
+  ico.innerHTML = showing
+    ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+    : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  const btn = inp.nextElementSibling;
+  btn.setAttribute('aria-label', showing ? 'Show passcode' : 'Hide passcode');
+}
+
+// FIX: Category hint on select change
+function showCatHint() {
+  const cat = document.getElementById('f-cat').value;
+  const hint = document.getElementById('cat-hint');
+  if (CAT_HINTS[cat]) {
+    hint.textContent = CAT_HINTS[cat];
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
+// FIX: Character counter for description
+function updateCharCount() {
+  const val = document.getElementById('f-desc').value;
+  const counter = document.getElementById('char-counter');
+  const len = val.length;
+  counter.textContent = len + ' character' + (len !== 1 ? 's' : '') + (len < 30 ? ' · aim for at least 30' : ' ✓');
+  counter.className = 'char-counter' + (len > 0 && len < 15 ? ' warn' : '');
+}
+
 function handleCollegeChange(){
   const college=document.getElementById('a-college').value;
   const deptSel=document.getElementById('a-dept');
@@ -523,6 +664,8 @@ function handleCollegeChange(){
 function norm(s){return (s||'').trim().toUpperCase();}
 function genId(){return 'TKT-'+Date.now().toString(36).toUpperCase().slice(-5)+Math.random().toString(36).slice(2,5).toUpperCase();}
 function fmtRel(iso){const diff=Date.now()-new Date(iso).getTime(),m=Math.floor(diff/60000);if(m<1)return 'just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';const d=Math.floor(h/24);if(d<30)return d+'d ago';return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+// FIX: Absolute date for tooltip
+function fmtAbs(iso){return new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function show(id){document.getElementById(id).classList.remove('hidden');}
 function hide(id){document.getElementById(id).classList.add('hidden');}
 
@@ -536,16 +679,92 @@ function setBtnLoading(btnId,loading,idleText){
   }
 }
 
+// FIX: Mode set via tab click instead of ghost button
+function setMode(mode) {
+  authMode = mode;
+  document.getElementById('tab-login-btn').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-register-btn').classList.toggle('active', mode === 'register');
+  document.getElementById('tab-login-btn').setAttribute('aria-selected', mode === 'login');
+  document.getElementById('tab-register-btn').setAttribute('aria-selected', mode === 'register');
+  document.getElementById('a-btn-label').textContent = mode === 'register' ? 'Create account' : 'Log in';
+  document.getElementById('forgot-hint').style.display = mode === 'login' ? '' : 'none';
+  if (mode === 'register') {
+    show('a-college-wrap'); show('a-name-wrap'); show('a-confirm-wrap');
+  } else {
+    hide('a-college-wrap'); hide('a-dept-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap');
+    document.getElementById('a-college').value = '';
+    document.getElementById('a-dept').innerHTML = '<option value="">First select your college</option>';
+    document.getElementById('a-dept').disabled = true;
+  }
+  hide('a-error');
+}
+
 function switchTab(tab){
   document.getElementById('tab-raise').classList.toggle('active',tab==='raise');
+  document.getElementById('tab-raise').setAttribute('aria-selected', tab==='raise');
   document.getElementById('tab-tickets').classList.toggle('active',tab==='tickets');
+  document.getElementById('tab-tickets').setAttribute('aria-selected', tab==='tickets');
   const panelRaise=document.getElementById('panel-raise');
   const panelTickets=document.getElementById('panel-tickets');
   panelRaise.classList.remove('active');
   panelTickets.classList.remove('active');
   void panelRaise.offsetWidth;
-  if(tab==='raise'){panelRaise.classList.add('active');}
-  else{panelTickets.classList.add('active');loadTickets();}
+  if(tab==='raise'){
+    panelRaise.classList.add('active');
+    stopAutoRefresh();
+  } else {
+    panelTickets.classList.add('active');
+    loadTickets();
+    startAutoRefresh();
+  }
+}
+
+// FIX: Auto-refresh tickets silently every 60s
+function startAutoRefresh() {
+  stopAutoRefresh();
+  refreshTimer = setInterval(() => { if (currentRoll) silentRefresh(); }, 60000);
+}
+function stopAutoRefresh() {
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+async function silentRefresh() {
+  try {
+    const {data,error} = await sb.from('tickets').select('*').eq('roll_number',currentRoll).order('created_at',{ascending:false});
+    if (!error && data) { tickets = data; renderTickets(); }
+  } catch(e) { /* silent */ }
+}
+
+// FIX: Filter tickets by status
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.filter === f);
+  });
+  renderTickets();
+}
+
+// FIX: Expand / collapse all
+function toggleExpandAll() {
+  allExpanded = !allExpanded;
+  const filtered = getFilteredTickets();
+  filtered.forEach(t => { openCards[t.id] = allExpanded; });
+  document.getElementById('expand-toggle').textContent = allExpanded ? 'Collapse all' : 'Expand all';
+  renderTickets();
+}
+
+function getFilteredTickets() {
+  const query = (document.getElementById('ticket-search')?.value || '').toLowerCase().trim();
+  return tickets.filter(t => {
+    const matchFilter = activeFilter === 'all'
+      || (activeFilter === 'open' && t.status === 'open')
+      || (activeFilter === 'progress' && t.status === 'progress')
+      || (activeFilter === 'resolved' && t.status === 'resolved');
+    const matchSearch = !query
+      || t.subject.toLowerCase().includes(query)
+      || t.id.toLowerCase().includes(query)
+      || t.category.toLowerCase().includes(query);
+    return matchFilter && matchSearch;
+  });
 }
 
 function loadImageFromFile(file){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>resolve(img);img.onerror=(e)=>{URL.revokeObjectURL(url);reject(e);};img.src=url;});}
@@ -555,21 +774,6 @@ async function compressImage(file){const img=await loadImageFromFile(file);const
 async function handleImageSelect(event){const file=event.target.files[0];event.target.value='';if(!file)return;if(!file.type.startsWith('image/')){alert('Please choose an image file.');return;}hide('img-preview-wrap');hide('img-meta');show('img-compressing');try{const compressed=await compressImage(file);pendingImageBlob=compressed;pendingImageExt='jpg';document.getElementById('img-preview').src=URL.createObjectURL(compressed);const pw=document.getElementById('img-preview-wrap');pw.classList.remove('hidden');void pw.offsetWidth;show('img-preview-wrap');document.getElementById('img-meta').textContent=`Ready to attach · ${(compressed.size/1024).toFixed(0)} KB`;show('img-meta');}catch(e){console.error(e);alert('Could not process that image.');pendingImageBlob=null;}finally{hide('img-compressing');}}
 function removeImage(){pendingImageBlob=null;document.getElementById('img-preview').src='';hide('img-preview-wrap');hide('img-meta');}
 async function uploadTicketImage(ticketId){if(!pendingImageBlob)return null;const path=`${currentRoll}/${ticketId}.${pendingImageExt}`;const{error}=await sb.storage.from(IMAGE_BUCKET).upload(path,pendingImageBlob,{contentType:'image/jpeg',upsert:true});if(error)throw error;const{data:pub}=sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);return pub?pub.publicUrl:null;}
-
-function toggleMode(){
-  authMode=authMode==='login'?'register':'login';
-  document.getElementById('a-btn-label').textContent=authMode==='register'?'Create account':'Log in';
-  document.getElementById('a-mode-toggle').textContent=authMode==='login'?'New here? Create an account':'Already registered? Log in';
-  if(authMode==='register'){
-    show('a-college-wrap');show('a-name-wrap');show('a-confirm-wrap');
-  }else{
-    hide('a-college-wrap');hide('a-dept-wrap');hide('a-name-wrap');hide('a-confirm-wrap');
-    document.getElementById('a-college').value='';
-    document.getElementById('a-dept').innerHTML='<option value="">First select your college</option>';
-    document.getElementById('a-dept').disabled=true;
-  }
-  hide('a-error');
-}
 
 function showError(msg,isSuccess){
   const el=document.getElementById('a-error');
@@ -603,24 +807,25 @@ async function submitStudent(){
       document.getElementById('a-college').value='';
       document.getElementById('a-dept').innerHTML='<option value="">First select your college</option>';
       document.getElementById('a-dept').disabled=true;
-      hide('a-dept-wrap');
-      authMode='login';
-      hide('a-name-wrap');hide('a-confirm-wrap');hide('a-college-wrap');hide('a-dept-wrap');
-      document.getElementById('a-btn-label').textContent='Log in';
-      document.getElementById('a-mode-toggle').textContent='New here? Create an account';
+      setMode('login');
       showError('Account created! Log in with your roll number and passcode.',true);
       return;
     }else{
       const{data:rec,error}=await sb.from('students').select('*').eq('roll_number',roll).maybeSingle();
       if(error)throw error;
-      if(!rec){showError('No account found for this roll number. Create one below.');return;}
-      if(rec.passcode!==pass){showError('Incorrect passcode.');return;}
+      if(!rec){showError('No account found for this roll number. Use "Create account" to register.');return;}
+      if(rec.passcode!==pass){showError('Incorrect passcode. Check your PIN and try again.');return;}
       currentRoll=roll;currentStudent=rec;
       await showDashboard();
     }
   }catch(e){
     console.error(e);
-    showError('Something went wrong reaching the server. Please try again.');
+    // FIX: More specific error messages
+    if(e.message && e.message.includes('network')){
+      showError('Cannot reach the server. Check your internet connection and try again.');
+    } else {
+      showError('Something went wrong. Please try again in a moment.');
+    }
   }finally{
     setBtnLoading('a-submit-btn',false,authMode==='register'?'Create account':'Log in');
   }
@@ -630,28 +835,45 @@ async function showDashboard(){
   hide('auth-screen');show('student-screen');
   document.getElementById('s-college').textContent=currentStudent?currentStudent.college+(currentStudent.department?' — '+currentStudent.department:''):'';
   await loadTickets();
+  // Show category hint for initial selection
+  showCatHint();
 }
 
 function logout(){
   currentRoll=null;currentStudent=null;
+  stopAutoRefresh();
   hide('student-screen');show('auth-screen');
   ['a-roll','a-name','a-pass','a-confirm'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-college').value='';
   document.getElementById('a-dept').innerHTML='<option value="">First select your college</option>';
   document.getElementById('a-dept').disabled=true;
   hide('a-error');
-  authMode='login';
-  document.getElementById('a-btn-label').textContent='Log in';
-  document.getElementById('a-mode-toggle').textContent='New here? Create an account';
-  hide('a-college-wrap');hide('a-dept-wrap');hide('a-name-wrap');hide('a-confirm-wrap');
+  setMode('login');
   removeImage();switchTab('raise');
+  // Reset char counter
+  document.getElementById('char-counter').textContent='0 characters · aim for at least 30';
 }
 
 async function submitTicket(){
   const cat=document.getElementById('f-cat').value,subj=document.getElementById('f-subject').value.trim(),desc=document.getElementById('f-desc').value.trim();
   hide('f-error');
-  if(!subj||!desc)return;
-  setBtnLoading('f-submit-btn',true,'+ Submit ticket');
+  if(!subj||!desc){
+    document.getElementById('f-error').textContent='Please fill in the subject and description.';
+    show('f-error');
+    return;
+  }
+  // FIX: Minimum description length check
+  if(desc.length < 15) {
+    document.getElementById('f-error').textContent='Description is too short. Please add more detail so we can help you better.';
+    show('f-error');
+    return;
+  }
+  const btn=document.getElementById('f-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting…';
+  // Hide previous success box
+  const succBox=document.getElementById('submit-success-box');
+  succBox.classList.remove('show');
+  succBox.style.display='none';
   try{
     const nowIso=new Date().toISOString(),ticketId=genId();
     let imageUrl=null;
@@ -661,27 +883,29 @@ async function submitTicket(){
     if(error)throw error;
     document.getElementById('f-subject').value='';
     document.getElementById('f-desc').value='';
+    updateCharCount();
     removeImage();
-    const suc=document.getElementById('f-success');
-    suc.classList.remove('hidden','show');
-    void suc.offsetWidth;
-    suc.classList.add('show');
-    show('f-success');
-    setTimeout(()=>hide('f-success'),3000);
+    // FIX: Show ticket ID in success box
+    document.getElementById('submit-success-id').textContent='Ticket ID: ' + ticketId;
+    succBox.style.display='block';
+    void succBox.offsetWidth;
+    succBox.classList.add('show');
+    // Auto-hide after 8s (longer so they can note the ID)
+    setTimeout(()=>{succBox.classList.remove('show');setTimeout(()=>succBox.style.display='none',300);},8000);
     await loadTickets();
   }catch(e){
     console.error(e);
-    document.getElementById('f-error').textContent='Could not submit the ticket. Please try again.';
+    document.getElementById('f-error').textContent='Could not submit the ticket. Please check your connection and try again.';
     show('f-error');
   }finally{
-    setBtnLoading('f-submit-btn',false,'+ Submit ticket');
+    btn.disabled=false;btn.textContent='+ Submit ticket';
   }
 }
 
-function stampHTML(status){const labels={open:'Open',progress:'In Progress',resolved:'Resolved'};return `<span class="stamp stamp-${status}">${labels[status]||status}</span>`;}
+function stampHTML(status){const labels={open:'Open',progress:'In Progress',resolved:'Resolved'};return `<span class="stamp stamp-${status}" aria-label="Status: ${labels[status]||status}">${labels[status]||status}</span>`;}
 let openCards={};
-function toggleCard(id){openCards[id]=openCards[id]===false?true:false;renderTickets();}
-function openLightbox(url){const box=document.createElement('div');box.className='lightbox';box.onclick=()=>box.remove();const img=document.createElement('img');img.src=url;box.appendChild(img);document.body.appendChild(box);}
+function toggleCard(id){openCards[id]=openCards[id]===false?true:!openCards[id];renderTickets();}
+function openLightbox(url){const box=document.createElement('div');box.className='lightbox';box.setAttribute('role','dialog');box.setAttribute('aria-label','Attachment full view');box.onclick=()=>box.remove();const img=document.createElement('img');img.src=url;img.alt='Ticket attachment enlarged';box.appendChild(img);document.body.appendChild(box);}
 
 async function loadTickets(){
   const list=document.getElementById('ticket-list');
@@ -692,39 +916,56 @@ async function loadTickets(){
     tickets=data||[];
   }catch(e){
     console.error(e);
-    list.innerHTML=`<div class="empty-state">Couldn't load tickets. Please refresh.</div>`;
+    list.innerHTML=`<div class="empty-state">Couldn't load tickets. Please refresh the page.</div>`;
     return;
   }
   renderTickets();
 }
 
 function renderTickets(){
+  const filtered = getFilteredTickets();
   const openCount=tickets.filter(t=>t.status!=='resolved').length;
   document.getElementById('active-count').textContent=openCount+' active';
   const badge=document.getElementById('tab-badge');
   if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}
   else badge.style.display='none';
   const list=document.getElementById('ticket-list');
-  if(tickets.length===0){list.innerHTML=`<div class="empty-state">No tickets yet — raise your first Query from the tab above.</div>`;return;}
-  list.innerHTML=tickets.map((t,i)=>{
+  if(tickets.length===0){
+    list.innerHTML=`<div class="empty-state">No tickets yet — raise your first query from the tab above.</div>`;
+    return;
+  }
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty-state">No tickets match your search or filter. Try changing the filter above.</div>`;
+    return;
+  }
+  list.innerHTML=filtered.map((t,i)=>{
     const expanded=openCards[t.id]!==false;
-    const bodyHTML=expanded?`<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url?`<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Attachment" onclick="event.stopPropagation();openLightbox('${escHTML(t.image_url)}')" /></div>`:''}${t.admin_note?`<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>`:''}</div>`:'';
-    return `<div class="ticket-card" style="animation:staggerIn 0.35s ease ${i*70}ms both;"><button class="ticket-toggle" onclick="toggleCard('${t.id}')"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`;
+    const bodyHTML=expanded?`<div class="ticket-body ticket-stub"><p class="desc">${escHTML(t.description)}</p>${t.image_url?`<div class="ticket-attachment"><img src="${escHTML(t.image_url)}" alt="Ticket attachment screenshot" onclick="event.stopPropagation();openLightbox('${escHTML(t.image_url)}')" /></div>`:''}${t.admin_note?`<div class="admin-note"><div class="note-label">Response from desk</div>${escHTML(t.admin_note)}</div>`:''}</div>`:'';
+    // FIX: Absolute date as title tooltip on time element
+    return `<div class="ticket-card" style="animation:staggerIn 0.35s ease ${i*70}ms both;"><button class="ticket-toggle" onclick="toggleCard('${t.id}')" aria-expanded="${expanded}"><div style="min-width:0"><div class="meta">${escHTML(t.category)} · ${escHTML(t.id)}</div><div class="subject">${escHTML(t.subject)}</div><div class="time" title="${fmtAbs(t.created_at)}">${fmtRel(t.created_at)}</div></div>${stampHTML(t.status)}</button>${bodyHTML}</div>`;
   }).join('');
 }
 
 function escHTML(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// Keyboard: Enter on img-drop
+document.addEventListener('keydown',function(e){
+  if(e.target.id==='img-drop'&&e.key==='Enter'){document.getElementById('img-file-input').click();}
+});
+
 function boot(){
   hide('loading-screen');
   show('auth-screen');
   ['a-roll','a-name','a-pass','a-confirm'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitStudent();}});
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitStudent();}});
   });
   const dropZone=document.getElementById('img-drop');
   ['dragenter','dragover'].forEach(evt=>{dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.add('drag-over');});});
   ['dragleave','drop'].forEach(evt=>{dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.remove('drag-over');});});
   dropZone.addEventListener('drop',e=>{const file=e.dataTransfer.files&&e.dataTransfer.files[0];if(file)handleImageSelect({target:{files:[file],value:''}});});
+  // Show initial category hint
+  showCatHint();
 }
 boot();
 </script>
