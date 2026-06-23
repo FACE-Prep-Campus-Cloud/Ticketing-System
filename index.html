@@ -537,7 +537,7 @@
         <div class="field">
           <label class="field-label" for="f-desc">Description</label>
           <textarea id="f-desc" rows="5" placeholder="Explain the issue in detail — include dates, names, or error messages if relevant…" oninput="updateCharCount()"></textarea>
-          <div class="char-counter" id="char-counter">0 characters · aim for at least 30</div>
+          <div class="char-counter" id="char-counter">0 characters · Type atleast 20 words for better understanding of your problem</div>
         </div>
         <div class="field">
           <label class="field-label">Attach a screenshot (optional)</label>
@@ -960,7 +960,7 @@ function logout() {
   setMode('login');
   removeImage();
   switchTab('raise');
-  document.getElementById('char-counter').textContent = '0 characters · aim for at least 30';
+  document.getElementById('char-counter').textContent = '0 characters · Type atleast 20 words for better understanding of your problem';
 }
 
 /* ═══════════════════════════════════════════
