@@ -384,6 +384,25 @@
         <input id="a-name" type="text" placeholder="Your name" autocomplete="name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')" />
       </div>
 
+      <!-- Security question (register only) -->
+      <div id="a-secq-wrap" class="field hidden">
+        <label class="field-label" for="a-secq">Security Question</label>
+        <select id="a-secq">
+          <option value="">Select a question</option>
+          <option>What was the name of your first school?</option>
+          <option>What is your favorite subject?</option>
+          <option>What is your father's first name?</option>
+          <option>What city were you born in?</option>
+          <option>What is the name of your best friend in school?</option>
+          <option>What was your first pet's name?</option>
+        </select>
+      </div>
+      <div id="a-seca-wrap" class="field hidden">
+        <label class="field-label" for="a-seca">Answer</label>
+        <input id="a-seca" type="text" placeholder="Your answer" autocomplete="off" />
+        <div class="field-hint">You'll need this to recover your passcode later — remember it exactly.</div>
+      </div>
+
       <div class="field">
         <label class="field-label" for="a-pass">Passcode</label>
         <div class="pass-wrap">
@@ -417,6 +436,7 @@
 
       <!-- ══════════════════════════════════════════
            PASSCODE RECOVERY SECTION
+           3-step flow: roll number → security question → set new passcode
            Shows inline below the login form when
            the student clicks "Recover it here".
       ══════════════════════════════════════════ -->
@@ -424,31 +444,63 @@
         <hr class="recovery-divider" />
         <div class="recovery-section-label">Passcode recovery</div>
 
-        <div class="field">
-          <label class="field-label" for="rec-roll">Roll Number</label>
-          <input id="rec-roll" type="text" placeholder="e.g. 23CS045" autocomplete="off"
-                 oninput="this.value=this.value.toUpperCase().trim()" />
-        </div>
-        <div class="field">
-          <label class="field-label" for="rec-name">Full Name <span style="font-weight:400;text-transform:none;letter-spacing:0;">(exactly as registered)</span></label>
-          <input id="rec-name" type="text" placeholder="Your registered full name" autocomplete="off" />
-          <div class="field-hint">Name must match what you entered when creating your account.</div>
-        </div>
-
-        <div id="rec-error" class="auth-error hidden"></div>
-
-        <!-- Result box — shown after successful match -->
-        <div id="rec-result" class="recovery-result-box">
-          <div style="font-size:12px;color:var(--text-body);margin-bottom:2px;">Your passcode is:</div>
-          <div id="rec-passcode" class="recovery-passcode-display"></div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Note it down, then close this panel and log in.</div>
-        </div>
-
-        <div class="recovery-row">
-          <button class="auth-btn-primary" id="rec-btn" onclick="recoverPasscode()" style="flex:1;margin-top:0;">
-            <span id="rec-btn-label">Find my passcode</span>
+        <!-- STEP 1: roll number -->
+        <div id="rec-step1">
+          <div class="field">
+            <label class="field-label" for="rec-roll">Roll Number</label>
+            <input id="rec-roll" type="text" placeholder="e.g. 23CS045" autocomplete="off"
+                   oninput="this.value=this.value.toUpperCase().trim()" />
+          </div>
+          <div id="rec-error1" class="auth-error hidden"></div>
+          <button class="auth-btn-primary" id="rec-btn1" onclick="fetchSecurityQuestion()">
+            <span id="rec-btn1-label">Continue</span>
           </button>
-          <button type="button" class="btn-secondary" onclick="closeRecovery()">Cancel</button>
+        </div>
+
+        <!-- STEP 2: answer the security question -->
+        <div id="rec-step2" class="hidden">
+          <div class="field">
+            <label class="field-label">Security Question</label>
+            <div id="rec-question-text" style="font-size:14px;color:var(--text-mid);margin-bottom:10px;line-height:1.5;"></div>
+            <input id="rec-answer" type="text" placeholder="Your answer" autocomplete="off" />
+          </div>
+          <div id="rec-error2" class="auth-error hidden"></div>
+          <button class="auth-btn-primary" id="rec-btn2" onclick="verifySecurityAnswer()">
+            <span id="rec-btn2-label">Verify</span>
+          </button>
+        </div>
+
+        <!-- STEP 3: set a new passcode -->
+        <div id="rec-step3" class="hidden">
+          <div class="field">
+            <label class="field-label" for="rec-newpass">New Passcode</label>
+            <div class="pass-wrap">
+              <input id="rec-newpass" type="password" maxlength="4" inputmode="numeric" placeholder="4-digit PIN"
+                     oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+              <button type="button" class="pass-toggle" onclick="togglePass('rec-newpass','eye-recnew')" aria-label="Show passcode">
+                <svg id="eye-recnew" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="rec-newpass2">Confirm New Passcode</label>
+            <div class="pass-wrap">
+              <input id="rec-newpass2" type="password" maxlength="4" inputmode="numeric" placeholder="Re-enter PIN"
+                     oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+              <button type="button" class="pass-toggle" onclick="togglePass('rec-newpass2','eye-recnew2')" aria-label="Show passcode">
+                <svg id="eye-recnew2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="rec-error3" class="auth-error hidden"></div>
+          <div id="rec-success3" class="auth-error is-success hidden"></div>
+          <button class="auth-btn-primary" id="rec-btn3" onclick="submitNewPasscode()">
+            <span id="rec-btn3-label">Set new passcode</span>
+          </button>
+        </div>
+
+        <div class="recovery-row" style="margin-top:10px;">
+          <button type="button" class="btn-secondary" onclick="closeRecovery()" style="flex:1;">Cancel</button>
         </div>
       </div>
       <!-- ══════════════════════════════════════════ -->
@@ -606,6 +658,7 @@ let pendingImageBlob = null, pendingImageExt = 'jpg';
 let activeFilter = 'all', allExpanded = false;
 let refreshTimer = null;
 let openCards = {};
+let recStudentRoll = null; // holds the verified roll number between recovery steps
 
 /* ── Category hints ── */
 const CAT_HINTS = {
@@ -760,9 +813,11 @@ function setMode(mode) {
 
   if(mode === 'register') {
     show('a-college-wrap'); show('a-name-wrap'); show('a-confirm-wrap');
+    show('a-secq-wrap'); show('a-seca-wrap');
     closeRecovery(); // hide recovery if switching to register
   } else {
     hide('a-college-wrap'); hide('a-dept-wrap'); hide('a-name-wrap'); hide('a-confirm-wrap');
+    hide('a-secq-wrap'); hide('a-seca-wrap');
     document.getElementById('a-college').value = '';
     document.getElementById('a-dept').innerHTML = '<option value="">First select your college</option>';
     document.getElementById('a-dept').disabled = true;
@@ -771,101 +826,140 @@ function setMode(mode) {
 }
 
 /* ═══════════════════════════════════════════
-   PASSCODE RECOVERY
+   PASSCODE RECOVERY — 3-step flow
+   1) roll number  2) security question  3) set new passcode
 ═══════════════════════════════════════════ */
 function openRecovery() {
   const panel = document.getElementById('recovery-panel');
   panel.style.display = 'block';
-
-  // Clear previous state
-  document.getElementById('rec-name').value = '';
-  hide('rec-error');
-  const res = document.getElementById('rec-result');
-  res.classList.remove('show');
-  res.style.display = 'none';
+  resetRecoveryFlow();
 
   // Pre-fill roll number if already typed in login form
   const existingRoll = document.getElementById('a-roll').value.trim();
   document.getElementById('rec-roll').value = existingRoll ? norm(existingRoll) : '';
 
-  // Scroll gently to recovery panel
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function closeRecovery() {
-  const panel = document.getElementById('recovery-panel');
-  panel.style.display = 'none';
-  hide('rec-error');
-  const res = document.getElementById('rec-result');
-  res.classList.remove('show');
-  res.style.display = 'none';
+  document.getElementById('recovery-panel').style.display = 'none';
+  resetRecoveryFlow();
+}
+
+function resetRecoveryFlow() {
+  recStudentRoll = null;
+  ['rec-step1','rec-step2','rec-step3'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('rec-step1').classList.remove('hidden');
+  ['rec-error1','rec-error2','rec-error3','rec-success3'].forEach(id => hide(id));
   document.getElementById('rec-roll').value = '';
-  document.getElementById('rec-name').value = '';
+  document.getElementById('rec-answer').value = '';
+  document.getElementById('rec-newpass').value = '';
+  document.getElementById('rec-newpass2').value = '';
+  document.getElementById('rec-question-text').textContent = '';
 }
 
-async function recoverPasscode() {
-  const roll = norm(document.getElementById('rec-roll').value);
-  const name = document.getElementById('rec-name').value.trim();
-
-  hide('rec-error');
-  const res = document.getElementById('rec-result');
-  res.classList.remove('show');
-  res.style.display = 'none';
-
-  if(!roll) {
-    showRecError('Enter your roll number.');
-    return;
-  }
-  if(!name) {
-    showRecError('Enter your full name as registered.');
-    return;
-  }
-
-  const btn = document.getElementById('rec-btn');
-  const lbl = document.getElementById('rec-btn-label');
-  btn.disabled = true;
-  lbl.textContent = 'Checking…';
-
-  try {
-    const { data, error } = await sb
-      .from('students')
-      .select('name, passcode')
-      .eq('roll_number', roll)
-      .maybeSingle();
-
-    if(error) throw error;
-
-    if(!data) {
-      showRecError('No account found for this roll number. Double-check and try again.');
-      return;
-    }
-
-    // Case-insensitive name comparison
-    if(data.name.trim().toUpperCase() !== name.toUpperCase()) {
-      showRecError('The name you entered does not match our records. Check spelling and try again.');
-      return;
-    }
-
-    // ✅ Match — reveal passcode
-    document.getElementById('rec-passcode').textContent = data.passcode;
-    res.style.display = 'block';
-    void res.offsetWidth; // force reflow for animation
-    res.classList.add('show');
-
-  } catch(e) {
-    console.error(e);
-    showRecError('Could not reach the server. Check your connection and try again.');
-  } finally {
-    btn.disabled = false;
-    lbl.textContent = 'Find my passcode';
-  }
-}
-
-function showRecError(msg) {
-  const el = document.getElementById('rec-error');
+function showStepError(id, msg) {
+  const el = document.getElementById(id);
   el.textContent = msg;
   el.className = 'auth-error';
-  show('rec-error');
+  show(id);
+}
+
+/* STEP 1 → fetch the student's security question */
+async function fetchSecurityQuestion() {
+  const roll = norm(document.getElementById('rec-roll').value);
+  hide('rec-error1');
+  if(!roll) { showStepError('rec-error1', 'Enter your roll number.'); return; }
+
+  const btn = document.getElementById('rec-btn1');
+  btn.disabled = true;
+  document.getElementById('rec-btn1-label').textContent = 'Checking…';
+
+  try {
+    const { data, error } = await sb.from('students')
+      .select('roll_number, security_question')
+      .eq('roll_number', roll)
+      .maybeSingle();
+    if(error) throw error;
+    if(!data) { showStepError('rec-error1', 'No account found for this roll number.'); return; }
+    if(!data.security_question) {
+      showStepError('rec-error1', 'No security question is set on this account. Please contact campus admin to reset your passcode.');
+      return;
+    }
+    recStudentRoll = roll;
+    document.getElementById('rec-question-text').textContent = data.security_question;
+    document.getElementById('rec-step1').classList.add('hidden');
+    document.getElementById('rec-step2').classList.remove('hidden');
+  } catch(e) {
+    console.error(e);
+    showStepError('rec-error1', 'Could not reach the server. Try again.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('rec-btn1-label').textContent = 'Continue';
+  }
+}
+
+/* STEP 2 → verify the answer */
+async function verifySecurityAnswer() {
+  const answer = document.getElementById('rec-answer').value.trim();
+  hide('rec-error2');
+  if(!answer) { showStepError('rec-error2', 'Enter your answer.'); return; }
+
+  const btn = document.getElementById('rec-btn2');
+  btn.disabled = true;
+  document.getElementById('rec-btn2-label').textContent = 'Verifying…';
+
+  try {
+    const { data, error } = await sb.from('students')
+      .select('security_answer')
+      .eq('roll_number', recStudentRoll)
+      .maybeSingle();
+    if(error) throw error;
+    if(!data || (data.security_answer || '').trim().toLowerCase() !== answer.toLowerCase()) {
+      showStepError('rec-error2', "That answer doesn't match our records.");
+      return;
+    }
+    document.getElementById('rec-step2').classList.add('hidden');
+    document.getElementById('rec-step3').classList.remove('hidden');
+  } catch(e) {
+    console.error(e);
+    showStepError('rec-error2', 'Could not reach the server. Try again.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('rec-btn2-label').textContent = 'Verify';
+  }
+}
+
+/* STEP 3 → set the new passcode */
+async function submitNewPasscode() {
+  const p1 = document.getElementById('rec-newpass').value;
+  const p2 = document.getElementById('rec-newpass2').value;
+  hide('rec-error3'); hide('rec-success3');
+
+  if(!/^\d{4}$/.test(p1)) { showStepError('rec-error3', 'Passcode must be exactly 4 digits.'); return; }
+  if(p1 !== p2) { showStepError('rec-error3', 'Passcodes do not match.'); return; }
+
+  const btn = document.getElementById('rec-btn3');
+  btn.disabled = true;
+  document.getElementById('rec-btn3-label').textContent = 'Saving…';
+
+  try {
+    const { error } = await sb.from('students')
+      .update({ passcode: p1 })
+      .eq('roll_number', recStudentRoll);
+    if(error) throw error;
+
+    const successEl = document.getElementById('rec-success3');
+    successEl.textContent = 'Passcode updated! You can log in now.';
+    show('rec-success3');
+    setTimeout(() => { closeRecovery(); }, 1800);
+  } catch(e) {
+    console.error(e);
+    showStepError('rec-error3', 'Could not update your passcode. Try again.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('rec-btn3-label').textContent = 'Set new passcode';
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -893,10 +987,14 @@ async function submitStudent() {
       const dept    = document.getElementById('a-dept').value;
       const name    = document.getElementById('a-name').value.trim();
       const confirm = document.getElementById('a-confirm').value;
+      const secQ    = document.getElementById('a-secq').value;
+      const secA    = document.getElementById('a-seca').value.trim();
 
       if(!college)               { showAuthError('Select your college.'); return; }
       if(!dept)                  { showAuthError('Select your department.'); return; }
       if(!name)                  { showAuthError('Enter your full name.'); return; }
+      if(!secQ)                  { showAuthError('Select a security question.'); return; }
+      if(!secA)                  { showAuthError('Enter an answer to your security question.'); return; }
       if(!/^\d{4}$/.test(pass)) { showAuthError('Passcode must be exactly 4 digits (numbers only).'); return; }
       if(pass !== confirm)       { showAuthError('Passcodes do not match.'); return; }
 
@@ -904,10 +1002,14 @@ async function submitStudent() {
       if(checkErr) throw checkErr;
       if(existing) { showAuthError('This roll number is already registered. Log in instead.'); return; }
 
-      const { error: insertErr } = await sb.from('students').insert({ roll_number: roll, name, passcode: pass, college, department: dept });
+      const { error: insertErr } = await sb.from('students').insert({
+        roll_number: roll, name, passcode: pass, college, department: dept,
+        security_question: secQ, security_answer: secA
+      });
       if(insertErr) throw insertErr;
 
-      ['a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = '');
+      ['a-name','a-pass','a-confirm','a-seca'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('a-secq').value = '';
       document.getElementById('a-college').value = '';
       document.getElementById('a-dept').innerHTML = '<option value="">First select your college</option>';
       document.getElementById('a-dept').disabled = true;
@@ -954,7 +1056,8 @@ function logout() {
   currentRoll = null; currentStudent = null;
   stopAutoRefresh();
   hide('student-screen'); show('auth-screen');
-  ['a-roll','a-name','a-pass','a-confirm'].forEach(id => document.getElementById(id).value = '');
+  ['a-roll','a-name','a-pass','a-confirm','a-seca'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('a-secq').value = '';
   document.getElementById('a-college').value = '';
   document.getElementById('a-dept').innerHTML = '<option value="">First select your college</option>';
   document.getElementById('a-dept').disabled = true;
@@ -1269,15 +1372,21 @@ function boot() {
   show('auth-screen');
 
   // Enter key on auth inputs
-  ['a-roll','a-name','a-pass','a-confirm'].forEach(id => {
+  ['a-roll','a-name','a-pass','a-confirm','a-seca'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.addEventListener('keydown', e => { if(e.key === 'Enter') { e.preventDefault(); submitStudent(); } });
   });
 
   // Enter key on recovery inputs
-  ['rec-roll','rec-name'].forEach(id => {
+  const recEnterMap = {
+    'rec-roll':     fetchSecurityQuestion,
+    'rec-answer':   verifySecurityAnswer,
+    'rec-newpass':  submitNewPasscode,
+    'rec-newpass2': submitNewPasscode
+  };
+  Object.keys(recEnterMap).forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.addEventListener('keydown', e => { if(e.key === 'Enter') { e.preventDefault(); recoverPasscode(); } });
+    if(el) el.addEventListener('keydown', e => { if(e.key === 'Enter') { e.preventDefault(); recEnterMap[id](); } });
   });
 
   // Keyboard activation for image drop zone
