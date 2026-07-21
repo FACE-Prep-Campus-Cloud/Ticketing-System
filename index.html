@@ -368,6 +368,7 @@
           <option>Kongunadu College of Arts and Science</option>
           <option>Sri Ramakrishna College of Arts and Science for Women</option>
           <option>St. Agnes College (Autonomous)</option>
+          <option>Yenepoya (Deemed to be University)</option>
         </select>
       </div>
       <div id="a-dept-wrap" class="field hidden">
@@ -687,31 +688,32 @@ const CAT_HINTS = {
 
 /* ── College → Department map ── */
 const COLLEGE_DEPARTMENTS = {
-  "Kamaraj College":              ["I BCA - A","I BCA - B","II BCA","B.Com Honors","BBA Digital Marketing"],
-  "Kamaraj Women's College":      ["I B.Sc. CS with AI"],
-  "SDNB Vaishnav College for Women": ["II B.Sc. CS with AI","I B.Sc. CS with AI (Shift 1)","I B.Sc. CS with AI (Shift 2)","I B.Sc. DS & AI","I B.Com FinTech with AI","I BBA DM & BA"],
-  "Sree Saraswathi Thyagaraja College": ["I BBA","I MCA"],
-  "TERF's College of Arts and Science": ["III BCA","II B.Sc IT"],
-  "TJS College of Arts and Science": ["II B.Sc CS with AI"],
-  "Bharathidasan College of Arts & Science": ["I B.Sc CT","I BBA CA","II B.Sc CT"],
- "Nagarathinam Angalammal Arts & Science College": ["II B.Sc AI","I B.Sc AI","I B.Sc CC","II B.Sc CC","BBA DM","II BBA DM","I B.Com BC & FT","II B.Com BC & FT","III B.Sc AI"],
- "Vinayaga Mission's Research Foundation School of Arts & Science": ["I B.Com FinTech with AI","I B.Sc AI & ML"],
-  "Sri Amaraavathi College of Arts & Science": ["II BCA","III BCA","I B.Sc AI & ML","I B.Com FinTech"],
-  "Takshashila University": ["II B.Sc CS AI & ML","I B.Sc CS AI & ML","I B.Com FinTech with AI"],
-  "Study World Group of Institution": ["I BCA"],
-  "Rathinam College of Arts & Science": ["I BCA (AI)","I B.Sc CT (GenAI)"],
-  "Noorul Islam Centre for Higher Education (NICHE)": ["I B.Sc AI & ML"],
-  "AMET University": ["II B.Sc AI & ML","I B.Sc AI & ML","I B.Sc AI & DS","I B.Com Fintech with AI","I BBA E-Commerce & Digital Marketing"],
-  "Sasurie College of Arts and Science": ["I B.Sc AI & DS","I B.Sc CS","I B.Sc IT","I BBA CA","I B.Com PA"],
-  "S-VYASA University": ["II BCA"],
-  "Alliance University": ["I BCA (DS + AI & ML)","I BCA (Game Development)","II BCA DS (A+B)","II BCA AI & ML (A+B)","II BCA Game Development (A+B)","I MCA - A","I MCA - B"],
-  "Kristu Jayanti (Deemed to be University)": ["I BBA - AI & DS","I BBA - FinTech"],
-  "Asian School of Business": ["I BCA","I BBA","I B.Com"],
-  "Hindusthan College of Arts & Science": ["B.Sc CT","B.Com (FinTech)"],
-  "VLB Janakiammal College of Arts and Science": ["B.Sc CS (Artificial Intelligence & Data Science)","B.Com (SCM & AI)"],
-  "Kongunadu College of Arts and Science": ["B.Sc (Artificial Intelligence & Machine Learning)"],
-  "Sri Ramakrishna College of Arts and Science for Women": ["BBA (Digital Marketing)","BCA"],
-  "St. Agnes College (Autonomous)": ["B.Com (Artificial Intelligence & Machine Learning)"]
+  "Kamaraj College": ["I BCA -A","I BCA - B","II BCA - A","II BCA - B","III BCA","I BBA Digital Marketing","II BBA Digital Marketing","I B.Com. (Hons.)","II B.Com. (Hons.)"],
+  "Kamaraj Women's College": ["II - B.Sc. Computer Science with Artificial Intelligence"],
+  "SDNB Vaishnav College for Women": ["I- B.Sc. Computer Science with Artificial Intelligence Shift-1","I- B.Sc. Computer Science with Artificial Intelligence Shift-2","II - B.Sc. Computer Science with Artificial Intelligence Shift-1","II - B.Sc. Computer Science with Artificial Intelligence Shift-2","III- B.Sc. Computer Science with Artificial Intelligence","I - B.Sc Data Science and Artificial Intelligence","II- B.Sc Data Science and Artificial Intelligence","I - B.Sc Computer Science with Cloud Computing","I- BBA Digital Marketing and Business Analytics","II- BBA Digital Marketing and Business Analytics","I - B.Com. FinTech with Artificial Intelligence","II - B.Com. FinTech with Artificial Intelligence","I - B.com Banking and FinTech","I- BBA Airline and Airport Management","I- BBA Fashion Management"],
+  "Sree Saraswathi Thyagaraja College": ["I BBA","II BBA","I- BCOM","I MCA","II MCA"],
+  "TERF's College of Arts and Science": ["III BSC IT"],
+  "TJS College of Arts and Science": ["III - B.Sc. Computer Science with Artificial Intelligence"],
+  "Bharathidasan College of Arts & Science": ["II B.Sc. CT","III B.Sc. CT","II- BBA CA"],
+  "Nagarathinam Angalammal Arts & Science College": ["I- B.Sc Artificial Intelligence","II- B.Sc Artificial Intelligence","III- B.Sc Artificial Intelligence","I- B.Sc Cloud Computing With CyberSecurity","II- B.Sc Cloud Computing With CyberSecurity","I- B.Com Blockchain & Fintech","II- B.Com Blockchain & Fintech","II- BBA Digital Marketing"],
+  "Vinayaga Mission's Research Foundation School of Arts & Science": ["I- B.Sc. Artificial Intelligence and Machine Learning","II- B.Sc. Artificial Intelligence and Machine Learning","I B.Com. FinTech with Artificial Intelligence","II B.Com. FinTech with Artificial Intelligence"],
+  "Sri Amaraavathi College of Arts & Science": ["II B.Sc. Artificial Intelligence and Machine Learning","III BCA","II BCA","II - Bcom"],
+  "Takshashila University": ["I- B.Sc. Artificial Intelligence and Machine Learning","II- B.Sc. Artificial Intelligence and Machine Learning","III- B.Sc. Artificial Intelligence and Machine Learning","I B.Com. FinTech with Artificial Intelligence","II B.Com. FinTech with Artificial Intelligence"],
+  "Study World Group of Institution": ["I BCA","II BCA"],
+  "Rathinam College of Arts & Science": ["I BCA (AI)","II BCA (AI)","I BSc CT (GEN AI)","II BSc CT (GEN AI)"],
+  "Noorul Islam Centre for Higher Education (NICHE)": ["B.Sc. Artificial Intelligence and Machine Learning"],
+  "AMET University": ["II B.Sc. Artificial Intelligence and Machine Learning","III B.Sc. Artificial Intelligence and Machine Learning","I B.Sc. Artificial Intelligence and Data Science","II B.Sc. Artificial Intelligence and Data Science","I B.Tech Artificial Intelligence and Data Science","II BBA Digital Marketing and E-Commerce","I B.Com. FinTech with Artificial Intelligence","II B.Com. FinTech with Artificial Intelligence"],
+  "Sasurie College of Arts and Science": ["II B.Sc. CS AI & DS","II B.Sc. IT","II BSC CS","II- B.Com. PA","II - BBA CA"],
+  "S-VYASA University": ["BCA"],
+  "Alliance University": ["BCA (Hons.) I YEAR","BCA II YEAR","BCA III YEAR","MCA I ST YEAR","MCA"],
+  "Kristu Jayanti (Deemed to be University)": ["I BBA Aritificial Intelligence and Data Sciece","II BBA Aritificial Intelligence and Data Sciece","I - BBA FinTech","II- BBA FinTech"],
+  "Asian School of Business": ["I- BCA Data Science and Artificial Intelligence","II- BCA Data Science and Artificial Intelligence","I- BBA Digital Marketing and E-Commerce","II- BBA Digital Marketing and E-Commerce","I - B.Com. FinTech with AI","II - B.Com. FinTech with AI"],
+  "Hindusthan College of Arts & Science": ["I- BSC CT","I Bcom Fin tech With AI"],
+  "VLB Janakiammal College of Arts and Science": ["I- BSC CS AI & DS","I-BCOM (SCM & AI)"],
+  "Kongunadu College of Arts and Science": ["I BSC AI ML"],
+  "Sri Ramakrishna College of Arts and Science for Women": ["I- BCA","I- BBA DM"],
+  "St. Agnes College (Autonomous)": ["I BCom AIML"],
+  "Yenepoya (Deemed to be University)": ["General"]
 };/* ═══════════════════════════════════════════
    UTILITY HELPERS
 ═══════════════════════════════════════════ */
